@@ -1,21 +1,31 @@
+@import 'css/normalize.css'
+@import 'css/normalize-opentype.css'
 @import 'css/rupture'
 @import 'css/axis/*'
 
 body
-  font-family: "Helvetica"
-  text-align: center
-  padding: 50px 20px 0
-  color: #444
-  margin: 0
-  +above(600px)
-    background salmon
+    font-family: "Helvetica"
+    text-align: center
+    padding: 50px 20px 0
+    color: #444
+    margin: 0
+    background: teal
+    +above(900px)
+        background #D5634D
+
+div
+    padding: 0 20px 20px 20px
+    margin: 0 auto
+    border-radius: 6px
+    background: slategray
+    max-width: 500px
+
 
 h1
-  font-size: 65px
-  line-height: 1.2em
-  border-bottom: #CCC solid 1px
-  padding: 20px 0
+    font-size: 65px
+    line-height: 1.2em
+    padding: 20px 0
 
 
 h3
-  font-weight: 300
+    font-weight: 300
