@@ -1,10 +1,12 @@
 {
   "sundown": {
     "title": "Sundown iOS App",
-    "teaser": "A bunch of nonsense description text for sundown."
+    "teaser": "A bunch of nonsense description text for sundown.",
+    "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"]
   },
   "curriculate": {
     "title": "Curriculate",
-    "teaser": "A bunch of nonsense description text for curriculate."
+    "teaser": "A bunch of nonsense description text for curriculate.",
+    "roles": ["Web App Design", "Wireframing", "Interaction Design", "Responsive Web Design"]
   }
 }
