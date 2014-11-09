@@ -1,0 +1,12 @@
+doctype
+html
+    != partial('_partials/head')
+    body
+        if current.path[0] == "project"
+            h2 This is the post-specific markup
+            a(href="/") Back
+
+        != yield
+    
+        script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+    

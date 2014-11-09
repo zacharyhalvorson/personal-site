@@ -1,0 +1,17 @@
+{
+  "globals": {
+    "name": "Zachary Halvorson",
+    "title": "Zachary Halvorson",
+    "url": "http://zacharyhalvorson.github.io",
+    "description": "Zachary Halvorson's personal website.",
+    "author": {
+        "name": "Zachary Halvorson",
+        "email": "zacharyhalvorson@me.com",
+        "bio": "Designer at Mobify",
+        "twitter": "zachhalvorson",
+        "github": "zacharyhalvorson",
+        "dribbble": "zacharyhalvorson",
+        "rdio": "zacharyhalvorson"
+    }
+  }
+}
