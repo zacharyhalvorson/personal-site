@@ -1,0 +1,6 @@
+h2 My Work
+p Here's a couple examples of my work that I do when I'm not making things on the Product Team at Mobify.
+
+each project, slug in public.project._data
+  h2: a(href="/project/#{ slug }")= project.title
+  p= project.teaser
