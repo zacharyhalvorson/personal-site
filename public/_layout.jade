@@ -2,11 +2,18 @@ doctype
 html
     != partial('_partials/head')
     body
-        if current.path[0] == "project"
-            h2 This is the post-specific markup
-            a(href="/") Back
+        
+        nav#top: ul
+            each page, slug in public._data
+              li: a(href='/#{ slug }')= slug
 
-        != yield
+        main
+            if current.path[0] == 'project'
+                a(href='/') Back
+
+            != yield
+        
+        footer: != partial('_partials/footer')
     
         script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
     

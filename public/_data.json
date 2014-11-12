@@ -2,5 +2,9 @@
   "index": {
     "title": "This is my home page",
     "description": "Best home page ever"
+},
+  "about": {
+    "title": "This is my about page",
+    "description": "Best about page ever"
   }
 }

@@ -4,15 +4,12 @@
 @import 'axis/*'
 
 body
+    margin: 0 20px
     font-family: 'DIN-Light'
     font-size: 16px
-    text-align: center
-    padding: 50px 20px 0
-    color: #444
-    margin: 0
     background: tomato
     +above(900px)
-        background: cornsilk
+        background: azure
 
 h1
     font-family: 'DIN Alternate'
@@ -23,3 +20,6 @@ h1
 
 h3
     font-weight: 300
+
+ul
+    reset-list()
