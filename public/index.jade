@@ -1,3 +1,5 @@
-!= partial('_partials/intro')
-!= partial('_partials/work')
-!= partial('_partials/about')
+header: h1 Zachary Halvorson is an interaction designer working on the web and iOS.
+
+each project, slug in public.project._data
+  h2: a(href="/project/#{ slug }")= project.title
+  p= project.teaser
