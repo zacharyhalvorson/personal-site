@@ -1,0 +1,101 @@
+//
+// Image Container
+//
+
+div[class^="image-"]
+    background: grey1
+    margin-left: -100%
+    margin-top: 1.111111111rem
+
+
+.image-crop
+    overflow: hidden
+    height: 17rem
+    img
+        display: block
+        transition()
+
+.one-up img
+        width: 90%
+        margin: 0 auto
+        max-width: 15rem
+        transform: translateY(2rem)
+        &:hover
+            transform: translateY(1.3rem)
+        .wide&
+            max-width: 28rem
+            transform: translateY(3.7rem)
+            &:hover
+                transform: translateY(3.2rem)
+
+.two-up
+    display: flex
+    justify-content: center
+
+    img
+        width: 45%
+        height: auto
+        max-width: 16rem
+        transform: translateY(2.5rem)
+        &:first-child
+            margin-right: 5%
+        &:hover
+            transform: translateY(2rem)
+
+    &.big-right
+        img:first-child
+            width: 30%
+            transform: translateY(3rem)
+            &:hover
+                transform: translateY(2.5rem)
+        img:nth-child(2)
+            width: 70%
+            transform: translateY(2rem)
+            &:hover
+                transform: translateY(1.5rem)
+
+    &.big-left
+        img:nth-child(2)
+            width: 40%
+            max-width: 12rem
+            transform: translateY(3rem)
+        img:first-child
+            width: 50%
+            max-width: 16rem
+            transform: translateY(2rem)
+
+
+.image-fill
+    display: flex
+    justify-content: center
+    padding: 2.222222222rem 0
+    img
+        width: 40%
+        max-width: 10rem
+        transition()
+        &:first-child
+            margin-right: 10%
+        &:hover
+            transform: scale(1.1)
+
+//
+// Image Carousel
+//
+
+
+.m-scooch
+    position: relative
+    padding: 1.111111111rem 0
+    img
+        width: 80%
+        max-width: 50rem
+        display: block;
+        margin: 0 auto;
+    .m-scooch-controls a
+        position: absolute
+        top: 50%;
+        transform: translateY(-50%)
+        &[data-m-slide="next"]
+            right: 1.111111111rem
+        &[data-m-slide="prev"]
+            left: 1.111111111rem

@@ -3,17 +3,24 @@ html
     != partial('_partials/head')
     body
         
-        nav#top: ul
-            each page, slug in public._data
-              li: a(href='/#{ slug }')= slug
+        header(role='banner')
+            a.logo(href='/'): img(src='http://placekitten.com/g/50/50')
+            nav(role='navigation'): ul
+                each page, slug in public._data
+                    if slug == "index"
+                        li: a(href='/' class='is-underlined')= page.title
+                    else    
+                        li: a(href='/#{ slug }' class='is-underlined')= page.title
+            
+            h1 <strong>Zachary Halvorson</strong> is an interaction designer working on the web and iOS.
 
-        main
-            if current.path[0] == 'project'
-                a(href='/') Back
+        main(class='#{ bodyClass ? bodyClass : "project"}', role="main")
 
             != yield
         
-        footer: != partial('_partials/footer')
+        footer(role='contentinfo'): != partial('_partials/footer')
     
         script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+        script(src='//cdn.mobify.com/modules/scooch/0.3.3/scooch.min.js')
+        script(src='/js/app.js')
     

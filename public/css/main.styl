@@ -1,25 +1,57 @@
-@import 'normalize'
-@import 'normalize-opentype'
+@import '_nib'
 @import 'rupture'
-@import 'axis/*'
+@import 'mixins/*'
+@import 'pages/*'
+@import 'modules/*'
+
+// Set default text styles
+normalize-css()
+base()
+reset-headers()
+
+::selection
+    background: green
 
 body
-    margin: 0 20px
-    font-family: 'DIN-Light'
-    font-size: 16px
-    background: tomato
-    +above(900px)
-        background: azure
+    max-width: 800px
+    padding: 0 1.111111111rem
+    margin: 0 auto
 
-h1
-    font-family: 'DIN Alternate'
-    font-size: 36px
-    line-height: 1.2em
-    padding: 20px 0
+a
+    color: link-color
 
+p:first-child
+    margin-top: 0
 
-h3
-    font-weight: 300
+strong
+    font-weight: fontRegular
 
 ul
     reset-list()
+
+// Modifier Classes
+
+.is-left,
+.is-right
+    float: left
+    width: 50%
+    group()
+
+
+.is-underlined
+    text-decoration: none
+    position: relative
+    &:after
+        transition()
+        content: ''
+        display: block
+        background: orange
+        height: 2px
+        width: 100%
+        position: absolute
+        bottom: 1px
+        opacity: 0
+    &:hover
+        &:after
+            transform: translateY(2px)
+            opacity: 1
