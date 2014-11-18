@@ -18,6 +18,8 @@ body
 
 a
     color: link-color
+    text-decoration: none
+    position: relative
 
 p:first-child
     margin-top: 0
@@ -37,15 +39,15 @@ ul
     group()
 
 
-.is-underlined
+.is-underlined-bold
     text-decoration: none
     position: relative
     &:after
         transition()
         content: ''
         display: block
-        background: orange
-        height: 2px
+        background: red
+        height: 1px
         width: 100%
         position: absolute
         bottom: 1px
@@ -54,3 +56,23 @@ ul
         &:after
             transform: translateY(2px)
             opacity: 1
+
+.is-underlined
+    transition()
+    &:hover
+        color: red
+        &::after
+        // This looks like crap in chrome, needs to be fixed
+            // transform: translateY(-.1rem)
+            // opacity: 0
+    &::after
+        transition()
+        content: ""
+        width: 100%
+        height: 1px
+        opacity: 1
+        border-bottom: 1px link-color solid
+        position: absolute
+        bottom: -1px
+        left: 0
+        transform: scaleY(0.5)

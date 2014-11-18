@@ -8,9 +8,9 @@ html
             nav(role='navigation'): ul
                 each page, slug in public._data
                     if slug == "index"
-                        li: a(href='/' class='is-underlined')= page.title
+                        li: a(href='/' class='is-underlined-bold')= page.title
                     else    
-                        li: a(href='/#{ slug }' class='is-underlined')= page.title
+                        li: a(href='/#{ slug }' class='is-underlined-bold')= page.title
             
             h1 <strong>Zachary Halvorson</strong> is an interaction designer working on the web and iOS.
 
