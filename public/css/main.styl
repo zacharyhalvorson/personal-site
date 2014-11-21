@@ -1,9 +1,12 @@
+@import 'normalize'
+@import 'normalize-opentype'
 @import 'rupture'
 @import 'mixins/*'
 @import 'pages/*'
 @import 'modules/*'
 
-// Set default text styles
+headerBreak = 27.5rem
+
 normalize-css()
 base()
 reset-headers()
@@ -34,9 +37,10 @@ ul
 
 .is-left,
 .is-right
-    float: left
-    width: 50%
-    group()
+    +above(headerBreak)
+        float: left
+        width: 50%
+        group()
 
 
 .is-underlined-bold

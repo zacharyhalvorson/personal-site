@@ -1,12 +1,18 @@
 //
 // Banner Styles
 //
+headerBreak = 27.5rem
+
 header[role="banner"]
     border-bottom()
     line-height: 1.6666rem
     padding-top: 2.33333rem
+    +below(headerBreak)
+        padding-top: 1.111111112rem
+        border-none()
 
     .logo, nav, h1
+        transition()
         float: left
 
     .logo
@@ -16,11 +22,38 @@ header[role="banner"]
 
     nav
         width: 25%
+        +below(headerBreak)
+            width: auto
+            float: right
+            ul
+              group()
+              margin: 0
+              padding-top: .555555556rem
+
+              li
+                float: left
+                margin-right: 2rem
+                list-style-type: none
+
+              li:last-child
+                margin-right: .555555556rem
 
     h1
         width: 50%
         margin-bottom: 2.556 rem
         padding-left: .555555556rem
+        +below(headerBreak)
+            clear: both
+            float: none
+            width: auto
+            padding-left: 0
+            padding-top: 2.166666667rem
+            padding-bottom: .555555556rem
+
+            // account for unfortunate wrapping on iphone4
+            margin-bottom: 0
+            margin-right: -.17rem
+            margin-left: -.18rem
 
     .is-selected
         font-weight: fontRegular

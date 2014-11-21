@@ -2,10 +2,14 @@
 // Image Container
 //
 
+headerBreak = 27.5rem
+
 div[class^="image-"]
     background: grey1
     margin-left: -100%
     margin-top: 1.111111111rem
+    +below(headerBreak)
+        margin-left: 0
 
 
 .image-crop
@@ -71,6 +75,7 @@ div[class^="image-"]
     padding: 2.222222222rem 0
     img
         width: 40%
+        height: 100% //Fixes a weird chrome issue
         max-width: 10rem
         transition()
         &:first-child
@@ -96,6 +101,13 @@ div[class^="image-"]
         top: 50%;
         transform: translateY(-50%)
         &[data-m-slide="next"]
-            right: 1.111111111rem
+            right: 3%
+            +below(headerBreak)
+                right: 2%
         &[data-m-slide="prev"]
-            left: 1.111111111rem
+            left: 3%
+            +below(headerBreak)
+                left: 2%
+        +below(headerBreak)
+            img
+                width: 50%

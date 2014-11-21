@@ -1,12 +1,22 @@
 //
 // Project Page Styling
 //
+
+headerBreak = 27.5rem
+
 .project
     margin-top: 2.222222222rem
     group()
+    +below(headerBreak)
+        margin-top: 1.111111111rem
+        padding-top: 1.111111111rem
+        border-top()
 
     header
         padding-left: 25%
+        +below(headerBreak)
+            padding-left: 0
+            margin-bottom: 1.111111111rem
 
     h2, h3
         font-weight: fontRegular

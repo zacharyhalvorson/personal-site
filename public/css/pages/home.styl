@@ -1,8 +1,13 @@
 //
 // Work Page Styles
 //
+
+projectListBreak = 30rem
+
 .projectList
     group()
+    +below(projectListBreak)
+        margin: 0 -1.111111111rem
 
     a
         float: left
@@ -14,6 +19,13 @@
             padding-right: .555555556rem
         &:nth-child(even)
             padding-left: .555555556rem
+        +below(projectListBreak)
+            width: 100%
+            margin: 0
+            &:first-child
+                margin-top: 1.111111111rem
+            &:nth-child(n)
+                padding: 0
 
         > div
             margin: 0

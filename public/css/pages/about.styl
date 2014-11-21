@@ -1,6 +1,9 @@
 //
 // About Page Styles
 //
+
+headerBreak = 27.5rem
+
 .about
     margin-top: 2.222222222rem
     group()
@@ -13,3 +16,15 @@
 
     .is-right
         padding-left: .555555556rem
+
+    +below(headerBreak)
+        margin-top: 1.111111111rem
+        padding-top: 1.111111111rem
+        border-top()
+
+        .profile-picture
+            margin-bottom: 1.111111111rem
+
+        .is-left,
+        .is-right
+            padding: 0
