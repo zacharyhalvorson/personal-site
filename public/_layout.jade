@@ -6,17 +6,17 @@ html
         header(role='banner')
             a.logo(href='/'): img(src='http://placekitten.com/g/50/50')
             nav(role='navigation'): ul
-                each page, slug in public._data
-                    if slug == "index"
-                        li: a(href='/' class='is-underlined-bold')= page.title
-                    else    
-                        li: a(href='/#{ slug }' class='is-underlined-bold')= page.title
+                li: a(href='/' class='is-underlined-bold #{ current.source != "about" ? "current" : "" }') Work
+                li: a(href='/about' class='is-underlined-bold #{ current.source === "about" ? "current" : "" }') About
             
             h1 <strong>Zachary Halvorson</strong> is an interaction designer working on the web and iOS.
 
         main(class='#{ bodyClass ? bodyClass : "project"}', role="main")
 
             != yield
+            
+        if current.source != "about" || "index"
+            != partial('_partials/paginator')
         
         footer(role='contentinfo'): != partial('_partials/footer')
     
