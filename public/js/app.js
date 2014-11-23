@@ -4,7 +4,8 @@ if ( $('.m-item:first-child' ).hasClass('m-active') ) {
     $('.m-scooch-controls [data-m-slide="prev"]').addClass('hide');
 };
 
-$('.m-scooch-controls a').click(function() {
+$('.m-scooch').on('afterSlide', function(e, previousSlide, nextSlide) {
+
     $('.m-scooch-controls a').removeClass('hide');
 
     if ( $('.m-item:first-child' ).hasClass('m-active') ) {
@@ -14,24 +15,4 @@ $('.m-scooch-controls a').click(function() {
     if ( $('.m-item:last-child' ).hasClass('m-active') ) {
         $('.m-scooch-controls [data-m-slide="next"]').addClass('hide');
     };
-
 });
-
-
-// Pseusocode
-//
-// Create array of images in carousel
-// var images = $('.m-item').map(function() {
-//      return this
-// }).get();
-//
-// when the afterSlide event fires
-//
-//     make sure to reevaluate the situation, adding buttons back that were previously removed
-//
-//     for image in images
-//         if !image[i-1]
-//             add hide class to previous button
-//         if !image[i+1]
-//             add hide class to next button
-//
