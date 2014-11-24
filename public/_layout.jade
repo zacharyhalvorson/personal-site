@@ -4,7 +4,7 @@ html
     body
         
         header(role='banner')
-            a.logo(href='/'): img(src='http://placekitten.com/g/50/50')
+            .logo: a(href='/'): img(src='/img/logo.svg')
             nav(role='navigation'): ul
                 li: a(href='/' class='is-underlined-bold #{ current.source != "about" ? "current" : "" }') Work
                 li: a(href='/about' class='is-underlined-bold #{ current.source === "about" ? "current" : "" }') About
@@ -22,5 +22,6 @@ html
     
         script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
         script(src='//cdn.mobify.com/modules/scooch/0.3.3/scooch.min.js')
+        script(src='/js/velocity.min.js')
         script(src='/js/app.js')
     

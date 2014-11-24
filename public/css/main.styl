@@ -70,9 +70,9 @@ ul
     &:hover
         color: red
         &::after
-        // This looks like crap in chrome, needs to be fixed
-            // transform: translateY(-.1rem)
-            // opacity: 0
+            transform: scaleY(0.5)
+            box-shadow: 0 1px 0 0 red;
+
     &::after
         transition()
         content: ""
