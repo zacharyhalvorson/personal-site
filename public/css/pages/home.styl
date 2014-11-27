@@ -45,6 +45,9 @@ projectListBreak = 30rem
             opacity: 0
             transition()
             transform: translateY(.8rem)
+            +below(projectListBreak)
+                opacity: 1
+                transform: translateY(1.1111111rem)
         &:hover
             img
                 transform: translateY(3rem)
