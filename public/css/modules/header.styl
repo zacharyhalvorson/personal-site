@@ -19,24 +19,24 @@ header[role="banner"]
         width: 25%
         a
             transition()
-            display: flex
-            justify-content: center
-            align-items: flex-end
+            display: block
             width: 50px
             height: 50px
-            background: rgba(161, 231, 176, 0.6)
+            display: flex
+            justify-content: center
+            align-items: center
             &:hover
-                #top
-                    transform: translate(5px, 0)
-                #middle
-                    opacity: 0
-                #bottom
-                    transform: translate(5px, 15px)
-        path,
-        rect
-            transition()
-            transform: translate(6px, 7px)
+                img
+                    opacity: 1
+                    transform: scale(1)
 
+            img
+                transition()
+                transform: scale(0.8)
+                opacity: 0
+                +below(projectListBreak)
+                    opacity: 1
+                    transform: scale(1) 
     nav
         width: 25%
         +below(headerBreak)

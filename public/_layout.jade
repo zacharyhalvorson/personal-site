@@ -5,7 +5,7 @@ html
         
         header(role='banner')
             .logo: a(href='/')
-                != partial('_partials/logo')
+                img(src='/img/logo.svg')
                 
             nav(role='navigation'): ul
                 li: a(href='/' class='is-underlined-bold #{ current.source != "about" ? "current" : "" }') Work
@@ -25,4 +25,5 @@ html
         script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
         script(src='//cdn.mobify.com/modules/scooch/0.3.3/scooch.min.js')
         script(src='/js/app.js')
+        script(src='/js/rainbow.js')
     
