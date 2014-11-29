@@ -1,25 +1,87 @@
 @import 'normalize'
 @import 'normalize-opentype'
 @import 'rupture'
-@import 'axis/*'
+@import 'mixins/*'
+@import 'pages/*'
+@import 'modules/*'
+
+
+
+normalize-css()
+base()
+reset-headers()
+
+::selection
+    background: green
 
 body
-    font-family: 'DIN-Light'
-    font-size: 16px
-    text-align: center
-    padding: 50px 20px 0
-    color: #444
-    margin: 0
-    background: tomato
-    +above(900px)
-        background: cornsilk
+    max-width: 800px
+    padding: 0 1.111111111rem
+    margin: 0 auto
 
-h1
-    font-family: 'DIN Alternate'
-    font-size: 36px
-    line-height: 1.2em
-    padding: 20px 0
+a
+    color: link-color
+    text-decoration: none
+    position: relative
+
+p:first-child
+    margin-top: 0
+
+strong
+    font-weight: fontRegular
+
+ul
+    reset-list()
+
+// Modifier Classes
+
+.current
+    color: font-color
+    font-weight: fontRegular
+
+.is-left,
+.is-right
+    +above(headerBreak)
+        float: left
+        width: 50%
+        group()
 
 
-h3
-    font-weight: 300
+.is-underlined-bold
+    text-decoration: none
+    position: relative
+    &:after
+        transition()
+        content: ''
+        display: block
+        background: red
+        height: 1px
+        width: 100%
+        position: absolute
+        left: 0
+        bottom: 1px
+        opacity: 0
+    &:hover
+        &:after
+            transform: translateY(2px)
+            opacity: 1
+
+.is-underlined
+    transition()
+    &:hover
+        color: red
+        &::after
+            transform: scaleY(0.5)
+            box-shadow: 0 1px 0 0 red;
+
+    &::after
+        transition()
+        content: ""
+        width: 100%
+        height: 1px
+        opacity: 1
+        border-bottom: 1px link-color solid
+        position: absolute
+        bottom: -1px
+        left: 0
+        transform: scaleY(0.5)

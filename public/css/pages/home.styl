@@ -1,0 +1,73 @@
+//
+// Work Page Styles
+//
+
+projectListBreak = 30rem
+
+.projectList
+    group()
+    +below(projectListBreak)
+        margin: 0 -1.111111111rem
+
+    a
+        float: left
+        width: 50%
+        height: 12rem
+        margin-top: 1.111111111rem
+        position: relative
+        &:nth-child(odd)
+            padding-right: .555555556rem
+        &:nth-child(even)
+            padding-left: .555555556rem
+        +below(projectListBreak)
+            width: 100%
+            margin: 0
+            &:first-child
+                margin-top: 1.111111111rem
+            &:nth-child(n)
+                padding: 0
+
+        > div
+            margin: 0
+            height: 100%
+            overflow: hidden
+            img
+                transition()
+                width: 70%
+                display: block
+                margin: 0 auto
+                transform: translateY(3.3rem)
+
+        strong
+            position: absolute
+            top: 0
+            left: 2.222222222rem
+            opacity: 0
+            transition()
+            transform: translateY(.8rem)
+            +below(projectListBreak)
+                opacity: 1
+                transform: translateY(1.1111111rem)
+        &:hover
+            img
+                transform: translateY(3rem)
+            strong
+                opacity: 1
+                transform: translateY(1.1111111rem)
+
+// State colors for the different post backgrounds
+.is-blue
+    > div
+        background blue1
+
+.is-yellow
+    > div
+        background yellow
+
+.is-green
+    > div
+        background green
+
+.is-red
+    > div
+        background red
