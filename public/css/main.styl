@@ -1,11 +1,8 @@
 @import 'normalize'
 @import 'normalize-opentype'
-@import 'rupture'
 @import 'mixins/*'
 @import 'pages/*'
 @import 'modules/*'
-
-
 
 normalize-css()
 base()
@@ -41,7 +38,7 @@ ul
 
 .is-left,
 .is-right
-    +above(headerBreak)
+    @media all and (min-width: headerBreak)
         float: left
         width: 50%
         group()
