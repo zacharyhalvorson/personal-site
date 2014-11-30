@@ -4,20 +4,13 @@
     "teaser": "A bunch of nonsense description text for sundown.",
     "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"],
     "color": "blue",
-    "teaser": "sundown-teaser"
+    "teaser": "sundown"
   },
   "curriculate": {
     "title": "Curriculate",
     "teaser": "A bunch of nonsense description text for curriculate.",
     "roles": ["UX Design", "Wireframing", "Interaction Design"],
     "color": "green",
-    "teaser": "curriculate-teaser"
-    },
-    "this-website": {
-      "title": "This Website",
-      "teaser": "A bunch of nonsense description text for curriculate.",
-      "roles": ["Web App Design", "Wireframing", "Interaction Design", "Responsive Web Design"],
-      "color": "yellow",
-      "teaser": ""
+    "teaser": "curriculate"
     }
 }
