@@ -6,7 +6,7 @@ projectListBreak = 30rem
 
 .projectList
     group()
-    +below(projectListBreak)
+    @media all and (max-width: projectListBreak)
         margin: 0 -1.111111111rem
 
     a
@@ -19,7 +19,7 @@ projectListBreak = 30rem
             padding-right: .555555556rem
         &:nth-child(even)
             padding-left: .555555556rem
-        +below(projectListBreak)
+        @media all and (max-width: projectListBreak)
             width: 100%
             margin: 0
             &:first-child
@@ -45,7 +45,7 @@ projectListBreak = 30rem
             opacity: 0
             transition()
             transform: translateY(.8rem)
-            +below(projectListBreak)
+            @media all and (max-width: projectListBreak)
                 opacity: 1
                 transform: translateY(1.1111111rem)
         &:hover

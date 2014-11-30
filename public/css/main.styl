@@ -1,12 +1,5 @@
-// Node Modules
-@import "../../node_modules/jeet/stylus/jeet/index.styl";
-@import "../../node_modules/rupture/rupture/index.styl";
-
-// Resets
 @import 'normalize'
 @import 'normalize-opentype'
-
-// Custom Styles
 @import 'mixins/*'
 @import 'pages/*'
 @import 'modules/*'
@@ -45,7 +38,7 @@ ul
 
 .is-left,
 .is-right
-    +above(headerBreak)
+    @media all and (min-width: headerBreak)
         float: left
         width: 50%
         group()
