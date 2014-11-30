@@ -9,7 +9,7 @@
     justify-content: center
     align-items: center
     margin-left: -100%
-    @media all and (max-width: headerBreak)
+    +below(headerBreak)
         margin: 1.111111111rem -20px
 
     img
@@ -22,9 +22,9 @@
 .image-cover
     height: 18rem
     align-items: flex-start
-    @media all and (max-width: 35rem)
+    +below(35rem)
         height: 14rem
-    @media all and (max-width: headerBreak)
+    +below(headerBreak)
         height: 12rem
 
     img
@@ -65,13 +65,13 @@
                 width: 30%
                 max-width: 9rem
                 margin-right: 3%
-                @media all and (max-width: headerBreak)
+                +below(headerBreak)
                     transform: translateY(-5rem)
                     margin-right: -4%
             &:last-child
                 width: 60%
                 max-width: 18rem
-                @media all and (max-width: headerBreak)
+                +below(headerBreak)
                     transform: translateY(-1rem)
                     margin-left: -4%
 
@@ -80,20 +80,20 @@
         align-items: flex-end
         height: 16rem
         padding: 0
-        @media all and (max-width: headerBreak)
+        +below(headerBreak)
             align-items: center
 
         img
             width: 45%
             max-width: 14rem
             transform: translateY(30%)
-            @media all and (max-width: headerBreak)
+            +below(headerBreak)
                 transform: none
             &:first-child
                 margin-right: 3%
             &:hover
                 transform: translateY(25%)
-                @media all and (max-width: headerBreak)
+                +below(headerBreak)
                     transform: none
 
 //
@@ -114,13 +114,13 @@
         transition()
         &[data-m-slide="next"]
             right: 3%
-            @media all and (max-width: headerBreak)
+            +below(headerBreak)
                 right: 2%
         &[data-m-slide="prev"]
             left: 3%
-            @media all and (max-width: headerBreak)
+            +below(headerBreak)
                 left: 2%
-        @media all and (max-width: headerBreak)
+        +below(headerBreak)
             img
                 width: 50%
 

@@ -7,7 +7,7 @@ header[role="banner"]
     border-bottom()
     line-height: 1.6666rem
     padding-top: 2.33333rem
-    @media all and (max-width: headerBreak)
+    +below(headerBreak)
         padding-top: 1.111111112rem
         border-none()
 
@@ -34,12 +34,12 @@ header[role="banner"]
                 transition()
                 transform: scale(0.8)
                 opacity: 0
-                @media all and (max-width: projectListBreak)
+                +below(projectListBreak)
                     opacity: 1
                     transform: scale(1)
     nav
         width: 25%
-        @media all and (max-width: headerBreak)
+        +below(headerBreak)
             width: auto
             float: right
             ul
@@ -59,7 +59,7 @@ header[role="banner"]
         width: 50%
         margin-bottom: 2.556 rem
         padding-left: .555555556rem
-        @media all and (max-width: headerBreak)
+        +below(headerBreak)
             clear: both
             float: none
             width: auto

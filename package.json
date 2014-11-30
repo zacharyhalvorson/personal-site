@@ -1,0 +1,14 @@
+{
+    "name": "-zacharyhalvorson",
+    "description": "This is the personal website of Zachary Halvorson",
+
+    "scripts": {
+        "postinstall": "rm -rf ./node_modules/jeet/tests",
+        "postinstall": "rm -rf ./node_modules/rupture/tests"
+    },
+
+    "devDependencies": {
+        "jeet": "git://github.com/mojotech/jeet#v6.1.2",
+        "rupture": "git://github.com/jenius/rupture#v0.4.0"
+    }
+}
