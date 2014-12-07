@@ -1,8 +1,8 @@
 projects = []
 
-for project, slug in public.project._data
+for project, slug in public.projects._data
     - project.slug = slug
-    - projects.push(public.project._data[slug])
+    - projects.push(public.projects._data[slug])
 
 each project, i in projects
     if project.slug === current.source
