@@ -1,4 +1,5 @@
-// This comes from Charlie Loyd [ @vruba ] http://basecase.org/2012/11/diadem/.
+// This comes from Charlie Loyd [ @vruba ] http://basecase.org/2012/11/diadem/ and
+// also some help from the talented Daniel Bader [ @DBader_Org ] at @Mobify
 
 var pi = Math.PI;
 var sin = Math.sin;
@@ -27,14 +28,31 @@ function K(h) {
 }
 
 function recolor(plus) {
+	// Create canvas for favicon
+	var canvas = document.createElement('canvas');
+	var ctx = canvas.getContext('2d');
+	canvas.width = 16;
+	canvas.height = 16;
+
+	// Cycle colors
 	var cycle = ((epoch()/50) + plus) % 1;
 	var color = K(cycle);
 	color = 'rgb(' + color.join(',') + ')';
+
+	// Set logo color
 	$('.logo a').css({'background-color': color});
+
+	// Set favicon color
+	ctx.fillStyle = color;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	var favicon = document.getElementsByTagName('link')[0];
+	favicon.href = canvas.toDataURL();
 }
 
 $(document).ready(function(){
 	recolor(0);
-	a = function() { setInterval(function() { recolor(0) }, 2000); }
+	a = function() {
+		setInterval(function() { recolor(0) }, 2000);
+	}
 	a();
 });
