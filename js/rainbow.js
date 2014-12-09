@@ -7,6 +7,12 @@ var floor = Math.floor;
 var abs = Math.abs;
 var pow = Math.pow;
 
+// Create canvas for favicon
+var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+canvas.width = 16;
+canvas.height = 16;
+
 var epoch = function() { return new Date().getTime()/600; }
 
 function clip(min, n, max) {
@@ -28,11 +34,6 @@ function K(h) {
 }
 
 function recolor(plus) {
-	// Create canvas for favicon
-	var canvas = document.createElement('canvas');
-	var ctx = canvas.getContext('2d');
-	canvas.width = 16;
-	canvas.height = 16;
 
 	// Cycle colors
 	var cycle = ((epoch()/50) + plus) % 1;
