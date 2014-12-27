@@ -16,6 +16,7 @@ header[role="banner"]
 
     .logo
         width: 25%
+
         a
             transition()
             display: block
@@ -24,15 +25,13 @@ header[role="banner"]
             display: flex
             justify-content: center
             align-items: center
+            transform: scale(1)
+
             &:hover
-                img
-                    opacity: 1
-                    transform: scale(1)
+                transform: scale(1.15)
 
             img
                 transition()
-                transform: scale(0.8)
-                opacity: 0
                 @media all and (max-width: projectListBreak)
                     opacity: 1
                     transform: scale(1)
