@@ -4,9 +4,9 @@
 
 header[role="banner"]
     line-height: 1.6666rem
-    padding-top: 2.33333rem
-    @media all and (max-width: headerBreak)
-        padding-top: 1.111111112rem
+    padding: 2.33333rem 0
+    @media all and (max-width: columnBreak)
+        padding: 1.111111112rem 0
 
     .logo, nav, h1
         transition()
@@ -59,8 +59,7 @@ header[role="banner"]
             float: none
             width: auto
             padding-left: 0
-            padding-top: 2.166666667rem
-            padding-bottom: .555555556rem
+            padding-top: 1.111111111rem
 
             // account for unfortunate wrapping on iphone4
             margin-bottom: 0
@@ -72,3 +71,8 @@ header[role="banner"]
         color: font-color
 
     group()
+
+// Hide the intro on the about screen on small screens
+header[role="banner"].about h1
+    @media all and (max-width: headerBreak)
+        display: none;
