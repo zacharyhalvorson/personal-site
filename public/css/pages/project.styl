@@ -4,15 +4,18 @@
 
 .project
     margin-top: 2.222222222rem
+    padding: 2.222222222rem 0 1.111111111rem 0
     group()
-    @media all and (max-width: headerBreak)
+    border-top-bottom()
+
+    @media all and (max-width: columnBreak)
         margin-top: 1.111111111rem
         padding-top: 1.111111111rem
-        border-top()
+
 
     header
         padding-left: 25%
-        @media all and (max-width: headerBreak)
+        @media all and (max-width: columnBreak)
             padding-left: 0
             margin-bottom: 1.111111111rem
 

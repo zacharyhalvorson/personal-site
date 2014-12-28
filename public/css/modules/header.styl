@@ -3,12 +3,10 @@
 //
 
 header[role="banner"]
-    border-bottom()
     line-height: 1.6666rem
     padding-top: 2.33333rem
     @media all and (max-width: headerBreak)
         padding-top: 1.111111112rem
-        border-none()
 
     .logo, nav, h1
         transition()
@@ -32,7 +30,7 @@ header[role="banner"]
 
             img
                 transition()
-                @media all and (max-width: projectListBreak)
+                @media all and (max-width: columnBreak)
                     opacity: 1
                     transform: scale(1)
     nav
@@ -55,7 +53,6 @@ header[role="banner"]
 
     h1
         width: 50%
-        margin-bottom: 2.556 rem
         padding-left: .555555556rem
         @media all and (max-width: headerBreak)
             clear: both
