@@ -7,7 +7,7 @@
     border-top-bottom()
     padding-bottom: 1.111111111rem
 
-    @media all and (max-width: columnBreak)
+    @media all and (max-width: projectListBreak)
         margin: 0 -1.111111111rem
         border-none()
 
@@ -21,7 +21,7 @@
             padding-right: .555555556rem
         &:nth-child(even)
             padding-left: .555555556rem
-        @media all and (max-width: columnBreak)
+        @media all and (max-width: projectListBreak)
             width: 100%
             margin: 0
             &:first-child
@@ -47,7 +47,7 @@
             opacity: 0
             transition()
             transform: translateY(.8rem)
-            @media all and (max-width: columnBreak)
+            @media all and (max-width: projectListBreak)
                 opacity: 1
                 transform: translateY(1.1111111rem)
         &:hover
