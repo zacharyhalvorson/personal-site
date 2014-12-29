@@ -9,10 +9,11 @@
     justify-content: center
     align-items: center
     margin-left: -100%
-    @media all and (max-width: headerBreak)
+    @media all and (max-width: columnBreak)
         margin: 1.111111111rem -20px
 
     img
+        will-change: transform, padding, margin
         transition()
 
     + [class^="image-"]
@@ -55,7 +56,7 @@
     // right side bigger than left and shifts layout to emphasize right on mobile
     &.offset
         align-items: flex-end
-        height: 16rem
+        height: 17rem
         padding: 0
         img
             transform: translateY(1rem)
@@ -82,6 +83,8 @@
         padding: 0
         @media all and (max-width: headerBreak)
             align-items: center
+            padding: 1.111111111rem 0
+            height: auto
 
         img
             width: 45%

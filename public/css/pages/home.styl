@@ -2,12 +2,14 @@
 // Work Page Styles
 //
 
-projectListBreak = 30rem
-
 .projectList
     group()
+    border-top-bottom()
+    padding-bottom: 1.111111111rem
+
     @media all and (max-width: projectListBreak)
         margin: 0 -1.111111111rem
+        border-none()
 
     a
         float: left
@@ -22,8 +24,6 @@ projectListBreak = 30rem
         @media all and (max-width: projectListBreak)
             width: 100%
             margin: 0
-            &:first-child
-                margin-top: 1.111111111rem
             &:nth-child(n)
                 padding: 0
 
@@ -32,6 +32,7 @@ projectListBreak = 30rem
             height: 100%
             overflow: hidden
             img
+                will-change: transform
                 transition()
                 width: 70%
                 display: block
@@ -43,11 +44,13 @@ projectListBreak = 30rem
             top: 0
             left: 2.222222222rem
             opacity: 0
+            will-change: transform
             transition()
             transform: translateY(.8rem)
             @media all and (max-width: projectListBreak)
                 opacity: 1
                 transform: translateY(1.1111111rem)
+
         &:hover
             img
                 transform: translateY(3rem)

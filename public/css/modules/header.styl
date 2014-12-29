@@ -3,20 +3,19 @@
 //
 
 header[role="banner"]
-    border-bottom()
     line-height: 1.6666rem
-    padding-top: 2.33333rem
-    @media all and (max-width: headerBreak)
-        padding-top: 1.111111112rem
-        border-none()
+    padding: 2.33333rem 0
+    @media all and (max-width: columnBreak)
+        padding: 1.111111112rem 0
 
     .logo, nav, h1
-        transition()
         float: left
 
     .logo
         width: 25%
+
         a
+            will-change: transform
             transition()
             display: block
             width: 50px
@@ -24,18 +23,11 @@ header[role="banner"]
             display: flex
             justify-content: center
             align-items: center
-            &:hover
-                img
-                    opacity: 1
-                    transform: scale(1)
+            transform: scale(1)
 
-            img
-                transition()
-                transform: scale(0.8)
-                opacity: 0
-                @media all and (max-width: projectListBreak)
-                    opacity: 1
-                    transform: scale(1)
+            &:hover
+                transform: scale(1.15)
+                
     nav
         width: 25%
         @media all and (max-width: headerBreak)
@@ -56,15 +48,13 @@ header[role="banner"]
 
     h1
         width: 50%
-        margin-bottom: 2.556 rem
         padding-left: .555555556rem
         @media all and (max-width: headerBreak)
             clear: both
             float: none
             width: auto
             padding-left: 0
-            padding-top: 2.166666667rem
-            padding-bottom: .555555556rem
+            padding-top: 1.111111111rem
 
             // account for unfortunate wrapping on iphone4
             margin-bottom: 0
@@ -76,3 +66,8 @@ header[role="banner"]
         color: font-color
 
     group()
+
+// Hide the intro on the about screen on small screens
+header[role="banner"].about h1
+    @media all and (max-width: headerBreak)
+        display: none;

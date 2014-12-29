@@ -1,9 +1,9 @@
 clearfix()
-  &:before
-  &:after
+  &::before
+  &::after
     content: ""
     display: table
-  &:after
+  &::after
     clear: both
 
 group = clearfix
