@@ -47,7 +47,8 @@ ul
 .is-underlined-bold
     text-decoration: none
     position: relative
-    &:after
+    &::after
+        will-change: opacity, transform
         transition()
         content: ''
         display: block
@@ -59,11 +60,12 @@ ul
         bottom: 1px
         opacity: 0
     &:hover
-        &:after
+        &::after
             transform: translateY(2px)
             opacity: 1
 
 .is-underlined
+    will-change: color
     transition()
     &:hover
         color: red
@@ -72,6 +74,7 @@ ul
             box-shadow: 0 1px 0 0 red;
 
     &::after
+        will-change: transform, color
         transition()
         content: ""
         width: 100%

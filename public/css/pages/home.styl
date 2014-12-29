@@ -24,8 +24,6 @@
         @media all and (max-width: projectListBreak)
             width: 100%
             margin: 0
-            &:first-child
-                margin-top: 1.111111111rem
             &:nth-child(n)
                 padding: 0
 
@@ -34,6 +32,7 @@
             height: 100%
             overflow: hidden
             img
+                will-change: transform
                 transition()
                 width: 70%
                 display: block
@@ -45,11 +44,13 @@
             top: 0
             left: 2.222222222rem
             opacity: 0
+            will-change: transform
             transition()
             transform: translateY(.8rem)
             @media all and (max-width: projectListBreak)
                 opacity: 1
                 transform: translateY(1.1111111rem)
+
         &:hover
             img
                 transform: translateY(3rem)

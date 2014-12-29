@@ -9,13 +9,13 @@ header[role="banner"]
         padding: 1.111111112rem 0
 
     .logo, nav, h1
-        transition()
         float: left
 
     .logo
         width: 25%
 
         a
+            will-change: transform
             transition()
             display: block
             width: 50px
@@ -27,12 +27,7 @@ header[role="banner"]
 
             &:hover
                 transform: scale(1.15)
-
-            img
-                transition()
-                @media all and (max-width: columnBreak)
-                    opacity: 1
-                    transform: scale(1)
+                
     nav
         width: 25%
         @media all and (max-width: headerBreak)
