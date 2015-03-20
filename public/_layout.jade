@@ -3,7 +3,7 @@ html
     != partial('_partials/head')
     body
         
-        header(class='#{ current.source === "about" ? "about" : "" }' role='banner')
+        header(class='#{ current.source === "about" ? "noIntro" : "" }' role='banner')
             .logo: a(href='/')
                 img(src='/img/logo.svg')
                 

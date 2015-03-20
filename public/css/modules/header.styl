@@ -27,7 +27,7 @@ header[role="banner"]
 
             &:hover
                 transform: scale(1.15)
-                
+
     nav
         width: 25%
         @media all and (max-width: headerBreak)
@@ -65,9 +65,9 @@ header[role="banner"]
         font-weight: fontRegular
         color: font-color
 
-    group()
+    // Hide the intro on the about screen on small screens
+    &.noIntro h1
+        @media all and (max-width: headerBreak)
+            display: none;
 
-// Hide the intro on the about screen on small screens
-header[role="banner"].about h1
-    @media all and (max-width: headerBreak)
-        display: none;
+    group()
