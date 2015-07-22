@@ -1,2 +1,5 @@
-script(type='text/javascript').
-    window.location.href = '../';
+extends ../includes/_layout
+
+for post in public.posts._data
+    h1= post.title
+    p= post.teaser
