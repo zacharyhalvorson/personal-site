@@ -1,0 +1,21 @@
+doctype html
+html(lang='en')
+    
+    head
+        include _meta
+        block meta
+            
+        block title
+            title= siteTitle
+        
+        link(rel="stylesheet" href="/main.css")
+        block styles
+            
+    body
+        block header
+            include ../partials/_header
+        main
+            block content
+        block footer
+            include ../partials/_footer
+        block scripts

@@ -1,4 +1,8 @@
-each project, slug in public.projects._data
-    a(href='/projects/#{ slug }' class='is-#{ project.color }')
-        strong= project.title
-        div: img(src='/img/teasers/#{ project.teaser }.png') 
+extends includes/_layout
+
+block content
+    h1 Here's my website.
+    h3 It's so much better than it was before.
+
+block scripts
+    include includes/_jquery

@@ -1,0 +1,4 @@
+each project, slug in public.projects._data
+    a(href='/projects/#{ slug }' class='is-#{ project.color }')
+        strong= project.title
+        div: img(src='/img/teasers/#{ project.teaser }.png') 

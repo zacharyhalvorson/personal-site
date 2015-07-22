@@ -1,0 +1,12 @@
+{
+    "sundown": {
+        "title": "Sundown",
+        "teaser": "A bunch of nonsense description text for sundown.",
+        "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"]
+    },
+    "curriculate": {
+        "title": "Curriculate",
+        "teaser": "A bunch of nonsense description text for curriculate.",
+        "roles": ["UX Design", "Wireframing", "Interaction Design"]
+    }
+}
