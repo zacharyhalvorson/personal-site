@@ -1,11 +1,10 @@
-extends ../includes/_layout
+extends _layout
 
-block content
-    
+block header
     h2.projectName #{ title }
-    
     ul
         each role in roles
             li= role
-    
-    != yield
+
+block scripts
+    include _jquery
