@@ -27,4 +27,4 @@ I will start by writing the content. With annotations for imagery and any intera
 
 Writing the content will have to include gathering up the imagery as well, so I'll be looking back over my various before and after screenshots and whatever I can get together to document progress and polish.
 
-I'm developing with harp.js, and hosting it on surge.sh. This will allow me to quickly deploy new changes. I previously had been using github pages, which was great but also introduced this extra deployment step, as I wasnt able to have my build files living anywhere but the root directory. This surge process will keep things clean, and fast. Plus its a local OS project, I love what they're doing.
+I'm developing with harp.js, and hosting it on surge.sh. This will allow me to quickly deploy new changes. I previously had been using github pages, which was great but also introduced this extra deployment step, as I wasn't able to have my build files living anywhere but the root directory. This surge process will keep things clean, and fast. Plus its a local OS project, I love what they're doing.
