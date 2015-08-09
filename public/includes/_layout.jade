@@ -3,12 +3,12 @@ doctype html
 html(lang='en')
     
     head
-        include _meta
         block meta
+            include _meta
         block title
             title= siteTitle
-        link(rel="stylesheet" href="/main.css")
         block styles
+            link(rel="stylesheet" href="/main.css")
             
     body
         block header

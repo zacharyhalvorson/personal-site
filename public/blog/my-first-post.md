@@ -16,14 +16,15 @@ So this site will help people know me better as a designer, understand what I've
 
 ## How am I going to build it?
 
-I'm starting with the content, mapping out what all needs to be here. I've got a bit of a list:
+I'm starting with the content, write the pages first then think about overall structure. I've got a bit of a list:
 - Some kind of interactive home page for new experiments.
 - My personal projects, like Curriculate, and Sundown.
 - A sharply curated list of my work at Mobify.
 - A starting blog post (like this one), with an intention for more.
 - An about page, so people can get to know my background, what I get excited about, and what kinds of things I'd like to work on.
+- I want to keep my content in markdown as much as possible. Seperating the content from formal markup as much as possible. This will help me move content and write more easily.
 
-I will start by writing the content. With annotations for imagery and any interactive bits. I have a decent structure in place from my previous website, so things like pagination and navigation structure will just mimick what I've done before.
+I will start by writing the pages. With annotations for imagery and any interactive bits. I have a decent structure in place from my previous website, so things like pagination and navigation structure will just mimic what I've done before.
 
 Writing the content will have to include gathering up the imagery as well, so I'll be looking back over my various before and after screenshots and whatever I can get together to document progress and polish.
 

@@ -1,10 +1,9 @@
 header
-    
-    a(href='/') Zachary Halvorson
-        
-    nav(role='navigation'): ul
-        li: a(href='/work') Work
-        li: a(href='/blog') Blog
-        li: a(href='/about') About
+    nav(role='navigation')
+        a(href='/') Zachary Halvorson
+        ul
+        each page, slug in public._data
+            unless page.title == "Home"
+                li: a(href='/#{ slug }')= page.title
 
 hr
