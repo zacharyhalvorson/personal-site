@@ -1,16 +1,11 @@
 //- What does this page need to say again?
 //- Its a listing of my work. And it should also sort of guide the user through things.
 
-extends ../includes/_layout
-
 block content
     ul
         each project, slug in public.work._data
             li
                 a(href='/work/#{ slug }')
                     strong= project.title
-                    div: img(src='/images/#{ project.slug }/teaser.jpg')
+                    img(src='/images/#{ project.slug }/teaser.jpg')
                     p= project.teaser
-
-block scripts
-    include ../includes/_jquery

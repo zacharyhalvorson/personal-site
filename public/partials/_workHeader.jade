@@ -1,10 +1,5 @@
-extends _layout
-
 block header
     h2.projectName #{ title }
     ul
         each role in roles
             li= role
-
-block scripts
-    include _jquery
