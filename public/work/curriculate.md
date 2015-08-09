@@ -1,6 +1,6 @@
-My background in teaching has motivated me to begin work on this project. It's a tool for planning, managing and sharing lesson plans. I started with the idea and went from there, asking myself all the Why questions I could before starting to sketch.
+My background in teaching has motivated me to begin work/ on this project. It's a tool for planning, managing and sharing lesson plans. I started with the idea and went from there, asking myself all the Why questions I could before starting to sketch.
 
-![](images/assets/curriculate/screens/login.png)
+![](../images/work/curriculate/screens/login.png)
 
 ### Information Architecture
 From sketches I began to create a userflow and wireframes.
@@ -12,7 +12,7 @@ The following iterations brought me to the final mockups I have begun to use for
 
 The project is still early in the development stage, I'll hopefully have something live linked here soon.
 
-![](images/assets/curriculate/sketch1.png)
-![](images/assets/curriculate/sketch2.png)
-![](images/assets/curriculate/ipad1.png)
-![](images/assets/curriculate/ipad2.png)
+![](../images/work/curriculate/sketch1.png)
+![](../images/work/curriculate/sketch2.png)
+![](../images/work/curriculate/ipad1.png)
+![](../images/work/curriculate/ipad2.png)

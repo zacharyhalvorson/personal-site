@@ -6,6 +6,6 @@ The interface is meant to compliment but not distract from the beautiful sunset 
 ### Development
 I plan to continue to develop this app in Xcode and launch it for free in the app store - open to any Rdio users with an option for non-Rio users to try it out as a guest. I’ve currently got a Framer JS prototype that you can check out [here](http://zacharyhalvorson.github.io/Sundown-Framer), go ahead and give it some swipes. And if you happen to be curious how many minutes you are away from the sunset, go ahead and click [here](http://zacharyhalvorson.com/Sundown-Web/clock).
 
-![](/assets/images/sundown/loginScreen.png)
-![](/assets/images/sundown/homeScreen.png)
-![](/assets/images/sundown/menuOpen.png)
+![](../images/work/sundown/loginScreen.png)
+![](../images/work/sundown/homeScreen.png)
+![](../images/work/sundown/menuOpen.png)
