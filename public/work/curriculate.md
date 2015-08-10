@@ -1,18 +1,22 @@
-My background in teaching has motivated me to begin work/ on this project. It's a tool for planning, managing and sharing lesson plans. I started with the idea and went from there, asking myself all the Why questions I could before starting to sketch.
+This project is a work in progress that began while I was at University. I have a background in teaching, and the current state of tools for teacher to plan, and present lesson was lacking to say the least.
 
-![](../images/work/curriculate/screens/login.png)
+My process began by defining the set of problems I was looking to help solve - the core issue I was addressing was that the tools teachers use to plan are different from the ones they use to present. There's a migration that always needs to happen. A lot of points where the process could be more efficient.
 
-### Information Architecture
-From sketches I began to create a userflow and wireframes.
-Once the information architecture and wireframing process was complete I started with the visual design process, originally starting with an iPad-centric experience in mind.
+When teaching a class, its usually very helpful to have a timeline of the lesson. A chronological list of activities that, if all goes as planned, get you to your expected outcome. Most teachers keep this in the form of a piece of paper, or a word document they look at on their desktop computer before class. It's essentially like presenters notes, but not necessarily tied to a slideshow.
 
-### Design
-Teachers use their desktop computers, their iPads, smartboards and whatever interfaces they can get their hands on to teach a lesson so it made more sense to start developing a responsive web app. Being able to use the app from anywhere is a must for the user.
-The following iterations brought me to the final mockups I have begun to use for the prototype development.
+![](../assets/images/work/curriculate/sketch1.png)
+![](../assets/images/work/curriculate/sketch2.png)
 
-The project is still early in the development stage, I'll hopefully have something live linked here soon.
+So with that timeline in mind I started with a lot of sketches, trying to imagine an interface that could help teachers develop their timelines and then use that same tool to help guide their lessons.
 
-![](../images/work/curriculate/sketch1.png)
-![](../images/work/curriculate/sketch2.png)
-![](../images/work/curriculate/ipad1.png)
-![](../images/work/curriculate/ipad2.png)
+There were quite a few iterations on that timeline. The design started to shift toward bold colors, and high contrast. In the context of a classroom, being able to quickly glance at a screen and understand your plan was key. Teachers wouldnt have much time to be scanning an interface for the information they needed while trying to stay engaged with the class.
+
+![](../assets/images/work/curriculate/ipad1.png)
+![](../assets/images/work/curriculate/ipad2.png)
+
+The iterations eventually led me to some mocks which gave me a place to start building prototypes. This is, unfortunately, still a work in progress. Hopefully have time to give to it soon.
+
+![](../assets/images/work/curriculate/screens/dashboard.png)
+![](../assets/images/work/curriculate/screens/no-lessons.png)
+![](../assets/images/work/curriculate/screens/profile.png)
+![](../assets/images/work/curriculate/screens/login.png)
