@@ -1,4 +1,6 @@
 extends ../includes/_layout
 
-block content 
+block content
+    if current.source != "index"
+        include ../partials/_workIntro
     != yield
