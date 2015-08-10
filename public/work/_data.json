@@ -2,11 +2,19 @@
     "curriculate": {
         "title": "Curriculate",
         "teaser": "A bunch of nonsense description text for curriculate.",
-        "roles": ["UX Design", "Wireframing", "Interaction Design"]
+        "roles": ["UX Design", "Wireframing", "Interaction Design"],
+        "isPublic": "true"
     },
     "sundown": {
         "title": "Sundown",
         "teaser": "A bunch of nonsense description text for sundown.",
-        "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"]
+        "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"],
+        "isPublic": "true"
+    },
+    "mobify-cloud": {
+        "title": "Mobify Cloud",
+        "teaser": "I helped design and develop the primary customer portal for Mobify. It functions as a Mobify website testing and deployment platform.",
+        "roles": ["Product Design", "Front-End Development", "UX Research"],
+        "isPublic": "true"
     }
 }
