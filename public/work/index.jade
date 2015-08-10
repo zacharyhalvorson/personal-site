@@ -4,8 +4,10 @@
 block content
     ul
         each project, slug in public.work._data
-            li
-                a(href='/work/#{ slug }')
-                    strong= project.title
-                    img(src='/images/#{ project.slug }/teaser.jpg')
-                    p= project.teaser
+            unless project.isPublic == "false"
+                li
+                    a(href='/work/#{ slug }')
+                        div
+                            strong= project.title
+                            img(src='/images/#{ project.slug }/teaser.jpg')
+                            p= project.teaser

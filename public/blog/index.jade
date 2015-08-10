@@ -6,5 +6,6 @@ block content
         each post, slug in public.blog._data
             li
                 a(href='/blog/#{ slug }')
-                    strong= post.title
-                    p= post.description
+                    div
+                        strong= post.title
+                        p= post.description
