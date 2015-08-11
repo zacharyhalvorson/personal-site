@@ -18,7 +18,7 @@ The other part of our user research, and one I can actually show, is our persona
 
 In this section I'll describe my modular UI design process briefly and show off the changes from the UI Colour Palette refresh.
 
-Also show a bunch of screens, from publishing, to orgs.
+Also show a carousel of screens, from publishing, to login, to orgs.
 
 ## Mobify Preview
 
