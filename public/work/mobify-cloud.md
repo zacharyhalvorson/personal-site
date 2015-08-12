@@ -1,12 +1,14 @@
 👸👋
 
-Mobify Cloud is a responsive web application translated into multiple languages, servicing users in several countries. It functions as a development team management interface, as well as a production testing and deployment platform. I've worked on a multitude of features and improvements, ranging from high-level product direction and user research, to UI design and front-end implementation.
+Mobify Cloud is a responsive web application translated into multiple languages, servicing users in several countries. It functions as a development team management interface, as well as a production testing and deployment platform for mobile web experiences. I've worked on a multitude of features and improvements, ranging from high-level product direction and user research, to UI design and front-end implementation.
 
-## User Research
+## Understanding Our Users
 
-The one part  of our user research, and one I can actually show, is our personas. I conducted multiple user interviews to build out a list of user archetypes, and then created personas from them. We use the personas to help drive our design decisions.
+I want to talk about how were a product company that has a client services side but we also have partner companies also using our software. When conducting our user research we needed to make sure we were accounting for all those different types of people. Teams of varying size, skill level, devices, and workflows.
 
-[TODO persona photos here]
+I conducted multiple user interviews to build out a list of common problems and workflows. These informed our user archetypes, and then created personas from them. We use the personas to help drive our design decisions.
+
+[TODO persona photos, and shot of problems spreadsheet here]
 
 ## UI Design
 
