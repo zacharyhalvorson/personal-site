@@ -1,3 +1,5 @@
+@import 'assets/styles/components/topBar';
+
 $font-stack: "'San Francisco Display', 'Helvetica Neue', 'Lucida Grande'";
 
 @mixin zero-margins() {
@@ -14,12 +16,16 @@ html {
     font-size: 100%;
 }
 
-body{
+body {
     font-family: -apple-system, #{$font-stack};
     text-align: center;
-    padding: 50px 20px 0;
     background: #f4f4f7;
     color: #444;
+    margin: 0;
+}
+
+main {
+    padding: 50px 20px 0;
     margin: 0 auto;
     max-width: 40em;
 }
