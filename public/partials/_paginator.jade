@@ -1,19 +1,20 @@
-- projects = []
+- var pages = []
+- var root = eval("public." + current.path[0] + "._data")
 
-for project, slug in public.work._data
-    - project.slug = slug
-    - projects.push(public.work._data[slug])
+for page, slug in root
+    - page.slug = slug
+    - pages.push(root[slug])
 
-each project, i in projects
-    if project.slug === current.source
-        - prev = projects[i - 1]
-        - next = projects[i + 1]
-        .project-nav
+each page, i in pages
+    if page.slug === current.source
+        - prev = pages[i - 1]
+        - next = pages[i + 1]
+        .c-paginator
             if prev
-                a(href= "#{ prev.slug }" class="prev")
+                a(href= "#{ prev.slug }")
                     p Previous
                     p= prev.title
             if next
-                a(href= "#{ next.slug }" class="next")
+                a(href= "#{ next.slug }")
                     p Next
                     p= next.title

@@ -1,4 +1,7 @@
 extends ../includes/_layout
 
-block content 
+block content
     != yield
+
+prepend footer
+    include ../partials/_paginator
