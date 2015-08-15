@@ -9,8 +9,13 @@ I want to talk about how were a product company that has a client services side 
 I conducted multiple user interviews to build out a list of common problems and workflows. These informed our user archetypes, and then created personas from them. We use the personas to help drive our design decisions.
 
 [TODO persona photos, and shot of problems spreadsheet here]
+[TODO need to design a compelling way to show some visuals here]
 
-## UI Design
+## Colour Refresh
+
+[This should show before and after screenshots of the interface, maybe a swiping effect, showing one image and scrubbing between them]
+
+## UI Design Process
 
 In this section I'll describe my modular UI design process briefly and show off the changes from the UI Colour Palette refresh.
 
