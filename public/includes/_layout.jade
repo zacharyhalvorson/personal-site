@@ -1,7 +1,10 @@
 //- Single column layout with basic header and footer.
+//- Current page
+- var currentPage = current.source === 'index' && current.path.length >= 2 ? current.path[current.path.length - 2] : current.source
+
 doctype html
 html(lang='en')
-    
+
     head
         block meta
             include _meta
@@ -10,7 +13,7 @@ html(lang='en')
         block styles
             link(rel="stylesheet" href="/main.css")
             
-    body
+    body(class= "t-" + currentPage)
         block header
             include ../partials/_header
         main
