@@ -9,7 +9,8 @@
         "title": "Mobify Cloud",
         "teaser": "I helped design and develop the primary customer portal for Mobify. It functions as a Mobify website testing and deployment platform.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
-        "isPublic": "true"
+        "isPublic": "true",
+        "hasGallery": "true"
     },
     "ritchie-brothers": {
         "title": "Ritchie Brothers Auctioneers",

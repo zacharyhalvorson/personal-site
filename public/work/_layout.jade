@@ -7,3 +7,7 @@ block content
 
 prepend footer
     include ../partials/_paginator
+
+append footer
+    if hasGallery == "true"
+        include ../partials/_photoswipe.html
