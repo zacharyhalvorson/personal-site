@@ -1,15 +1,5 @@
-@import 'assets/styles/components/topBar';
-
-$font-stack: "'San Francisco Display', 'Helvetica Neue', 'Lucida Grande'";
-
-@mixin zero-margins() {
-    margin: 0;
-    -webkit-margin-before: 0;
-    -webkit-margin-after: 0;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
-    -webkit-padding-start: 0;
-}
+// Base
+// ===
 
 html {
     font-family: sans-serif;
@@ -19,7 +9,6 @@ html {
 body {
     font-family: -apple-system, #{$font-stack};
     text-align: center;
-    background: #f4f4f7;
     color: #444;
     margin: 0;
 }
