@@ -1,0 +1,13 @@
+{
+    "name": "zacharyhalvorson",
+    "version": "0.0.0",
+    "homepage": "http://zacharyhalvorson.com",
+    "authors": [
+        "Zachary Halvorson <zacharyhalvorson@me.com>"
+    ],
+    "description": "My personal website.",
+    "license": "MIT",
+    "dependencies": {
+        "photoswipe": "4.1.0"
+    }
+}
