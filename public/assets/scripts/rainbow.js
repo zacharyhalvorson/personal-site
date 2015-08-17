@@ -46,8 +46,6 @@ function recolor(plus) {
 	// Set favicon color
 	ctx.fillStyle = color;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	var favicon = document.getElementById('favicon');
-	favicon.href = canvas.toDataURL();
 }
 
 $(document).ready(function(){
