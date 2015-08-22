@@ -1,7 +1,20 @@
 .c-work-post {
 
     background: $grey;
-    max-width: 23em;
+    margin-bottom: 1.5*$unit;
+
+    @media (min-width: 35em) {
+        float: left;
+        width: 47%;
+        margin-right: 3%;
+    }
+
+    &:hover {
+        .c-work-post__image img {
+
+            transform: translateY(-$unit/2);
+        }
+    }
 }
 
 .c-work-post__image {
@@ -14,12 +27,15 @@
 
     img {
         margin-top: 4*$unit;
+        will-change: transform;
+        transition: transform .15s ease;
     }
 }
 
 .c-work-post__text {
     background: mix($grey, black, 82%);
     padding: 1.5*$unit;
+    height: 100%;
 }
 
 .c-work-post__title {

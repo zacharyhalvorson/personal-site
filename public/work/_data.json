@@ -1,7 +1,7 @@
 {
     "sundown": {
         "title": "Sundown",
-        "teaser": "A bunch of nonsense description text for sundown.",
+        "teaser": "This iOS application tracks the sunset and provides the user a countdown, and some fitting music to go along with the magic hour.",
         "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"],
         "isPublic": "true",
         "color": "green"
@@ -15,15 +15,15 @@
         "hasGallery": "true"
     },
     "ritchie-brothers": {
-        "title": "Ritchie Brothers Auctioneers",
-        "teaser": "This large-scale heavy equipment auctioneering service needed native apps to compliment it's online bidding experience. I was a designer on the team thats delivering them.",
+        "title": "Ritchie Brothers",
+        "teaser": "This large-scale heavy equipment auctioneering service needed native apps to compliment it's online bidding experience.",
         "roles": ["iOS", "Android", "Interaction Design"],
         "isPublic": "true",
         "color": "purple"
     },
     "curriculate": {
         "title": "Curriculate",
-        "teaser": "A bunch of nonsense description text for curriculate.",
+        "teaser": "A bunch of nonsense description text for curriculate. This is placeholder text to make sure we have consistency.",
         "roles": ["UX Design", "Wireframing", "Interaction Design"],
         "isPublic": "true",
         "color": "orange"

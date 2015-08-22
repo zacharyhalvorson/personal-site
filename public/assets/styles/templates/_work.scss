@@ -1,0 +1,10 @@
+.t-work {
+    main ul {
+        padding-top: 3em;
+        &::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+    }
+}
