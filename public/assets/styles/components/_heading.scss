@@ -1,0 +1,28 @@
+// Heading
+// ===
+
+.c-heading,
+%c-heading {
+    margin: 0;
+}
+
+.c-heading.c--1,
+%c-heading-1 {
+    font-size: 2.25rem;
+    font-weight: bold;
+}
+
+.c-heading.c--2,
+%c-heading-2 {
+    font-size: 1.875rem;
+    font-weight: bold;
+}
+
+.c-heading.c--3,
+%c-heading-3 {
+    font-size: 1.75rem;
+}
+
+.c-heading.c--4,
+%c-heading-4 {
+}

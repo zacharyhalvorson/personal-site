@@ -1,4 +1,32 @@
 // Variables
 // ===
 
-$font-stack: "'San Francisco Display', 'Helvetica Neue', 'Lucida Grande'";
+// Colors
+// ---
+
+// Accents
+$green: #A3EBAF;
+$blue: #B9D9FE;
+$grey: #8F8F95;
+$purple: #C9C0DE;
+$orange: #FFB995;
+
+// Text
+$font-color: #4D4D4D;
+
+// Actions
+$link-color: $font-color;
+
+
+// Spacing
+// ---
+
+$unit: 10px;
+$max-width: 50em;
+
+
+// Typography
+// ---
+
+$font-family: 'San Francisco Display', -apple-system, 'Helvetica Neue', 'Lucida Grande';
+$font-size: 16px;
