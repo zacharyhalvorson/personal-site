@@ -5,9 +5,10 @@ block content
     ul
         each project, slug in public.work._data
             unless project.isPublic == "false"
-                li
+                li(class='c-work-post c--#{project.color}')
                     a(href='/work/#{ slug }')
-                        div
-                            strong= project.title
-                            img(src='/images/#{ project.slug }/teaser.jpg')
-                            p= project.teaser
+                        .c-work-post__image
+                            img(src='../assets/images/work/#{slug}/teaser.png')
+                        .c-work-post__text        
+                            strong.c-work-post__title= project.title
+                            p.c-work-post__description= project.teaser

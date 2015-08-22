@@ -3,15 +3,5 @@
 // ===
 
 .c-topBar {
-    will-change: height;
-    transition: height .3s linear;
     height: 1em;
-
-    @media (min-width: 40em) {
-        height: 2em;
-    }
-
-    @media (min-width: 50em) {
-        height: 3em;
-    }
 }

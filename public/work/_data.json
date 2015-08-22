@@ -3,31 +3,36 @@
         "title": "Sundown",
         "teaser": "A bunch of nonsense description text for sundown.",
         "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"],
-        "isPublic": "true"
+        "isPublic": "true",
+        "color": "green"
     },
     "mobify-cloud": {
         "title": "Mobify Cloud",
         "teaser": "I helped design and develop the primary customer portal for Mobify. It functions as a Mobify website testing and deployment platform.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
+        "color": "blue",
         "hasGallery": "true"
     },
     "ritchie-brothers": {
         "title": "Ritchie Brothers Auctioneers",
         "teaser": "This large-scale heavy equipment auctioneering service needed native apps to compliment it's online bidding experience. I was a designer on the team thats delivering them.",
         "roles": ["iOS", "Android", "Interaction Design"],
-        "isPublic": "false"
+        "isPublic": "true",
+        "color": "purple"
     },
     "curriculate": {
         "title": "Curriculate",
         "teaser": "A bunch of nonsense description text for curriculate.",
         "roles": ["UX Design", "Wireframing", "Interaction Design"],
-        "isPublic": "true"
+        "isPublic": "true",
+        "color": "orange"
     },
     "beyond-the-rack": {
         "title": "Beyond The Rack",
         "teaser": "Beyond The Rack is an online-only retailer, I worked on their web-enabled Android native application.",
         "roles": ["App Design", "Android", "eCommerce"],
-        "isPublic": "true"
+        "isPublic": "true",
+        "color": ""
     }
 }
