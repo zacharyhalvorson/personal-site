@@ -2,6 +2,7 @@
 
     background: $grey;
     margin-bottom: 2*$unit;
+    animation: fade-scale .35s;
 
     @media (min-width: 35em) {
         float: left;

@@ -1,0 +1,11 @@
+
+@keyframes fade-scale {
+    from {
+        transform: scale(.98);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

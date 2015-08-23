@@ -11,6 +11,10 @@ body {
     font-size: $font-size;
 }
 
+main {
+    animation: fade .35s;
+}
+
 blockquote {
     position: relative;
     margin-left: 0;
