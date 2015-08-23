@@ -1,0 +1,34 @@
+.c-link,
+%c-link {
+
+    color: $font-color;
+    font-weight: 600;
+    position: relative;
+
+    &::after {
+        will-change: opacity, transform;
+        transition: opacity .3s, transform .3s ease;
+        content: '';
+        display: block;
+        background: $red;
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+
+        @media (min-width: 25em) {
+            bottom: 1px;
+            opacity: 0;
+        }
+    }
+
+    @media (min-width: 25em) {
+        &:hover {
+            &::after {
+                transform: translateY(2px);
+                opacity: 1;
+            }
+        }
+    }
+}
