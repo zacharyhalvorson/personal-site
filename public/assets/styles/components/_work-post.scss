@@ -81,3 +81,9 @@
         background: mix($orange, black, 82%);
     }
 }
+.c-work-post.c--red {
+    background: $red;
+    .c-work-post__text {
+        background: mix($red, black, 82%);
+    }
+}

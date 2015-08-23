@@ -33,6 +33,6 @@
         "teaser": "Beyond The Rack is an online-only retailer, I worked on their web-enabled Android native application.",
         "roles": ["App Design", "Android", "eCommerce"],
         "isPublic": "true",
-        "color": ""
+        "color": "red"
     }
 }
