@@ -1,12 +1,15 @@
 .c-work-post {
 
     background: $grey;
-    margin-bottom: 1.5*$unit;
+    margin-bottom: 2*$unit;
 
     @media (min-width: 35em) {
         float: left;
-        width: 47%;
-        margin-right: 3%;
+        width: 48%;
+
+        &:nth-child(odd) {
+            margin-right: 4%;
+        }
     }
 
     &:hover {
