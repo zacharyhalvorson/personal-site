@@ -12,7 +12,7 @@
     &:hover {
         .c-work-post__image img {
 
-            transform: translateY(-$unit/2);
+            transform: translate(0, -$unit/2);
         }
     }
 }
@@ -27,8 +27,7 @@
 
     img {
         margin-top: 4*$unit;
-        will-change: transform;
-        transition: transform .15s ease;
+        transition: transform .3s ease;
     }
 }
 

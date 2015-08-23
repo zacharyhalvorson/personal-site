@@ -26,6 +26,16 @@ a {
     }
 }
 
+p {
+    line-height: 28px;
+
+    @media(min-width: 35em) {
+
+        font-size: 18px;
+        line-height: 30px;
+    }
+}
+
 h1,
 h2,
 h3,

@@ -12,7 +12,7 @@
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
         "color": "blue",
-        "hasGallery": "true"
+        "hasGallery": "false"
     },
     "ritchie-brothers": {
         "title": "Ritchie Brothers",

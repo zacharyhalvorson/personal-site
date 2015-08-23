@@ -1,9 +1,9 @@
 extends ../includes/_layout
 
 block content
+    if current.source != "index"
+        include ../partials/_intro
     .c-container
-        if current.source != "index"
-            include ../partials/_intro
         != yield
 
 prepend footer
