@@ -4,14 +4,14 @@
         "teaser": "This iOS application tracks the sunset and provides the user a countdown, and some fitting music to go along with the magic hour.",
         "roles": ["iOS Development", "Prototyping", "Interaction Design", "DJ"],
         "isPublic": "true",
-        "color": "green"
+        "color": "blue"
     },
     "mobify-cloud": {
         "title": "Mobify Cloud",
         "teaser": "I helped design and develop the primary customer portal for Mobify. It functions as a Mobify website testing and deployment platform.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
-        "color": "blue",
+        "color": "green",
         "hasGallery": "false"
     },
     "ritchie-brothers": {
