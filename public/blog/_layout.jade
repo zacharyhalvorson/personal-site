@@ -1,7 +1,8 @@
 extends ../includes/_layout
 
 block content
-    != yield
+    .c-container
+        != yield
 
 prepend footer
     include ../partials/_paginator

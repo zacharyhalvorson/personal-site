@@ -1,4 +1,9 @@
-h1.projectName #{ title }
-ul
-    each role in roles
-        li= role
+div(class='c-hero c--#{color}')
+    .c-container
+        img(src='../assets/images/work/#{current.source}/hero.png')
+
+.c-container
+    h1 #{ title }
+    ul.c-list
+        each role in roles
+            li.c-list__item= role

@@ -1,0 +1,34 @@
+.c-hero {
+
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 3*$unit;
+    height: 8em;
+
+    @media (min-width: 35em) {
+
+        height: 13em;
+    }
+
+    img {
+        width: 100%;
+        margin-top: 2*$unit;
+    }
+}
+
+// Modifiers for colour
+//
+.c-hero.c--green {
+    background: $green;
+}
+.c-hero.c--purple {
+    background: $purple;
+}
+.c-hero.c--blue {
+    background: $blue;
+}
+.c-hero.c--orange {
+    background: $orange;
+}
