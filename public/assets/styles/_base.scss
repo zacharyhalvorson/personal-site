@@ -11,6 +11,36 @@ body {
     font-size: $font-size;
 }
 
+blockquote {
+    position: relative;
+    margin-left: 0;
+
+    &::before {
+        position: absolute;
+        display: block;
+        content: '';
+        left: 0;
+        top: 5px;
+        bottom: 5px;
+        width: 2px;
+        background: $font-color-light;
+        opacity: .7;
+
+        @media (min-width: 35em) {
+            width: 4px;
+        }
+    }
+
+    p {
+        padding-left: 1em;
+        color: $font-color-light;
+
+        @media (min-width: 35em) {
+            padding-left: 2.5*$unit;
+        }
+    }
+}
+
 ul {
     @include zero-margins();
     list-style-type: none;
