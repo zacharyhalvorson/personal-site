@@ -1,12 +1,10 @@
-# My personal site redesign
-
 Personal websites are hard. Everyone's got a drawer full of redesigns and guilt over not contributing to it more. Personal websites are fun though, they give you a place to experiment and try new things. That's why I made this one.
 
 ## Where do I start?
 
-> "Design is the rendering of intent."
+> "Design is the rendering of intent." Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
 
-Any project worth doing starts with content. You need to establish your intent before you can start any rendering. Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
+Any [project](#) worth doing starts with content. You need to establish your intent before you can start any rendering. Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
 
 ## What is this site going to be for?
 

@@ -2,6 +2,9 @@
 //- Current page
 - var currentPage = current.source === 'index' && current.path.length >= 2 ? current.path[current.path.length - 2] : current.source
 
+if current.path[0] == 'blog'
+    - currentPage = 'blog'; 
+
 doctype html
 html(lang='en')
 

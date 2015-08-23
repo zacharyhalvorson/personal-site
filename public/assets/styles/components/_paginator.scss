@@ -1,5 +1,12 @@
 .c-paginator {
 
+    margin-top: 2em;
+
+    @media(min-width: 35em) {
+
+        margin-top: 3em;
+    }
+
     &::after {
         content: '';
         display: block;

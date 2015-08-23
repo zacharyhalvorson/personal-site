@@ -2,6 +2,7 @@ extends ../includes/_layout
 
 block content
     if current.source != "index"
+        include ../partials/_hero
         include ../partials/_intro
     .c-container
         != yield

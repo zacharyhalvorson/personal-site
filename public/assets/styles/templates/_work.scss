@@ -1,10 +1,10 @@
 .t-work {
     main ul {
-        padding-top: 2em;
+        margin: 2em 0;
 
         @media(min-width: 35em) {
 
-            padding-top: 3em;
+            margin: 3em 0;
         }
 
         &::after {
