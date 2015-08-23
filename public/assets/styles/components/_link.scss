@@ -12,9 +12,9 @@
         display: block;
         background: $red;
         height: 1px;
-        width: 100%;
         position: absolute;
-        left: 0;
+        left: 1px;
+        right: 1px;
         bottom: -1px;
 
         @media (min-width: 25em) {
