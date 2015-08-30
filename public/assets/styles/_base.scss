@@ -17,15 +17,17 @@ main {
 
 blockquote {
     position: relative;
+    margin: 0;
     margin-left: 0;
+    background: lighten($grey, 40%);
 
     &::before {
         position: absolute;
         display: block;
         content: '';
         left: 0;
-        top: 5px;
-        bottom: 5px;
+        top: 0px;
+        bottom: 0px;
         width: 2px;
         background: $font-color-light;
         opacity: .7;
@@ -36,10 +38,11 @@ blockquote {
     }
 
     p {
-        padding-left: 1em;
+        padding: .5*$unit $unit;
         color: $font-color-light;
 
         @media (min-width: 35em) {
+            padding: $unit;
             padding-left: 2.5*$unit;
         }
     }
