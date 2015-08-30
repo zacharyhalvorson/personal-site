@@ -51,6 +51,9 @@ blockquote {
 ul {
     @include zero-margins();
     list-style-type: none;
+    li {
+        margin: .5*$unit;
+    }
 }
 
 a {
