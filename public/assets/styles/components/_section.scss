@@ -1,10 +1,10 @@
 .c-section {
 
     display: block;
-    margin-bottom: 2*$unit;
+    margin-bottom: 3*$unit;
 
     @media (min-width: 35em) {
-        margin-bottom: 3*$unit;
+        margin-bottom: 5*$unit;
         display: flex;
     }
 }

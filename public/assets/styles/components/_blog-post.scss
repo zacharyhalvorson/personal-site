@@ -1,6 +1,27 @@
 .c-blog-post {
     margin-bottom: 4*$unit;
     list-style-type: none;
+    padding: $unit;
+    position: relative;
+
+    .c-blog-post__title {
+
+        transition: transform .2s ease;
+        display: inline-block;
+        will-change: transform;
+    }
+
+    @media (min-width: 35em) {
+
+        &:hover {
+
+            .c-blog-post__title {
+
+                transform: scale(1.05) ;
+            }
+        }
+    }
+
 }
 
 .c-blog-post__date {
@@ -9,6 +30,7 @@
     font-size: .75rem;
     color: $font-color-light;
     letter-spacing: 1px;
+    display: block;
 }
 
 .c-blog-post__description {
