@@ -21,12 +21,19 @@
 
 .c-hero.c--image {
 
-    background: url(../images/about/hero.jpg);
+    background: url(../images/about/hero-small.jpg) center center;
     background-size: cover;
 
-    @media (min-width: 35em) {
+    @media (min-width: 30em) {
 
-        background-position: center center;
+        background: url(../images/about/hero-medium.jpg) center center;
+        background-size: cover;
+    }
+
+    @media (min-width: 40em) {
+
+        background: url(../images/about/hero-large.jpg) center center;
+        background-size: cover;
     }
 }
 
