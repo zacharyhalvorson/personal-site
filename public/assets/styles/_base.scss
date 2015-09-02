@@ -6,6 +6,11 @@ html {
     color: $font-color;
 }
 
+*::selection {
+    color: white;
+    background: $green;
+}
+
 body {
     margin: 0;
     font-size: $font-size;
