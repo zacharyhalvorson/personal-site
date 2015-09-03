@@ -1,10 +1,27 @@
-Personal websites are hard. Everyone's got a drawer full of redesigns and guilt over not contributing to it more. Personal websites are fun though, they give you a place to experiment and try new things. That's why I made this one.
+## What’s this post really about?
+
+I’m trying to write about this site. Particularly why and how i made the thing. It should offer a glimpse into why I think personal sites are a good thing for designers on the web. There’s an argument for why people should just use Medium or whatever to blog with, this is a chance for me to talk about why I don’t really like that. Although.. Do I really believe that? I’m not quite sure. I should probably write about the two different perspectives.
+
+* Why a personal site at all?
+* Why a blog?
+* What was my process
+* The writing-first approach.
+* The decision to redesign my existing site.
+* Having to go back to it after a few days away.
+
+***
+
+Personal websites are hard. Everyone's got a drawer full of redesigns, and a guilty feeling around now getting them done. There’s been plenty written about how we should focus out design skills on our user’s problems, or just use the popular tools of the day because the idea of a personal site or blog is a solved problem. I’m not sure I can subscribe to that though.
+
+A personal site is a chance to have a dialogue with yourself. Understand your own 
+
+Personal websites are fun though, they give you a place to experiment and try new things. That's why I made this one.
 
 ## Where do I start?
 
-> "Design is the rendering of intent." Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
+Too many times have I started with a mood board, or even mocks, before I've even written a single word. So this time I'm starting with a post. This one in particular.
 
-Any [project](#) worth doing starts with content. You need to establish your intent before you can start any rendering. Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
+Any project worth doing starts with content. You need to establish your intent before you can start any rendering. Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
 
 ## What is this site going to be for?
 
