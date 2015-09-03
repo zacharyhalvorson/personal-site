@@ -1,16 +1,16 @@
-
-Mobify Cloud is a responsive web application translated into multiple languages, servicing users in several countries. It functions as a development team management interface, as well as a production testing and deployment platform for mobile web experiences. I've worked on a multitude of features and improvements, ranging from high-level product direction and user research, to UI design and front-end implementation.
+Mobify Cloud is a responsive web application translated into multiple languages, and used across several countries. It’s the primary customer portal for Mobify customers with many functions. It serves as a development team management interface, as well as a production testing and deployment platform for mobile experiences. I've worked on a multitude of features and improvements, ranging from conducting user research to high-level product direction, UI design and front-end implementation.
 
 ## Understanding Our Users
 
-I want to talk about how were a product company that has a client services side but we also have partner companies also using our software. When conducting our user research we needed to make sure we were accounting for all those different types of people. Teams of varying size, skill level, devices, and workflows.
+Mobify makes software that gives web development teams the ability to adapt desktop websites for mobile devices, enhancing user experience and performance. In addition to an amazing team of in-house designers and engineers doing implementations for customer websites, we also have partner organizations that do web implementations using our software. 
 
-👸👋
+I often led user research activities for Mobify Cloud. I conducted interviews, crafted surveys, and organized inbound feedback, for both our internal team as well as external delivery partners. We often found a wide array of skill sets and workflows among the users and teams that used Mobify’s software to deliver for customers. 
 
-I conducted multiple user interviews to build out a list of common problems and workflows. These informed our user archetypes, and then created personas from them. We use the personas to help drive our design decisions.
+> Photo of problems spreadsheet 👸👋
 
-[TODO persona photos, and shot of problems spreadsheet here]
-[TODO need to design a compelling way to show some visuals here]
+Keeping this information organized and indexed was key to making better product decisions. I distilled data from interviews and surveys into personas for use in product design decision-making, and I also created a database for quickly searching through inbound feedback from users, using a <a class=“c-link” href=“http://alistapart.com/article/connected-ux”>shared Evernote notebook</a> hooked up to our main feedback email address.
+
+> Photos of personas should go here.
 
 ## Colour Refresh
 
