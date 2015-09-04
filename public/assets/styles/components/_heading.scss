@@ -3,19 +3,23 @@
 
 .c-heading,
 %c-heading {
+    @include zero-margins();
     margin: 0;
 }
 
 .c-heading.c--1,
 %c-heading-1 {
-    font-size: 2.25rem;
+    font-size: 2.75rem;
     font-weight: bold;
+    margin-bottom: 0;
 }
 
 .c-heading.c--2,
 %c-heading-2 {
-    font-size: 1.875rem;
+    font-size: 2.25rem;
     font-weight: bold;
+    margin-top: 2.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .c-heading.c--3,

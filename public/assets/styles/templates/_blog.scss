@@ -4,7 +4,7 @@
 
         @media(min-width: 35em) {
 
-            margin: 3em 0;
+            margin: 4em 0;
         }
 
         ul {
@@ -43,6 +43,10 @@
 
     h1 {
         margin-bottom: 5*$unit;
+    }
+
+    h2:first-child {
+        margin-top: 1rem;
     }
 
 }
