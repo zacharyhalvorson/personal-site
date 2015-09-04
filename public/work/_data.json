@@ -14,6 +14,14 @@
         "isPublic": "true",
         "color": "red"
     },
+    "mobify-preview": {
+        "title": "Mobify Preview",
+        "teaser": "REMOVE ME This is filler text for the piece description. Ill need to revisit.",
+        "roles": ["Product Design", "Front-End Development", "UX Research"],
+        "isPublic": "true",
+        "color": "grey",
+        "hasGallery": "false"
+    },
     "sundown": {
         "title": "Sundown",
         "teaser": "This iOS application tracks the sunset and provides the user a countdown, and some fitting music to go along with the magic hour.",

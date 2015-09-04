@@ -21,7 +21,3 @@ Keeping this information organized and indexed was key to making better product 
 In this section I'll describe my modular UI design process briefly and show off the changes from the UI Colour Palette refresh.
 
 Also show a carousel of screens, from publishing, to login, to orgs.
-
-## Mobify Preview
-
-I'll show off Mobify Preview in a gif. Talking about what went into the design of it.
