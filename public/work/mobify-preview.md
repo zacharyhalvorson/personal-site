@@ -1,3 +1,11 @@
-## Design
+## What do I have to show for this?
 
-I'll show off Mobify Preview in a gif. Talking about what went into the design of it.
+> Screenshots
+
+> Research work
+
+> Maybe there’s some analytics on how often this page is used?
+
+> I’ll show off Mobify Preview in a gif.
+
+
