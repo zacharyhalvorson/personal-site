@@ -12,6 +12,14 @@
 .c-section__header,
 .c-section__content {
     flex-basis: 100%;
+
+    @media (min-width: 35em) {
+
+        h2 {
+
+            margin: 0;
+        }
+    }
 }
 
 .c-section__header h2 {
