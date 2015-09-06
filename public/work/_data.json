@@ -11,14 +11,14 @@
         "title": "Beyond The Rack",
         "teaser": "Beyond The Rack is an online-only retailer, I worked on their web-enabled Android native application.",
         "roles": ["App Design", "Android", "eCommerce"],
-        "isPublic": "true",
+        "isPublic": "false",
         "color": "red"
     },
     "mobify-preview": {
         "title": "Mobify Preview",
         "teaser": "REMOVE ME This is filler text for the piece description. Ill need to revisit.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
-        "isPublic": "true",
+        "isPublic": "false",
         "color": "grey",
         "hasGallery": "false"
     },
@@ -33,7 +33,7 @@
         "title": "Ritchie Brothers",
         "teaser": "This large-scale auctioneering service needed native apps to compliment it's online bidding experience.",
         "roles": ["iOS", "Android", "Interaction Design"],
-        "isPublic": "true",
+        "isPublic": "false",
         "color": "purple"
     },
     "curriculate": {
