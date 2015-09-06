@@ -16,4 +16,18 @@
             clear: both;
         }
     }
+
+    img {
+
+        margin: 2rem -10%;
+        width: 120%;
+        transition: width .15s ease;
+
+        @media (max-width: 44em) {
+
+            width: 100%;
+            margin: 1rem auto;
+        }
+
+    }
 }

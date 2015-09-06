@@ -4,7 +4,7 @@ block content
     if current.source != "index"
         include ../partials/_hero
         include ../partials/_intro
-    div(class="c-container #{ current.source === 'index' ? 'c--wide' : '' }")
+    div(class="c-container #{ current.source === 'index' ? 'c--wide' : 't-work' }")
         != yield
 
 
