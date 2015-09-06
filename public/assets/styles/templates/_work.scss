@@ -21,7 +21,7 @@
 
         margin: 2rem -10%;
         width: 120%;
-        transition: width .15s ease;
+        transition: width .15s ease, transform .3s ease;
 
         @media (max-width: 44em) {
 
