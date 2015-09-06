@@ -4,8 +4,10 @@ block content
     if current.source != "index"
         include ../partials/_hero
         include ../partials/_intro
-    .c-container
+    div(class="c-container #{ current.source === 'index' ? 'c--wide' : '' }")
         != yield
+
+
 
 prepend footer
     include ../partials/_paginator
