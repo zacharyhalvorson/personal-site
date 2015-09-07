@@ -1,35 +1,20 @@
-## What’s this post really about?
-
-I’m trying to write about this site. Particularly why and how i made the thing. It should offer a glimpse into why I think personal sites are a good thing for designers on the web. There’s an argument for why people should just use Medium or whatever to blog with, this is a chance for me to talk about why I don’t really like that. Although.. Do I really believe that? I’m not quite sure. I should probably write about the two different perspectives.
-
-* Why a personal site at all?
-* Why a blog?
-* What was my process
-* The writing-first approach.
-* The decision to redesign my existing site.
-* Having to go back to it after a few days away.
-
-***
-
-Personal websites are hard. Everyone's got a drawer full of redesigns, and a guilty feeling around now getting them done. There’s been plenty written about how we should focus out design skills on our user’s problems, or just use the popular tools of the day because the idea of a personal site or blog is a solved problem. I’m not sure I can subscribe to that though.
-
-A personal site is a chance to have a dialogue with yourself. Understand your own 
-
-Personal websites are fun though, they give you a place to experiment and try new things. That's why I made this one.
+Personal websites are hard. Everyone's got a drawer full of redesigns, and the guilty feeling that comes from unfinished work. There’s been plenty written about how we should just use the popular tools, like Squarespace or Medium, because the idea of a personal site or blog is a solved problem. I’m not sure I can subscribe to that though - a personal site is a chance to have a dialogue with yourself. Understand your own taste and give yourself the space to experiment and grow.
 
 ## Where do I start?
 
 Too many times have I started with a mood board, or even mocks, before I've even written a single word. So this time I'm starting with a post. This one in particular.
 
-Any project worth doing starts with content. You need to establish your intent before you can start any rendering. Too many times have I started with a mood board before I've even written a single word. So this time I'm starting with this post. Describe what I'm going to build and why.
+Any project worth doing starts with content. You need to establish your intent before you can start any meaningful work. So through this project, I’ve kept writing content as my first priority. Hashing out what I want to say before I build the place for it to live.
 
 ## What is this site going to be for?
 
-I'm looking for a place to write down my thoughts as I work on new projects, learn new development techniques, develop as a writer, and grow as a Designer. Sharing what you learn is important, and a personal website gives me a chance to both share and experiment. Grow and give back.
+I'm looking for a place to write down my thoughts as I work on new projects, learn new development techniques, develop as a writer, and grow as a Designer. In my work on the product team at Mobify I’m often working on longer term projects with a lot of different people, this blog can give me the chance to share the little pieces I work on as I go.
 
-So this site will help people know me better as a designer, understand what I've worked on in the past, and what I'd like to work on in the future. But I'd also like a place to write, and experiment.
+## How have I built it?
 
-## How am I going to build it?
+After I had written the majority of the content I set out in design and development with a few constraints:
+* The blog posts should be pure markdown. I want to be able to contribute as easily as possible. 
+* 
 
 I'm starting with the content, write the pages first then think about overall structure. I've got a bit of a list:
 - Some kind of interactive home page for new experiments.
