@@ -16,6 +16,20 @@
     }
 }
 
+.m-scooch.m--narrow {
+
+    .m-item img {
+
+        width: auto;
+        max-height: 20rem;
+
+        @media (min-width: 45em) {
+
+            max-height: 30rem;
+        }
+    }
+}
+
 .m-scooch {
 
     position: relative;
