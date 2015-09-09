@@ -8,6 +8,6 @@
     "description": "My personal website.",
     "license": "MIT",
     "dependencies": {
-        "photoswipe": "4.1.0"
+
     }
 }
