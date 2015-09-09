@@ -1,0 +1,62 @@
+.c-carousel {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem -10%;
+}
+
+
+//
+// Image Carousel
+//
+.m-scooch {
+
+    position: relative;
+    padding: 1.111111111rem 0;
+
+    .m-item img {
+
+        width: 80%;
+        max-width: 40rem;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .m-scooch-controls a {
+
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: all .3s ease;
+
+        &[data-m-slide="next"] {
+
+            right: 3%;
+
+            @media (max-width: 45em) {
+                right: 2%;
+            }
+        }
+
+        &[data-m-slide="prev"] {
+
+            left: 3%;
+
+            @media (max-width: 45em) {
+                left: 2%;
+            }
+        }
+
+        @media (max-width: 45em) {
+
+            img {
+                width: 50%;
+            }
+        }
+
+        &.hide {
+            opacity: 0;
+        }
+    }
+}

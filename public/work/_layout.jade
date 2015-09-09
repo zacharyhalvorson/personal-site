@@ -7,7 +7,11 @@ block content
     div(class="c-container #{ current.source === 'index' ? 'c--wide' : 't-work' }")
         != yield
 
-
+append styles
+    link(href='//cdn.mobify.com/modules/scooch/0.3.3/scooch.min.css' rel='stylesheet' type='text/css')
+        
+append scripts
+    include ../includes/_scooch
 
 prepend footer
     include ../partials/_paginator
