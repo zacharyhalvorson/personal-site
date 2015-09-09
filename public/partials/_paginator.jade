@@ -2,9 +2,10 @@
 - var root = eval("public." + current.path[0] + "._data")
 
 for page, slug in root
-    - page.slug = slug
-    - pages.push(root[slug])
-    
+    if page.isPublic == 'true'
+        - page.slug = slug
+        - pages.push(root[slug])
+        
 each page, i in pages
     if page.slug === current.source
         - prev = pages[i - 1]
