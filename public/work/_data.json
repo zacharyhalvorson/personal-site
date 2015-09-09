@@ -38,7 +38,7 @@
     },
     "curriculate": {
         "title": "Curriculate",
-        "teaser": "A bunch of nonsense description text for curriculate. This is placeholder text to make sure we have consistency.",
+        "teaser": "This web application project is meant to be a way for educators to easily plan and present in the classroom with the same tool.",
         "roles": ["UX Design", "Wireframing", "Interaction Design"],
         "isPublic": "true",
         "color": "orange"
