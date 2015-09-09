@@ -2,11 +2,13 @@
     "my-first-post": {
         "title": "My first blog post",
         "description": "Personal websites are hard. So much work, and often not much return. This time I decided to document process.",
-        "date": "August 21, 2015"
+        "date": "August 21, 2015",
+        "isPublic": "true"
     },
     "cloud-research": {
         "title": "User Research On Mobify Cloud",
         "description": "An exploration into our user research process at Mobify.",
-        "date": "August 18, 2015"
+        "date": "August 18, 2015",
+        "isPublic": ""
     }
 }

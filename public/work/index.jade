@@ -1,7 +1,7 @@
 block content
     ul
         each project, slug in public.work._data
-            unless project.isPublic == "false"
+            unless project.isPublic != "true"
                 li(class='c-work-post c--#{project.color}')
                     a(href='/work/#{ slug }')
                         .c-work-post__image
