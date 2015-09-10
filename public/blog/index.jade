@@ -4,7 +4,6 @@
 block content
     ul
         each post, slug in public.blog._data
-            - var date = Date.parse(post.date)
             unless post.isPublic != "true"
                 li.c-blog-post
                     a(href='/blog/#{ slug }')
