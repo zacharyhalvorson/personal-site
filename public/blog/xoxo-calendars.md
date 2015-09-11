@@ -4,7 +4,7 @@ Feel free to subscribe to them. I'm a Calendar.app user, sorry for you Google Ca
 
 ## How Do I Add Them?
 
-### Step 1: Click The Link You Want To Add
+### Step 1: Click The Calendar You Want To Add
 
 It should open your Calendar.app and open a confirmation dialog to subscribe to the calendar.
 
