@@ -6,7 +6,7 @@ This tool is widely used by many different agents on a typical Mobify project, f
 
 ### Getting Started
 
-At the beginning of this project, we asked ourselves, "What would 1-click preview look like?". After analyzing all the different workflows, came up with multiple solutions that could shorten the time to preview for a typical user. Here's what it looks like for a developer to use preview locally.
+At the beginning of this project, we asked ourselves, "What would 1-click preview look like?". After analyzing all the different workflows, we came up with multiple solutions that could shorten the time to preview for a typical user. Here's what it looks like for a developer to use preview locally.
 
 I did a lot of in-person interviews with customer-facing people within the company gain insight into how preview was used. I ended up making an <a class="c-link" href="https://github.com/zacharyhalvorson/alfred-audio">Alfred workflow</a> for quickly starting audio recordings.
 

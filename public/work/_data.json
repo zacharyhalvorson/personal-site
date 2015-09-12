@@ -23,7 +23,7 @@
     },
     "mobify-preview": {
         "title": "Mobify Preview",
-        "teaser": "REMOVE ME This is filler text for the piece description. Ill need to revisit.",
+        "teaser": "I worked on this tool used by developers around the world to test and share their work on Mobify projects.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
         "color": "red",
