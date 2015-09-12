@@ -1,0 +1,17 @@
+{
+  "globals": {
+    "name": "Zachary Halvorson",
+    "siteTitle": "Zachary Halvorson",
+    "url": "http://zacharyhalvorson.github.io",
+    "description": "Zachary Halvorson is a designer. He's focussed on digital interaction and product design.",
+    "author": {
+        "name": "Zachary Halvorson",
+        "email": "zacharyhalvorson@me.com",
+        "bio": "Designer at Mobify",
+        "twitter": "zachhalvorson",
+        "github": "zacharyhalvorson",
+        "dribbble": "zacharyhalvorson",
+        "rdio": "zacharyhalvorson"
+    }
+  }
+}

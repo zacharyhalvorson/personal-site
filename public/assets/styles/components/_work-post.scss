@@ -1,0 +1,92 @@
+.c-work-post {
+
+    background: $grey;
+    margin: 0;
+    margin-bottom: 2*$unit;
+    animation: fade-scale .35s;
+
+    @media (min-width: 35em) {
+        float: left;
+        width: 48%;
+
+        &:nth-child(odd) {
+            margin-right: 4%;
+        }
+    }
+
+    &:hover {
+        .c-work-post__image img {
+
+            transform: translate(0, -$unit/2);
+        }
+    }
+}
+
+.c-work-post__image {
+
+    height: 10em;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+        max-width: 80%;
+        margin-top: 4*$unit;
+        transition: transform .3s ease;
+    }
+}
+
+.c-work-post__text {
+    background: mix($grey, black, 82%);
+    padding: 1.5*$unit;
+    height: 100%;
+}
+
+.c-work-post__title {
+    display: block;
+    color: #fff;
+    font-size: 1.875rem; /* =30px */
+    margin-bottom: .5*$unit;
+}
+
+.c-work-post__description {
+
+    color: #fff;
+    font-size: 1.125rem; /* =18px */
+    line-height: 26px;
+    @include zero-margins();
+}
+
+// Modifiers for colour
+//
+.c-work-post.c--green {
+    background: $green;
+    .c-work-post__text {
+        background: mix($green, black, 82%);
+    }
+}
+.c-work-post.c--purple {
+    background: $purple;
+    .c-work-post__text {
+        background: mix($purple, black, 82%);
+    }
+}
+.c-work-post.c--blue {
+    background: $blue;
+    .c-work-post__text {
+        background: mix($blue, black, 82%);
+    }
+}
+.c-work-post.c--orange {
+    background: $orange;
+    .c-work-post__text {
+        background: mix($orange, black, 82%);
+    }
+}
+.c-work-post.c--red {
+    background: $red;
+    .c-work-post__text {
+        background: mix($red, black, 82%);
+    }
+}

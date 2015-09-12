@@ -1,0 +1,33 @@
+.t-work {
+    main {
+        animation: none;
+    }
+    main ul {
+        margin: 2em 0;
+
+        @media(min-width: 35em) {
+
+            margin: 3em 0;
+        }
+
+        &::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+    }
+
+    img {
+
+        margin: 2rem -10%;
+        width: 120%;
+        transition: width .15s ease, transform .3s ease;
+
+        @media (max-width: 44em) {
+
+            width: 100%;
+            margin: 1rem auto;
+        }
+
+    }
+}

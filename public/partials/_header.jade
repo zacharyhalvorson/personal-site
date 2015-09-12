@@ -1,0 +1,8 @@
+header.c-overlay.c--top
+    .c-container.c--wide
+        nav(role='navigation').c-nav
+            a(href='/').c-nav__title Zachary Halvorson
+            ul.c-nav__menu
+                each page, slug in public._data
+                    unless page.title == "Home"
+                        li(class='c-nav__link #{ current.path[0] == page.title.toLowerCase() ? "c--current" : "" }'): a(href='/#{ slug }')= page.title

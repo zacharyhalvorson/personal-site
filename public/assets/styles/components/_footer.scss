@@ -1,0 +1,14 @@
+.c-footer {
+    padding: 1.5*$unit 0;
+    color: $font-color-light;
+
+    p {
+        margin: 0;
+        font-size: 0.875rem; /* =14px */
+    }
+
+    @media (min-width: 35em) {
+
+        font-size: 1rem; /* =16px */
+    }
+}

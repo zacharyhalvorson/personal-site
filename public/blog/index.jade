@@ -1,0 +1,12 @@
+//- What does this page need to say again?
+//- It's the blog post listing page.
+
+block content
+    ul
+        each post, slug in public.blog._data
+            unless post.isPublic != "true"
+                li.c-blog-post
+                    a(href='/blog/#{ slug }')
+                        time.c-blog-post__date= post.date
+                        h2.c-blog-post__title= post.title
+                        p.c-blog-post__description= post.description

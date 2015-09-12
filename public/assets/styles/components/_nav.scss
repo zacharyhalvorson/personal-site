@@ -1,0 +1,46 @@
+.c-nav {
+
+    padding: 3*$unit 0 1.5*$unit;
+
+    @media (min-width: 25em) {
+        padding: 3*$unit 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.c-nav__title {
+    display: block;
+    font-size: 1.4rem; /* =24px */
+    margin-bottom: 1.5*$unit;
+
+    @media (min-width: 25em) {
+
+        margin-bottom: 0;
+    }
+}
+
+.c-nav__menu {
+
+    display: flex;
+}
+
+.c-nav__link {
+
+    margin-left: 2*$unit;
+    font-size: 1rem;
+
+    @media (min-width: 25em) {
+        margin-left: 3*$unit;
+    }
+
+    &:first-child {
+        margin-left: 0;
+    }
+}
+
+.c-nav__link.c--current {
+
+    font-weight: bold;
+}

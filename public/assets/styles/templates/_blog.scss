@@ -1,0 +1,56 @@
+.t-blog {
+    main {
+        margin: 2em 0;
+
+        @media(min-width: 35em) {
+
+            margin: 4em 0;
+        }
+
+        ul {
+            @extend %c-list;
+            font-size: 1rem;
+            line-height: 28px;
+            color: $font-color;
+
+            @media(min-width: 35em) {
+
+                font-size: 18px;
+                line-height: 30px;
+            }
+
+        }
+
+        li {
+
+            text-indent: -1.5*$unit;
+            margin-left: 1.5*$unit;
+
+            &.c-blog-post {
+                text-indent: 0;
+                margin-left: 0;
+            }
+        }
+
+        a {
+            @extend %c-link;
+        }
+
+        p {
+            font-weight: normal;
+        }
+    }
+
+    h1 {
+        margin-bottom: 5*$unit;
+    }
+
+    h2:first-child {
+        margin-top: 1rem;
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+}
