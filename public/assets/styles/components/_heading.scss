@@ -9,25 +9,37 @@
 
 .c-heading.c--1,
 %c-heading-1 {
-    font-size: 2.75rem;
+    font-size: 2.25rem;
     font-weight: bold;
     margin-bottom: 0;
     line-height: 42px;
+
+    @media (min-width: 35em) {
+        font-size: 2.75rem;
+    }
 }
 
 .c-heading.c--2,
 %c-heading-2 {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
     font-weight: bold;
     margin-top: 2.25rem;
     margin-bottom: 1.5rem;
     line-height: 32px;
+
+    @media (min-width: 35em) {
+        font-size: 2.25rem;
+    }
 }
 
 .c-heading.c--3,
 %c-heading-3 {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     line-height: 30px;
+
+    @media (min-width: 35em) {
+        font-size: 1.75rem;
+    }
 }
 
 .c-heading.c--4,
