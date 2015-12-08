@@ -1,6 +1,6 @@
 .c-nav {
 
-    padding: 3*$unit 0 1.5*$unit;
+    padding: 3*$unit 0 0;
 
     @media (min-width: 25em) {
         padding: 3*$unit 0;
@@ -28,15 +28,23 @@
 
 .c-nav__link {
 
-    margin-left: 2*$unit;
+    min-width: 3.8rem;
+    text-align: center;
+    padding: .4rem 0 .8rem;
+    margin: 0;
     font-size: 1rem;
 
-    @media (min-width: 25em) {
-        margin-left: 3*$unit;
+    &:first-child {
+        text-align: left;
     }
 
-    &:first-child {
-        margin-left: 0;
+    &:last-child {
+        text-align: right;
+    }
+
+    @media (min-width: 25em) {
+
+        padding: .4rem 0;
     }
 }
 
