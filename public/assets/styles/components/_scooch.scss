@@ -16,14 +16,13 @@
     }
 }
 
-.m--narrow {
+.m-scooch .m-item.m--narrow img {
 
-    width: auto;
-    max-height: 20rem;
+    width: 60%;
 
     @media (min-width: 45em) {
 
-        max-height: 30rem;
+        width: 40%;
     }
 }
 
