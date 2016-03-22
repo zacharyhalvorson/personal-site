@@ -3,6 +3,14 @@
         "title": "Home",
         "description": "This is Zachary Halvorson's personal website."
     },
+    "work": {
+        "title": "Work",
+        "description": "A collection of my work."
+    },
+    "blog": {
+        "title": "Blog",
+        "description": "A collection of my writing on design and making."
+    },
     "about": {
         "title": "About",
         "description": "All about Zachary Halvorson."

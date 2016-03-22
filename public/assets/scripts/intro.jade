@@ -1,0 +1,24 @@
+script(type="text/javascript").
+
+    var typeIntro = function() {
+        var text = "Hi, my name is Zach. I'm a product designer in Vancouver.";
+        var charCount = text.length;
+        var currentLetterCount = 0;
+        var speed = 100;
+        var $input = $("#intro");
+        
+        function writeLetter() {
+            var currentText = $input.text();
+            var currentLetter = text.charAt(currentLetterCount);
+            currentLetterCount++;
+            $input.text(currentText + currentLetter);
+            if(currentLetterCount == charCount)
+                clearInterval(timerId);
+        }
+            
+        var timerId = setInterval(writeLetter, speed);
+    }
+    
+    window.onload = function() {
+        typeIntro();
+    };

@@ -1,0 +1,26 @@
+//- Single column layout with basic header and footer.
+//- Current page
+- var currentPage = current.source === 'index' && current.path.length >= 2 ? current.path[current.path.length - 2] : current.source
+
+doctype html
+html(lang='en')
+
+    head
+        block meta
+            include ../_includes/meta
+        block title
+            title= siteTitle
+        block styles
+            link(rel="stylesheet" href="/assets/styles/stylesheet.css")
+            
+    body(class= "t-" + currentPage)
+        block nav
+            include ../_includes/nav
+        main
+            block header
+            block content
+                h1 I'm the base template
+        block footer
+        block scripts
+            include ../_includes/jquery
+            include ../_includes/ga
