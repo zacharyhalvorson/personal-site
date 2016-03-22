@@ -1,11 +1,17 @@
 extends ./_layouts/home
 
-block header
+block prepend content
     header
         h1#intro
-    
-block append content 
-    h1 I'm the index template
-
-block append scripts
-    include ./assets/scripts/intro
+            
+block content
+    section
+        header
+            h2 Here are some things I’ve worked on.
+            ul
+                li: a(href="/") Mobify Cloud
+                li: a(href="work/ritchie-brothers") Ritchie Brothers
+                li: a(href="/") Sundown
+                li: a(href="/") Frequency
+    section
+        h2 Wanna learn more? Visit my <a href="/about">about</a> page.
