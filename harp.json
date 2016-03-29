@@ -1,18 +1,39 @@
 {
-  "globals": {
-    "name": "Zachary Halvorson",
-    "siteTitle": "Zachary Halvorson",
-    "url": "http://zacharyhalvorson.github.io",
-    "description": "Zachary Halvorson is a designer. He's focussed on digital interaction and product design.",
-    "author": {
+    "globals": {
         "name": "Zachary Halvorson",
-        "email": "zacharyhalvorson@me.com",
-        "bio": "Designer at Mobify",
-        "twitter": "zachhalvorson",
-        "github": "zacharyhalvorson",
-        "dribbble": "zacharyhalvorson",
-        "spotify": "zacharyhalvorson",
-        "instagram": "zacharyhalvorson"
+        "siteTitle": "Zachary Halvorson",
+        "description": "Zachary Halvorson is a designer. He's focussed on digital interaction and product design.",
+        "author": {
+            "name": "Zachary Halvorson",
+            "email": "zacharyhalvorson@me.com",
+            "bio": "Designer at Mobify"
+        },
+        "socialLinks": [
+            {
+                "name": "Spotify",
+                "username": "zacharyhalvorson",
+                "url": "https://open.spotify.com/user/"
+            },
+            {
+                "name": "Twitter",
+                "username": "zachhalvorson",
+                "url": "http://www.twitter.com/"
+            },
+            {
+                "name": "Instagram",
+                "username": "zacharyhalvorson",
+                "url": "https://www.instagram.com/"
+            },
+            {
+                "name": "Github",
+                "username": "zacharyhalvorson",
+                "url": "http://www.github.com/"
+            },
+            {
+                "name":"Linkedin",
+                "username": "zacharyhalvorson",
+                "url": "https://ca.linkedin.com/in/"
+            }
+        ]
     }
-  }
 }
