@@ -1,9 +1,10 @@
 .c-social-links {
     list-style-type: none;
     @include zero-margins();
+    padding: 1rem 0;
 
     @media (min-width: 35em) {
-        padding: 1rem 0;
+        padding: 2rem 0;
     }
 }
 
@@ -18,9 +19,7 @@
     display: block;
 
     @media (min-width: 35em) {
-        background: no-repeat center/60%;
-        height: 3rem;
-        width: 3rem;
+        background: no-repeat center/50%;
     }
 }
 
