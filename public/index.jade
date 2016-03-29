@@ -1,11 +1,11 @@
 extends ./_layouts/home
 
 block prepend content
-    header
-        h1#intro
-            
+    header.c-intro
+        .c-intro-text
+                    
 block content
-    section
+    section.u-container
         header
             h2 Here are some things I’ve worked on.
             ul
@@ -13,5 +13,5 @@ block content
                 li: a(href="work/ritchie-brothers") Ritchie Brothers
                 li: a(href="/") Sundown
                 li: a(href="/") Frequency
-    section
-        h2 Wanna learn more? Visit my <a href="/about">about</a> page.
+    section.u-container
+        h2 Wanna learn more? Visit my <a class="c-link" href="/about">about</a> page.
