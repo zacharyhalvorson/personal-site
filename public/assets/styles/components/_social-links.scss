@@ -1,0 +1,45 @@
+.c-social-links {
+    list-style-type: none;
+    @include zero-margins();
+
+    @media (min-width: 35em) {
+        padding: 1rem 0;
+    }
+}
+
+.c-social-link {
+    height: 4rem;
+    width: 4rem;
+}
+
+[class*="c--icon-"] {
+    background: no-repeat center/50%;
+    height: 100%;
+    display: block;
+
+    @media (min-width: 35em) {
+        background: no-repeat center/60%;
+        height: 3rem;
+        width: 3rem;
+    }
+}
+
+.c--icon-Spotify {
+    background-image: url(/assets/images/icons/spotify.svg);
+}
+
+.c--icon-Twitter {
+    background-image: url(/assets/images/icons/twitter.svg);
+}
+
+.c--icon-Github {
+    background-image: url(/assets/images/icons/github.svg);
+}
+
+.c--icon-Instagram {
+    background-image: url(/assets/images/icons/instagram.svg);
+}
+
+.c--icon-Linkedin {
+    background-image: url(/assets/images/icons/linkedin.svg);
+}

@@ -1,0 +1,12 @@
+[class*="u-align"],
+[class*="u-justify"] {
+    display: flex;
+}
+
+.u-align-center {
+    align-items: center;
+}
+
+.u-justify-center {
+    justify-content: center;
+}

@@ -1,0 +1,63 @@
+html,
+body {
+    color: $font-color;
+}
+
+html {
+    font-size: $font-size;
+}
+
+body {
+    margin: 0;
+    font-family: $font-family;
+}
+
+h1,
+h2,
+%c-heading {
+    @include zero-margins();
+    font-family: $font-family-headings;
+}
+
+h1,
+%c-heading-1 {
+    font-size: 2rem;
+    line-height: 2rem;
+    padding: 2.75rem 0 1rem 0;
+
+    @media (min-width: 35em) {
+        font-size: 2.25rem;
+        line-height: 2.25rem;
+        padding: 3rem 0 1rem 0;
+    }
+}
+
+h2,
+%c-heading-2 {
+    font-size: 1.625rem;
+    line-height: 1.625rem;
+    padding: 1.75rem 0 .5rem 0;
+
+    @media (min-width: 35em) {
+        font-size: 1.875rem;
+        line-height: 1.875rem;
+        padding: 2rem 0 1rem 0;
+    }
+}
+
+p {
+    @include zero-margins();
+    font-size: 1.125rem;
+    line-height: 1.6875rem;
+    padding-top: 1rem;
+
+    @media (min-width: 35em) {
+        font-size: 1.3125rem;
+        line-height: 2.0625rem;
+    }
+}
+
+a {
+    color: $link-color;
+    text-decoration: none;
+}
