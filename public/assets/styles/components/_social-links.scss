@@ -3,7 +3,7 @@
     @include zero-margins();
     padding: 1rem 0;
 
-    @media (min-width: 35em) {
+    @media (min-width: $social-links-break) {
         padding: 2rem 0;
     }
 }
@@ -18,7 +18,7 @@
     height: 100%;
     display: block;
 
-    @media (min-width: 35em) {
+    @media (min-width: $social-links-break) {
         background: no-repeat center/50%;
     }
 }

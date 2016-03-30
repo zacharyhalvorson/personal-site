@@ -2,7 +2,6 @@
     height: 100vh;
     display: flex;
     align-items: center;
-    box-shadow: 0 1px 0 0 $grey-1;
     padding: 0 $padding-side;
 }
 
@@ -12,7 +11,7 @@
     margin: 0 auto;
     max-width: $max-width;
 
-    @media (min-width: 35em) {
+    @media (min-width: $type-break) {
         font-size: 3rem;
         line-height: 3.75rem;
         max-width: 44rem;
