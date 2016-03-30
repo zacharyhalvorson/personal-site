@@ -1,4 +1,4 @@
 nav
-    ul
+    ul.c-nav
         each page, slug in public._data
-            li: a(href='/#{ slug }')= page.title
+            li: a(href='/#{ slug }' class='c-nav__item')= page.title
