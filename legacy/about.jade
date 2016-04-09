@@ -1,7 +1,9 @@
 extends includes/_layout
 
+block prepend content
+    +hero(null, 'about')
+    
 block content
-    .c-hero.c--image
     .c-container.c--wide
         section.c-section.c--split
             header.c-section__header: h2 Contact

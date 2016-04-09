@@ -25,6 +25,15 @@
     &.c--ritchie-brothers::before {
         background-image: url(/assets/images/hero/ritchie-brothers.jpg);
     }
+
+    &.c--about {
+        margin-bottom: 0;
+        &::before {
+            filter: none;
+            opacity: 1;
+            background-image: url(/assets/images/hero/about.jpg);
+        }
+    }
 }
 
 

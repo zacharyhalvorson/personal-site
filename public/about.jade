@@ -1,8 +1,11 @@
 extends ./_layouts/base
 
+block prepend content
+    +hero(null, 'about')
+
 block content
     section.u-container
-        header: h2 About Me
+        header: h1 About Me
         p 👋 Hello, I’m a designer who’s focussed on digital interaction, and product design. I’ve worked on both web and native applications, and relish an opportunity to see a product through from research to implementation. I'm currently making things with the product team at Mobify.
         
     section.u-container

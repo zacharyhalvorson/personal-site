@@ -2,6 +2,9 @@
 //- Current page
 - var currentPage = current.source === 'index' && current.path.length >= 2 ? current.path[current.path.length - 2] : current.source
 
+block mixins
+    include ../_includes/_mixins
+
 doctype html
 html(lang='en')
 
