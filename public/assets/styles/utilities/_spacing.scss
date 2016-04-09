@@ -2,6 +2,10 @@
     padding: 0 $padding-side;
     margin: 0 auto;
     max-width: $max-width;
+
+    @media (min-width: $max-width-wide) {
+        max-width: $max-width-wide;
+    }
 }
 
 .u-margin-2 {

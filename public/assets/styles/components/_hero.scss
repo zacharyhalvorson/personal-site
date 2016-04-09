@@ -1,0 +1,42 @@
+.c-hero {
+    overflow: hidden;
+    height: 60vh;
+
+    @media (min-width: 35rem) {
+        overflow: visible;
+        margin-bottom: 11rem;
+    }
+
+    &::before {
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        filter: blur(4px);
+        opacity: .6;
+        content: '';
+        height: 60vh;
+        width: 100%;
+        display: block;
+        position: absolute;
+        z-index: -1;
+        overflow: hidden;
+    }
+
+    &.c--ritchie-brothers::before {
+        background-image: url(/assets/images/hero/ritchie-brothers.jpg);
+    }
+}
+
+
+.c-hero__image {
+    position: relative;
+    bottom: -5rem;
+
+    @media (min-width: 35rem) {
+        bottom: -10rem;
+    }
+
+    @media (min-width: 85rem) {
+        bottom: -22rem;
+    }
+}
