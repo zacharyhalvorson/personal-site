@@ -1,6 +1,7 @@
 [class*="u-align"],
 [class*="u-justify"],
-[class*="u-row"] {
+[class*="u-row"],
+[class*="u-col"] {
     display: flex;
 }
 
@@ -14,4 +15,15 @@
 
 .u-row-reverse {
     flex-direction: row-reverse;
+}
+
+.u-col-2 {
+    > div {
+    	width: 50%;
+    	padding: 10px;
+    }
+
+    > div:first-child {
+    	margin-right: 20px;
+    }
 }
