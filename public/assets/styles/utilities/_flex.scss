@@ -1,5 +1,6 @@
 [class*="u-align"],
-[class*="u-justify"] {
+[class*="u-justify"],
+[class*="u-row"] {
     display: flex;
 }
 
@@ -9,4 +10,8 @@
 
 .u-justify-center {
     justify-content: center;
+}
+
+.u-row-reverse {
+    flex-direction: row-reverse;
 }

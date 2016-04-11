@@ -10,12 +10,13 @@ each page, i in pages
     if page.slug === current.source
         - prev = pages[i - 1]
         - next = pages[i + 1]
+        .c-paginator
             .u-container
                 if prev
-                    a(href= "#{ prev.slug }")
+                    a(href= "#{ prev.slug }" class="c-paginator__prev")
                         p Previous
                         p= prev.title
                 if next
-                    a(href= "#{ next.slug }")
+                    a(href= "#{ next.slug }" class="c-paginator__next")
                         p Next
                         p= next.title
