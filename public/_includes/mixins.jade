@@ -1,5 +1,5 @@
-mixin hero(image, project)
-    header(class="c-hero c--#{project}")
-        if image 
+mixin hero(image, page)
+    header(class="c-hero c--#{page}")
+        if image
             figure.c-hero__image.u-justify-center
-                img(src="../assets/images/#{image}")
+                img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")

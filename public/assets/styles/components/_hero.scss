@@ -23,11 +23,11 @@
     }
 
     &.c--ritchie-brothers::before {
-        background-image: url(/assets/images/hero/ritchie-brothers.jpg);
+        background-image: url(/assets/images/work/ritchie-brothers/hero.jpg);
     }
 
     &.c--mobify-cloud::before {
-        background-image: url(/assets/images/hero/mobify-cloud.jpg);
+        background-image: url(/assets/images/work/mobify-cloud/hero.jpg);
     }
 
     &.c--about {
@@ -35,7 +35,7 @@
         &::before {
             filter: none;
             opacity: 1;
-            background-image: url(/assets/images/hero/about.jpg);
+            background-image: url(/assets/images/about/hero.jpg);
         }
     }
 }
