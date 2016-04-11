@@ -26,6 +26,10 @@
         background-image: url(/assets/images/hero/ritchie-brothers.jpg);
     }
 
+    &.c--mobify-cloud::before {
+        background-image: url(/assets/images/hero/mobify-cloud.jpg);
+    }
+
     &.c--about {
         margin-bottom: 0;
         &::before {

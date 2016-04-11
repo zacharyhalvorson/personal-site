@@ -1,0 +1,21 @@
+- var pages = []
+- var root = eval("public." + current.path[0] + "._data")
+
+for page, slug in root
+    if page.isPublic == 'true'
+        - page.slug = slug
+        - pages.push(root[slug])
+        
+each page, i in pages
+    if page.slug === current.source
+        - prev = pages[i - 1]
+        - next = pages[i + 1]
+            .u-container
+                if prev
+                    a(href= "#{ prev.slug }")
+                        p Previous
+                        p= prev.title
+                if next
+                    a(href= "#{ next.slug }")
+                        p Next
+                        p= next.title

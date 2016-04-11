@@ -1,0 +1,16 @@
+{
+    "mobify-cloud": {
+        "title": "Mobify Cloud",
+        "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
+        "roles": ["Product Design", "Front-End Development", "UX Research"],
+        "isPublic": "true",
+        "color": "green"
+    },
+    "ritchie-brothers": {
+        "title": "Ritchie Brothers",
+        "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
+        "roles": ["Product Design", "Front-End Development", "UX Research"],
+        "isPublic": "true",
+        "color": "green"
+    }
+}
