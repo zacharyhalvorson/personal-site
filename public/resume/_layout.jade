@@ -1,0 +1,15 @@
+extends ../includes/_layout
+
+block title
+    title= 'Zachary Halvorsons Resume'
+
+append styles
+    link(rel="stylesheet" href="/assets/styles/print.css")
+
+block header
+
+block content
+    .c-container
+        != yield
+
+block footer

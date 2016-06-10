@@ -20,32 +20,25 @@ I started at Mobify as a co-op, and have since filled several positions. My work
 ### [Style & Class](http://www.styleandclass.ca)
 - Volunteer
 - Vancouver, 2013-current
-- I aide the organizers of this meetup centred around the intersection of design and front-end development. Also most recently involved in the production of the first Style & Class conference in December 2014.
+
+I aide the organizers of this meetup centred around the intersection of design and front-end development.
+
 ### Adobe Phonegap Day
 - Workshop Facilitator: Designing For Perceived Performance
 - San Francisco, 2014
-- This workshop dealt with what developers can do to improve the feel of their apps. Design changes that can have a perceived effect on the performance of an application.
+
+This workshop dealt with what developers can do to improve the feel of their apps. Design changes that can have a perceived effect on the performance of an application.
 
 
 ## Education
+
 ### Capilano University
 - Interactive Design Diploma
 - September 2012 - January 2014
+
 ### University of Alberta
 - Bachelor of Education
-- Mathematics Major / Art and Design Minor
+    - Mathematics Major / Art and Design Minor
 - September 2006 - January 2011
 
-## References
-- Dave Shea
-    - Web Designer
-    - [dave@mezzoblue.com](mailto:dave@mezzoblue.com)
-- James Bryant
-	- Senior product designer - Atlassian
-    - [mail@jamesbryant.com.au](mailto:mail@jamesbryant.com.au)
-- James Bull
-	- Product design lead - Shopify
-    - [j.bull@me.com](mailto:j.bull@me.com)
-- Alaine Mackenzie
-	- Senior content strategy lead - Shopify
-    - [alainemackenzie@gmail.com](mailto:alainemackenzie@gmail.com)
+*References Available Upon Request*
