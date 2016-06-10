@@ -7,17 +7,17 @@
 - Product Designer
 - February 2014 - Current
 
-Mobify is a Vancouver-based SaaS company with a platform focussed on mobile customer engagement across web and native apps. The platform is currently being used to power some of the web’s most active mobile eCommerce experiences such as Pure Formulas, Think Geek, Garmin, Bose and more.
+[Mobify](http://www.mobify.com) is a Vancouver-based SaaS company with a platform focussed on mobile customer engagement across web and native apps. The platform is currently being used to power some of the web’s most active mobile eCommerce experiences such as Pure Formulas, Think Geek, Garmin, Bose and more.
 
-I started at Mobify as a co-op with my school, and have since filled several positions. My work there has included:
+I started at Mobify as a co-op, and have since filled several positions. My work there has included:
 
 - Product design for a mobile project testing and release console. The work extended from interaction design, and prototyping, to front-end development.
-- Product design for a customer engagement platform that included location-based marketing, and behavaiour-driven web and app push notification delivery.
+- Product design for a customer engagement platform that included location-based marketing, and behaviour-driven web and app push notification delivery.
 - iOS and Android app design for our hybrid app development framework, as well as several client builds.
 - Building relationships with the partner developer network, customers, and in-house development teams. Facilitating user testing, interviews, and gathering feedback on our platform.
 
 ## Community Involvement
-### Style & Class
+### [Style & Class](http://www.styleandclass.ca)
 - Volunteer
 - Vancouver, 2013-current
 - I aide the organizers of this meetup centred around the intersection of design and front-end development. Also most recently involved in the production of the first Style & Class conference in December 2014.
@@ -32,7 +32,7 @@ I started at Mobify as a co-op with my school, and have since filled several pos
 - Interactive Design Diploma
 - September 2012 - January 2014
 ### University of Alberta
-- Bachelor of Education - Secondary Route
+- Bachelor of Education
 - Mathematics Major / Art and Design Minor
 - September 2006 - January 2011
 
