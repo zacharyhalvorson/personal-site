@@ -10,10 +10,19 @@
     line-height: 2.25rem;
     margin: 0 auto;
     max-width: $max-width;
+    position: relative;
 
     @media (min-width: $type-break) {
         font-size: 3rem;
         line-height: 3.75rem;
         max-width: 44rem;
     }
+}
+
+.c-intro-face {
+    opacity: .4;
+    transform: scale(.4) translateY(30%);
+    position: absolute;
+    top: 0;
+    left: 50%;
 }

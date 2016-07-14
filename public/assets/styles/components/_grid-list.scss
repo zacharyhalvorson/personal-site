@@ -13,30 +13,3 @@
         margin-top: -$grid-spacing;
     }
 }
-
-.c-grid-list__item {
-    background: salmon;
-    height: 12rem;
-    margin-top: $grid-spacing;
-
-    &:first-child {
-        margin-top: 0;
-    }
-
-    a {
-        display: block;
-        height: 100%;
-    }
-
-    @media (min-width: $grid-break) {
-        flex: 1 0 calc(50% - 2.5rem);
-        margin-left: $grid-spacing;
-        margin-top: $grid-spacing;
-        max-width: calc(50% - 2.5rem);
-
-        &:first-child {
-            margin-top: $grid-spacing;
-        }
-    }
-
-}

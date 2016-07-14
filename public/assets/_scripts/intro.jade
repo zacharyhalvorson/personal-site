@@ -1,11 +1,13 @@
 script(type="text/javascript").
 
+    var $input = $(".c-intro-text");
+    var $face = $(".c-intro-face");
+
     var typeIntro = function() {
         var text = "Hi, my name is Zach. I'm a product designer in Vancouver.";
         var charCount = text.length;
         var currentLetterCount = 0;
         var speed = 100;
-        var $input = $(".c-intro-text");
         
         function writeLetter() {
             var currentText = $input.text();
@@ -19,6 +21,12 @@ script(type="text/javascript").
         var timerId = setInterval(writeLetter, speed);
     }
     
+    var showFace = function() {
+        
+    }
+    
+    
     window.onload = function() {
         typeIntro();
+        
     };

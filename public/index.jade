@@ -2,17 +2,22 @@ extends ./_layouts/home
 
 block prepend content
     header.c-intro
-        .c-intro-text
+        div
+            .c-intro-text
+            img(src="assets/images/my-face.jpg").c-intro-face
                     
 block content
     hr
-    section.u-container.u-margin-top-2
+    section.u-container
         header
-            h2#work Here are some things I’ve worked on.
+            h2#work.u-padding-top-4 Here are some things I’ve worked on.
             ul.c-grid-list
-                li.c-grid-list__item: a(href="work/mobify-cloud") Mobify Cloud
-                li.c-grid-list__item: a(href="work/ritchie-brothers") Ritchie Brothers
-                li.c-grid-list__item: a(href="/") Frequency
+                li.c-work-piece.c--purple: a(href="work/mobify-cloud") 
+                    .c-work-piece__label Mobify Cloud
+                li.c-work-piece.c--orange: a(href="work/ritchie-brothers") 
+                    .c-work-piece__label Ritchie Brothers
+                li.c-work-piece.c--baby-blue: a(href="/") 
+                    .c-work-piece__label Frequency
     hr
     section.u-container.u-margin-top-2
         h2 Wanna learn more? Visit my <a class="c-link" href="/about">about</a> page.
