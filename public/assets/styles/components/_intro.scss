@@ -5,12 +5,17 @@
     padding: 0 $padding-side;
 }
 
+.c-intro-text-container {
+
+    position: relative;
+    margin: 0 auto;
+    max-width: $max-width;
+
+}
+
 .c-intro-text {
     font-size: 1.75rem;
     line-height: 2.25rem;
-    margin: 0 auto;
-    max-width: $max-width;
-    position: relative;
 
     @media (min-width: $type-break) {
         font-size: 3rem;
@@ -20,9 +25,16 @@
 }
 
 .c-intro-face {
-    opacity: .4;
+    transition: all .3s ease-in-out;
+    opacity: 0;
     transform: scale(.4) translateY(30%);
+    height: 6rem;
     position: absolute;
-    top: 0;
+    top: -6rem;
     left: 50%;
+
+    &.c--show {
+        opacity: .9;
+        transform: scale(1) translateY(0);
+    }
 }

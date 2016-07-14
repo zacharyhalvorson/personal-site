@@ -22,11 +22,18 @@ script(type="text/javascript").
     }
     
     var showFace = function() {
-        
+        $input.hover(
+            function() {
+                $face.addClass("c--show");
+            },
+            function() {
+                $face.removeClass("c--show");
+            } 
+        );
     }
     
     
     window.onload = function() {
         typeIntro();
-        
+        showFace();
     };
