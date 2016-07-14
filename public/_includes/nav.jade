@@ -1,4 +1,4 @@
 nav.c-nav__wrapper
-    .c-nav.u-container
+    .c-nav
         each page, slug in public._data
-            a.c-nav__item.u-align-center.u-justify-center(href='/#{ slug }' class='#{ current.path[0] == page.title.toLowerCase() ? "u-bold" : "" }')= page.title
+            a.c-nav__item.u-align-center.u-justify-center(href='#{ page.navPath }' class='#{ current.path[0] == page.title.toLowerCase() ? "u-bold" : "" }')= page.title

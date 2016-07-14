@@ -1,9 +1,11 @@
 {
     "about": {
+        "navPath": "/about",
         "title": "About",
         "description": "All about Zachary Halvorson."
     },
     "index": {
+        "navPath": "/index#work",
         "title": "Home",
         "description": "This is Zachary Halvorson's personal website."
     }
