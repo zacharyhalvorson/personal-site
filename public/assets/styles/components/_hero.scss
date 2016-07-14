@@ -22,6 +22,11 @@
         overflow: hidden;
     }
 
+    &.c--frequency::before {
+        background-image: url(/assets/images/work/frequency/hero.jpg);
+        opacity: .9;
+    }
+
     &.c--ritchie-brothers::before {
         background-image: url(/assets/images/work/ritchie-brothers/hero.jpg);
     }
