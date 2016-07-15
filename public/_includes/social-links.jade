@@ -1,4 +1,4 @@
 nav
-    ul.c-social-links.u-justify-center
+    ul.c-social-links.u-justify-center.u-margin-top-2
         each account in socialLinks
             li.c-social-link: a(href='#{ account.url + account.username }' target='_blank' class='c--icon-#{account.name} u-hidden' data-name='')= account.name

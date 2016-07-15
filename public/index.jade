@@ -3,9 +3,17 @@ extends ./_layouts/home
 block prepend content
     header.c-intro
         .c-intro-text-container
-            .c-intro-text
-            img(src="assets/images/my-face.jpg").c-intro-face
+
+            p.them.c-intro-text.u-hide Hi! 👋 My name is Zach. I'm a product designer in Vancouver.
+            
+            a(href="/about").them: img(src="assets/images/my-face.png").c-intro-face.u-hide
+            
+            .typing-indicator.a-fade-scale
+                span
+                span
+                span
                     
+    a(href="/#work"): img(src="assets/images/chevron.svg").c-intro-chevron.a-bounce
 block content
     hr
     section.u-container

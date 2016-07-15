@@ -2,38 +2,32 @@ script(type="text/javascript").
 
     var $input = $(".c-intro-text");
     var $face = $(".c-intro-face");
-
-    var typeIntro = function() {
-        var text = "Hi! 👋 My name is Zach. I'm a product designer in Vancouver.";
-        var charCount = text.length;
-        var currentLetterCount = 0;
-        var speed = 100;
-        
-        function writeLetter() {
-            var currentText = $input.text();
-            var currentLetter = text.charAt(currentLetterCount);
-            currentLetterCount++;
-            $input.text(currentText + currentLetter);
-            if(currentLetterCount == charCount)
-                clearInterval(timerId);
-        }
-            
-        var timerId = setInterval(writeLetter, speed);
-    }
+    var $typingIndicator = $(".typing-indicator");
     
-    var showFace = function() {
-        $input.hover(
-            function() {
-                $face.addClass("c--show");
-            },
-            function() {
-                $face.removeClass("c--show");
-            } 
-        );
+    var typeMessages = function() {
+        
+        function showHello() {
+            $input.removeClass("u-hide").addClass("u-show a-fade-scale");
+        }
+        function showFace() {
+            $face.removeClass("u-hide").addClass("u-show a-fade-scale");
+        }
+        function hideTypingIndicator() {
+            $typingIndicator.addClass("u-hide");
+        }
+        function showTypingIndicator() {
+            $typingIndicator.removeClass("u-hide").addClass("u-show a-fade-scale");
+        }
+        
+        window.setTimeout(showHello, 3500);
+        window.setTimeout(hideTypingIndicator, 3500);    
+        window.setTimeout(showTypingIndicator, 4000);
+        window.setTimeout(showFace, 6000);
+        window.setTimeout(hideTypingIndicator, 6000);
+        
     }
     
     
     window.onload = function() {
-        typeIntro();
-        showFace();
+        typeMessages();
     };
