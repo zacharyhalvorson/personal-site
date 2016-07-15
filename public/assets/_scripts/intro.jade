@@ -1,6 +1,7 @@
 script(type="text/javascript").
 
     var $input = $(".c-intro-text");
+    var $supporting = $(".c-supporting-text");
     var $face = $(".c-intro-face");
     var $typingIndicator = $(".typing-indicator");
     
@@ -11,6 +12,9 @@ script(type="text/javascript").
         }
         function showFace() {
             $face.removeClass("u-hide").addClass("u-show a-fade-scale");
+        }
+        function showSupporting() {
+            $supporting.removeClass("u-hide").addClass("u-show a-fade-scale");
         }
         function hideTypingIndicator() {
             $typingIndicator.addClass("u-hide");
@@ -24,6 +28,9 @@ script(type="text/javascript").
         window.setTimeout(showTypingIndicator, 4000);
         window.setTimeout(showFace, 6000);
         window.setTimeout(hideTypingIndicator, 6000);
+        window.setTimeout(showTypingIndicator, 6500);
+        window.setTimeout(showSupporting, 8000);
+        window.setTimeout(hideTypingIndicator, 8000);
         
     }
     
