@@ -12,11 +12,17 @@
 }
 
 .c-intro-text-container {
-    padding-top: 25vh;
     position: relative;
     margin: 0 auto;
     width: 85%;
     max-width: $message-width;
+    padding-top: 10vh;
+
+    @media (min-width: $type-break) {
+        padding-top: 25vh;
+        font-size: 1.7rem;
+        line-height: 2.3rem;
+    }
 
 }
 
