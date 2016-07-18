@@ -1,3 +1,16 @@
+
+@keyframes blink {
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes bulge {
+    50% {
+        transform: scale(1.05);
+    }
+}
+
 @keyframes fade {
     from {
         opacity: 0;
@@ -12,7 +25,7 @@
         transform: translateY(0) scale(1);
     }
     from {
-        transform: translateY(-1vh) scale(1.1);
+        transform: translateY(-.5vh) scale(1.05);
     }
 }
 
