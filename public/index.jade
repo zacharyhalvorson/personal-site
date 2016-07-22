@@ -6,7 +6,7 @@ block prepend content
 
             p.them.c-intro-text.u-hide Hi! 👋 My name is Zach. I'm a product designer in Vancouver.
 
-            a(href="/about"): img(src="assets/images/my-face.png").c-intro-face.u-hide
+            a(href="/about"): img(src="assets/images/my-face.png" title="Nice to meet you!").c-intro-face.u-hide
             
             p.them.c-supporting-text.u-hide This is my personal site and portfolio. Have a look around! 👀
             
@@ -25,9 +25,9 @@ block content
                 each project, slug in public.work._data
                     li(class="c-work-piece c--#{project.color}")
                         a(href="/work/#{ slug }")
-                            img(class="c-work-post__image #{ project.isTall === 'true' ? 'c--tall' : '' }" src="/assets/images/work/#{slug}/teaser.png")        
+                            img(class="c-work-post__image #{ project.hasTallTeaser === 'true' ? 'c--tall' : '' }" src="/assets/images/work/#{slug}/teaser.png")        
                             .c-work-piece__label= project.title
 
     hr
-    section.u-container.u-margin-top-2
+    section.u-container.u-margin-top-2.u-margin-bottom-1
         h2 Wanna learn more? Visit my <a class="c-link" href="/about">about</a> page.

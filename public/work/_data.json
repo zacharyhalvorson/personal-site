@@ -4,7 +4,7 @@
         "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
-        "isTall": "true",
+        "hasTallTeaser": "true",
         "color": "purple"
     },
     "ritchie-brothers": {
@@ -12,7 +12,7 @@
         "teaser": "This large-scale auctioneering service needed native apps to compliment it's online bidding experience.",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
-        "isTall": "false",
+        "hasTallTeaser": "false",
         "color": "orange"
     },
     "frequency": {
@@ -20,7 +20,7 @@
         "teaser": "This is an ongoing side project for me. Reimagining in-flight navigation data access for pilots.",
         "roles": ["Product Design", "iOS Development"],
         "isPublic": "true",
-        "isTall": "false",
+        "hasTallTeaser": "false",
         "color": "baby-blue"
     }
 }
