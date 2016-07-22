@@ -5,13 +5,16 @@
     background-color: $grey-2;
     position: relative;
 
-    &:first-child {
-        margin-top: 0;
+    a {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
     }
 
-    a {
-        display: block;
-        height: 100%;
+    &:first-child {
+        margin-top: 0;
     }
 
     @media (min-width: $grid-break) {
@@ -71,4 +74,12 @@
     font-size: 1.5rem;
     color: white;
     border-radius: 0 0 $border-radius $border-radius;
+}
+
+.c-work-post__image {
+    margin-top: -20%;
+
+    &.c--tall {
+        margin-top: 10%;
+    }
 }
