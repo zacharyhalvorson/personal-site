@@ -1,5 +1,10 @@
-mixin hero(image, page)
+mixin hero(image, page, mobile)
     header(class="c-hero c--#{page}")
         if image
-            figure.c-hero__image.u-justify-center
-                img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
+            .c-hero__image.u-justify-center
+                if mobile
+                    picture.a-fade-scale
+                        source(srcset="../assets/images/work/#{page}/intro-#{mobile}.png" media="(max-width: 35rem)")
+                        img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
+                else 
+                    img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
