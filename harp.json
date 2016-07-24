@@ -10,11 +10,6 @@
         },
         "socialLinks": [
             {
-                "name": "Spotify",
-                "username": "zacharyhalvorson",
-                "url": "https://open.spotify.com/user/"
-            },
-            {
                 "name": "Twitter",
                 "username": "zachhalvorson",
                 "url": "http://www.twitter.com/"
@@ -28,6 +23,11 @@
                 "name": "Github",
                 "username": "zacharyhalvorson",
                 "url": "http://www.github.com/"
+            },
+            {
+                "name": "Dribbble",
+                "username": "zacharyhalvorson",
+                "url": "https://dribbble.com/"
             },
             {
                 "name":"Linkedin",
