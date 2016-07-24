@@ -1,5 +1,6 @@
 mixin hero(image, page, mobile)
     header(class="c-hero c--#{page}")
+        div(class="c-hero__backdrop c--#{page}")
         if image
             .c-hero__image.u-justify-center
                 if mobile

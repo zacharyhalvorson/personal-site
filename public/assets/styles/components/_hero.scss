@@ -1,21 +1,31 @@
 .c-hero {
     overflow: hidden;
     height: 60vh;
+    position: relative;
 
     @media (min-width: 35rem) {
         overflow: visible;
         margin-bottom: 11rem;
     }
 
+}
+.c-hero__backdrop {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+
     &::before {
+        height: 100%;
+        width: 100%;
+        transform: scale(1.2);
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
         filter: blur(4px);
         opacity: .6;
         content: '';
-        height: 60vh;
-        width: 100%;
         display: block;
         position: absolute;
         z-index: -1;
