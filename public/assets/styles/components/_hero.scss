@@ -8,7 +8,12 @@
         margin-bottom: 11rem;
     }
 
+    &.c--about {
+        margin-bottom: 0;
+    }
+
 }
+
 .c-hero__backdrop {
     overflow: hidden;
     position: absolute;
@@ -45,13 +50,10 @@
         background-image: url(/assets/images/work/mobify-cloud/hero.jpg);
     }
 
-    &.c--about {
-        margin-bottom: 0;
-        &::before {
-            filter: none;
-            opacity: 1;
-            background-image: url(/assets/images/about/hero.jpg);
-        }
+    &.c--about::before {
+        filter: none;
+        opacity: 1;
+        background-image: url(/assets/images/about/hero.jpg);
     }
 }
 
