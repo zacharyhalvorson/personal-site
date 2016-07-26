@@ -58,12 +58,17 @@
 }
 
 
-.c-hero__image img {
-    position: relative;
+.c-hero__image {
+    position: absolute;
     bottom: -5rem;
-    margin: 0 auto;
-    width: auto;
-    height: 28rem;
+    left: 50%;
+    transform: translateX(-50%);
+
+    img {
+
+        width: auto;
+        height: 28rem;
+    }
 
     @media (min-width: 35rem) {
         bottom: -10rem;
