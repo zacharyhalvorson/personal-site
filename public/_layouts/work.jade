@@ -1,4 +1,11 @@
 extends ../_layouts/base
 
+block prepend styles
+    include ../_includes/photoswipe
+
 block prepend footer
     include ../_includes/paginator
+    include ../_includes/slides
+    
+block append scripts
+    include ../assets/_scripts/photoswipe
