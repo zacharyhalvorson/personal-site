@@ -9,3 +9,9 @@ mixin hero(image, page, mobile)
                         img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
                 else 
                     img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
+
+mixin image(layoutClasses, size, originalPath, thumbnailPath)
+    .image
+        figure(itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject")
+            a(href="#{originalPath}" itemprop="contentUrl" data-size="#{size}")
+                img(class="#{layoutClasses}" src="#{thumbnailPath}" itemprop="thumbnail" alt="Image description")
