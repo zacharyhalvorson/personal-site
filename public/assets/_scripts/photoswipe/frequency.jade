@@ -32,8 +32,6 @@ script(type="text/javascript").
                     h: parseInt(size[1], 10)
                 };
 
-
-
                 if(figureEl.children.length > 1) {
                     // <figcaption> content
                     item.title = figureEl.children[1].innerHTML; 
@@ -79,6 +77,17 @@ script(type="text/javascript").
                 numChildNodes = childNodes.length,
                 nodeIndex = 0,
                 index;
+
+
+            //- // DBR ADDED THIS
+            //- clickedGallery = closest(clickedListItem, function(el) {
+            //-     return el.classList.contains('my-gallery');
+            //- })
+            //- 
+            //- // DBR ADDED THIS
+            //- childNodes = clickedGallery.querySelector('figure');
+            //- numChildNodes = childNodes.length;
+
 
             for (var i = 0; i < numChildNodes; i++) {
                 if(childNodes[i].nodeType !== 1) { 
