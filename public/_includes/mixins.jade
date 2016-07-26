@@ -15,10 +15,3 @@ mixin image(layoutClasses, size, originalPath, thumbnailPath)
         figure(itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject")
             a(href="#{originalPath}" itemprop="contentUrl" data-size="#{size}")
                 img(class="#{layoutClasses}" src="#{thumbnailPath}" itemprop="thumbnail" alt="Image description")
-
-mixin photoswipe()
-    block append scripts
-        include ../assets/_scripts/photoswipe
-
-    block append content
-        include ../_includes/slides
