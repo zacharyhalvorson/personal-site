@@ -1,12 +1,17 @@
 .c-hero {
     overflow: hidden;
-    height: 60vw;
+    height: 70vw;
     max-height: 60vh;
     position: relative;
 
     @media (min-width: 35rem) {
         overflow: visible;
         margin-bottom: 11rem;
+    }
+
+    @media (max-height: 30rem){
+        overflow: hidden;
+        margin-bottom: auto;
     }
 
     &.c--about {
@@ -61,18 +66,26 @@
 
 .c-hero__image {
     position: absolute;
-    bottom: -50vw;
+    bottom: -18rem;
     left: 50%;
     transform: translateX(-50%);
 
     img {
-
+        max-width: 100%;
         width: auto;
         height: 28rem;
     }
 
+    picture img {
+        max-width: none;
+    }
+
     @media (min-width: 35rem) {
         bottom: -10rem;
+    }
+
+    @media (max-height: 30rem) {
+        bottom: -22rem;
     }
 
 }
