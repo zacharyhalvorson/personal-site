@@ -1,6 +1,7 @@
 .c-hero {
     overflow: hidden;
-    height: 60vh;
+    height: 60vw;
+    max-height: 60vh;
     position: relative;
 
     @media (min-width: 35rem) {
@@ -60,7 +61,7 @@
 
 .c-hero__image {
     position: absolute;
-    bottom: -5rem;
+    bottom: -50vw;
     left: 50%;
     transform: translateX(-50%);
 

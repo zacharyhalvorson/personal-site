@@ -5,7 +5,7 @@ mixin hero(image, page, mobile)
             .c-hero__image.u-justify-center
                 if mobile
                     picture.a-fade-scale
-                        source(srcset="../assets/images/work/#{page}/intro-#{mobile}.png" media="(max-width: 35rem)")
+                        source(srcset="../assets/images/work/#{page}/intro-#{mobile}.png" media="(max-width: 45rem)")
                         img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
                 else 
                     img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
