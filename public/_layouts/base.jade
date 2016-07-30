@@ -12,7 +12,7 @@ html(lang='en')
         block meta
             include ../_includes/meta
         block title
-            title= siteTitle
+            title #{siteTitle} | #{title}
         include ../_includes/fonts
         block styles
             link(rel="stylesheet" href="/assets/styles/stylesheet.css")

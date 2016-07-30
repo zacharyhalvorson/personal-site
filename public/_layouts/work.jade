@@ -1,5 +1,8 @@
 extends ../_layouts/base
 
+block title
+    title #{siteTitle} | #{title}
+
 block prepend styles
     include ../_includes/photoswipe
 
