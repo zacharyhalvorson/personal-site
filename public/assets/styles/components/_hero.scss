@@ -89,3 +89,16 @@
     }
 
 }
+.c-hero__video {
+    height: 20.6rem;
+    position: absolute;
+    bottom: -6.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    @media (max-width: 35rem) {
+        display: none;
+    }
+    @media (max-height: 30rem) {
+        display: none;
+    }
+}

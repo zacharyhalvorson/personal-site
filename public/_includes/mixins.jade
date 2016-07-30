@@ -1,4 +1,4 @@
-mixin hero(image, page, mobile)
+mixin hero(image, page, mobile, video)
     header(class="c-hero c--#{page}")
         div(class="c-hero__backdrop c--#{page}")
         if image
@@ -9,6 +9,9 @@ mixin hero(image, page, mobile)
                         img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
                 else 
                     img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
+            if video
+                video(autoplay loop class="c-hero__video")
+                    source(src="../assets/images/work/ritchie-brothers/#{video}.mp4" type="video/mp4")
 
 mixin image(layoutClasses, size, originalPath, thumbnailPath)
     .image
