@@ -2,7 +2,16 @@
     "globals": {
         "name": "Zachary Halvorson",
         "siteTitle": "Zachary Halvorson",
-        "description": "Zachary Halvorson is a designer. He's focussed on digital interaction and product design.",
+        "description": "Zachary Halvorson is a designer focussed on digital interaction and product design.",
+        "socialEmbed": {
+            "cardType": "summary",
+            "contentType": "website",
+            "url": "http://www.zacharyhalvorson.com",
+            "site": "@zachhalvorson",
+            "title": "Zachary Halvorson",
+            "description": "I'm a designer focussed on digital interaction and product design.",
+            "image": "http://www.zacharyhalvorson.com/assets/embed-image.png"
+        },
         "author": {
             "name": "Zachary Halvorson",
             "email": "zacharyhalvorson@me.com",
