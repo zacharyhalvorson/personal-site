@@ -1,17 +1,48 @@
 {
-  "globals": {
-    "name": "Zachary Halvorson",
-    "siteTitle": "Zachary Halvorson",
-    "url": "http://zacharyhalvorson.github.io",
-    "description": "Zachary Halvorson is a designer. He's focussed on digital interaction and product design.",
-    "author": {
+    "globals": {
         "name": "Zachary Halvorson",
-        "email": "zacharyhalvorson@me.com",
-        "bio": "Designer at Mobify",
-        "twitter": "zachhalvorson",
-        "github": "zacharyhalvorson",
-        "dribbble": "zacharyhalvorson",
-        "rdio": "zacharyhalvorson"
+        "siteTitle": "Zachary Halvorson",
+        "description": "Zachary Halvorson is a designer focussed on digital interaction and product design.",
+        "socialEmbed": {
+            "cardType": "summary",
+            "contentType": "website",
+            "url": "http://www.zacharyhalvorson.com",
+            "site": "@zachhalvorson",
+            "title": "Zachary Halvorson",
+            "description": "I'm a designer focussed on digital interaction and product design.",
+            "image": "http://zacharyhalvorson.com/assets/images/embed-image.png"
+        },
+        "author": {
+            "name": "Zachary Halvorson",
+            "email": "zacharyhalvorson@me.com",
+            "bio": "Designer at Mobify"
+        },
+        "socialLinks": [
+            {
+                "name": "Twitter",
+                "username": "zachhalvorson",
+                "url": "http://www.twitter.com/"
+            },
+            {
+                "name": "Instagram",
+                "username": "zacharyhalvorson",
+                "url": "https://www.instagram.com/"
+            },
+            {
+                "name": "Github",
+                "username": "zacharyhalvorson",
+                "url": "http://www.github.com/"
+            },
+            {
+                "name": "Dribbble",
+                "username": "zacharyhalvorson",
+                "url": "https://dribbble.com/"
+            },
+            {
+                "name":"Linkedin",
+                "username": "zacharyhalvorson",
+                "url": "https://ca.linkedin.com/in/"
+            }
+        ]
     }
-  }
 }

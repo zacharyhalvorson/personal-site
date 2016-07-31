@@ -1,38 +1,39 @@
-:markdown
-    Mobify Cloud is a responsive web application translated into multiple languages, and used across several countries. It’s the primary customer portal for Mobify customers with many functions. It serves as a development team management interface, as well as a production testing and deployment platform for mobile experiences. I've worked on a multitude of features and improvements, ranging from conducting user research to high-level product direction, UI design and front-end implementation.
+extends ../_layouts/work
 
-    ## Understanding Our Users
+block prepend content
+    +hero('cloud-desktop.png', 'mobify-cloud', 'mobile')
 
-    Mobify makes software that gives web development teams the ability to adapt desktop websites for mobile devices, enhancing user experience and performance. In addition to an amazing team of in-house designers and engineers doing implementations for customer websites, we also have partner organizations that do web implementations using our software.
+block content
+    .u-container
+        section
+            header: h1 Mobify Cloud
+            p Mobify Cloud is a responsive web application translated into multiple languages, and used across several countries. It’s the primary customer portal for our  customers with many functions. It serves as a development team management interface, as well as a production testing and deployment platform for mobile experiences. I've worked with the team on a multitude of features and improvements, ranging from conducting user research to high-level product direction, UI design and front-end implementation.
+        
+        section.u-col-2.u-margin-1
+            +image("u-fill", "2648x1712", "../assets/images/work/mobify-cloud/problems.png", "../assets/images/work/mobify-cloud/problems.png")
+            +image("u-fill", "2648x1758", "../assets/images/work/mobify-cloud/personas.png", "../assets/images/work/mobify-cloud/personas.png")
+        
+        section
+            header: h2 Understanding Our Users
+            p Mobify makes software that gives web development teams the ability to adapt desktop websites for mobile devices, enhancing user experience and performance. In addition to an amazing team of in-house designers and engineers doing implementations for customer websites, we also have partner organizations that do web implementations using our software.
+            p We conducted interviews, crafted surveys, and organized inbound feedback, for both our internal team as well as external delivery partners. We often found a wide array of skill sets and workflows among the users and teams that used Mobify’s software to deliver for customers.
 
-    I often led user research activities for Mobify Cloud. I conducted interviews, crafted surveys, and organized inbound feedback, for both our internal team as well as external delivery partners. We often found a wide array of skill sets and workflows among the users and teams that used Mobify’s software to deliver for customers.
-
-    ![](../assets/images/work/mobify-cloud/problems-spreadsheet.png)
-
-    Keeping this information organized and indexed was key to making better product decisions. I distilled data from interviews and surveys into personas for use in product design decision-making, and I also created a database for quickly searching through inbound feedback from users, using a <a class=“c-link” href=“http://alistapart.com/article/connected-ux”>shared Evernote notebook</a> linked to our main feedback email address.
-
-    ![](../assets/images/work/mobify-cloud/personas.png)
-
-    ## User Interface
-
-    My responsibilities for Mobify Cloud extended from research into  the UI and it’s implementation. Early on in my work on Cloud I participated in a major colour palette refresh, updating our UI to match a new branding direction for the company. This involved tweaking the colour palette used in our CSS and redefining how we had been using colour to establish visual hierarchy on the page. I built out a set of Sketch files to match our UI components and was able to iterate quickly towards a design that could scale across the application.
-
-    ![](../assets/images/work/mobify-cloud/sketch-components.png)
-
-    This system of keeping a 1-1 mapping from web UI to Sketch files has proved useful in helping us quickly mock up new potential screens for the application and test different visual treatments.
-
-.m-scooch__wrapper
-    .m-scooch.m-scooch-photos.m-fluid.m--narrow
-        .m-scooch-inner
-            .m-item: img(src="../assets/images/work/mobify-cloud/carousel-publishing.png")
-            .m-item: img(src="../assets/images/work/mobify-cloud/carousel-projects.png")
-            .m-item: img(src="../assets/images/work/mobify-cloud/carousel-orgs.png")
-            .m-item: img(src="../assets/images/work/mobify-cloud/carousel-docs.png")
-        .m-scooch-controls
-            a(href="" data-m-slide="prev"): img(src="../assets/vectors/arrow-prev.svg")
-            a(href="" data-m-slide="next"): img(src="../assets/vectors/arrow-next.svg")
-
-:markdown
-    ## What Did I Learn?
-
-    Working on a larger-scale web application was a challenging, and educational experience. I learned about the importance of balancing time spent on new features with maintenance and management of technical debt. Being the person that both designs and implements parts of the front-end, there were also many lessons around how to plan for blue sky, while keeping the focus on an MVP.
+        section.u-margin-1
+            +image("u-fill", "2648x1880", "../assets/images/work/mobify-cloud/docs.png", "../assets/images/work/mobify-cloud/docs.png")
+        
+        section    
+            header: h2 Documentation And Developer Experience
+            p Mobify’s business involves a supporting network of development partners for implementing customer builds with out technology. As a result of our user research efforts, we were able to apply real knowledge about our users to the design of our documentation.
+            p My responsibilities for Mobify Cloud extended from research into the UI and it’s implementation. Early on in my work on Cloud I participated in a major colour palette refresh, updating our UI to match a new branding direction for the company. This involved tweaking the colour palette used in our CSS and redefining how we had been using colour to establish visual hierarchy on the page. We have a set of Sketch files built to match our UI components gives us the ability to iterate quickly towards a design and understand how it might scale across the application.
+        
+        section.u-margin-1
+            div.u-col-2
+                +image("u-fill", "2512x1668", "../assets/images/work/mobify-cloud/components.png", "../assets/images/work/mobify-cloud/components.png")
+                +image("u-fill", "2776x1778", "../assets/images/work/mobify-cloud/colour-palette.png", "../assets/images/work/mobify-cloud/colour-palette.png")
+            div.u-col-2
+                +image("u-fill", "2172x1796", "../assets/images/work/mobify-cloud/preview.png", "../assets/images/work/mobify-cloud/preview.png")
+                +image("u-fill", "2648x1880", "../assets/images/work/mobify-cloud/orgs.png", "../assets/images/work/mobify-cloud/orgs.png")
+        
+        section    
+            header: h2 What Did I Learn?
+            p Working on a larger-scale web application was a challenging, and educational experience. I learned about the importance of balancing time spent on new features with maintenance and management of technical debt. Being the person that both designs and implements parts of the front-end, there were also many lessons around how to plan for blue sky, while keeping the focus on an MVP.

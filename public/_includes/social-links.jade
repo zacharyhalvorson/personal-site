@@ -1,0 +1,4 @@
+nav
+    ul.c-social-links.u-justify-center
+        each account in socialLinks
+            li.c-social-link: a(title='Check me out on #{account.name}' href='#{ account.url + account.username }' target='_blank' class='c--icon-#{account.name} u-hidden' data-name='')= account.name

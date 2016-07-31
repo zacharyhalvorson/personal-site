@@ -1,9 +1,33 @@
-extends includes/_layout
+extends ./_layouts/home
 
+block prepend content
+    header.c-intro
+        .c-intro-text-container
+
+            p.them.c-intro-text.u-hide Hi! 👋 My name is Zach. I'm a product designer in Vancouver.
+
+            a(href="/about"): img(src="assets/images/my-face.png" title="Nice to meet you!").c-intro-face.u-hide
+            
+            p.them.c-supporting-text.u-hide This is my personal site and portfolio. Have a look around! 👀
+            
+            .typing-indicator.a-fade-scale
+                span
+                span
+                span
+                    
+    a(href="/#work"): img(src="assets/images/chevron.svg").c-intro-chevron.a-bounce
 block content
-    .c-container
-        h1 Oh, hello there. Looks like you found my personal site.
-        p This is my place for tinkering, writing, and sharing my work. 
-        p Have a look around! 👀
-        
-block footer
+    hr
+    section.u-container
+        header
+            h2#work.u-padding-top-4 Here are some things I’ve worked on.
+            ul.c-grid-list
+                each project, slug in public.work._data
+                    li(class="c-work-piece c--#{project.color}")
+                        a(href="/work/#{ slug }")
+                            img(class="c-work-post__image #{ project.hasTallTeaser === 'true' ? 'c--tall' : '' }" src="/assets/images/work/#{slug}/teaser.png")        
+                            .c-work-piece__label= project.title
+
+    hr
+    section.u-container.u-margin-top-2.u-margin-bottom-1
+        h2 Wanna learn more? Visit my <a class="c-link" href="/about">about</a> page.

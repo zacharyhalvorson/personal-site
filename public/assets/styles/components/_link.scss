@@ -1,8 +1,5 @@
-.c-link,
-%c-link {
+.c-link {
 
-    color: $font-color;
-    font-weight: 600;
     position: relative;
 
     &::after {
@@ -10,8 +7,8 @@
         transition: opacity .3s, transform .3s ease;
         content: '';
         display: block;
-        background: $font-color;
-        height: 1px;
+        background: $link-color;
+        height: 2px;
         position: absolute;
         left: 1px;
         right: 1px;

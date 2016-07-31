@@ -1,3 +1,75 @@
-@import 'animations/fade';
-@import 'animations/fade-drop';
-@import 'animations/fade-scale';
+
+@keyframes blink {
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes bulge {
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    to {
+        transform: translateY(0) scale(1);
+    }
+    from {
+        transform: translateY(-.5vh) scale(1.05);
+    }
+}
+
+
+@keyframes scale {
+    from {
+        transform: scale(.8);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes slide {
+    from {
+        transform: translateY(-10rem);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.a-fade {
+    animation: fade $transition-time ease;
+}
+
+.a-scale {
+    animation: fade $transition-time ease;
+}
+
+.a-fade-scale {
+    animation:
+        fade $transition-time ease,
+        scale $transition-time ease;
+}
+
+.a-fade-slide {
+    animation:
+        fade $transition-time ease,
+        slide $transition-time ease;
+}
+
+.a-bounce {
+    animation: bounce .7s ease-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}

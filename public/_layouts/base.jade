@@ -1,0 +1,29 @@
+//- Single column layout with basic header and footer.
+//- Current page
+- var currentPage = current.source === 'index' && current.path.length >= 2 ? current.path[current.path.length - 2] : current.source
+
+block mixins
+    include ../_includes/mixins
+
+doctype html
+html(lang='en')
+
+    head
+        block meta
+            include ../_includes/meta
+        block title
+            title #{siteTitle} | #{title}
+        include ../_includes/fonts
+        block styles
+            link(rel="stylesheet" href="/assets/styles/stylesheet.css")
+            
+    body(class= "t-" + currentPage + " a-fade")
+        block nav
+            include ../_includes/nav
+        main
+            block content
+        block footer
+            include ../_includes/social-links
+        block scripts
+            include ../_includes/jquery
+            include ../_includes/ga
