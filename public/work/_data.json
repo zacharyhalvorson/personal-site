@@ -1,12 +1,4 @@
 {
-    "connection-center": {
-        "title": "Connection Center",
-        "teaser": "",
-        "roles": ["Product Design", "Front-End Development", "UX Research"],
-        "isPublic": "true",
-        "hasTallTeaser": "true",
-        "color": "green"
-    },
     "ritchie-brothers": {
         "title": "Ritchie Brothers",
         "teaser": "This large-scale auctioneering service needed native apps to compliment it's online bidding experience.",
