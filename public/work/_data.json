@@ -1,11 +1,11 @@
 {
-    "mobify-cloud": {
-        "title": "Mobify Cloud",
-        "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
+    "connection-center": {
+        "title": "Connection Center",
+        "teaser": "",
         "roles": ["Product Design", "Front-End Development", "UX Research"],
         "isPublic": "true",
         "hasTallTeaser": "true",
-        "color": "purple"
+        "color": "green"
     },
     "ritchie-brothers": {
         "title": "Ritchie Brothers",
@@ -14,6 +14,14 @@
         "isPublic": "true",
         "hasTallTeaser": "false",
         "color": "orange"
+    },
+    "mobify-cloud": {
+        "title": "Mobify Cloud",
+        "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
+        "roles": ["Product Design", "Front-End Development", "UX Research"],
+        "isPublic": "true",
+        "hasTallTeaser": "true",
+        "color": "purple"
     },
     "frequency": {
         "title": "Frequency",
