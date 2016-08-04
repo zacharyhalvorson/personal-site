@@ -73,6 +73,12 @@
     img {
         width: auto;
         height: 28rem;
+
+
+        @media (min-width: 85rem) {
+            height: 49rem;
+
+        }
     }
 
     picture img {
@@ -87,6 +93,7 @@
         bottom: -22rem;
     }
 
+
 }
 .c-hero__video {
     transition: opacity .3s ease;
@@ -100,5 +107,11 @@
     }
     @media (max-height: 30rem) {
         display: none;
+    }
+
+
+    @media (min-width: 85rem) {
+        height: 35.9rem;
+        bottom: -3rem;
     }
 }
