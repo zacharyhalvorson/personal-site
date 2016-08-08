@@ -3,6 +3,20 @@ extends ../_layouts/work
 block prepend content
     +hero('iphone.png', 'ritchie-brothers', '', 'intro')
 
+block append scripts
+    script(type="text/javascript").
+        var $video = $('video');
+        function showVideo() {
+            function toggleHideClass() {
+                $video.removeClass('u-hide');
+            }
+            window.setTimeout(toggleHideClass, 500);
+        }
+        window.onload = function() {
+            showVideo();
+        };
+
+
 block content
     .u-container
         section
@@ -33,3 +47,4 @@ block content
             
             .u-row.u-justify-center.u-margin-top-3
                 a(href="https://itunes.apple.com/ca/app/ritchie-bros./id1068567213" target="_blank" itle="Download on the app store"): img(src="/assets/images/app-store.svg") 
+        

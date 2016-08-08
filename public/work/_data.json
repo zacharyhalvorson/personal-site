@@ -1,12 +1,4 @@
 {
-    "mobify-cloud": {
-        "title": "Mobify Cloud",
-        "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
-        "roles": ["Product Design", "Front-End Development", "UX Research"],
-        "isPublic": "true",
-        "hasTallTeaser": "true",
-        "color": "purple"
-    },
     "ritchie-brothers": {
         "title": "Ritchie Brothers",
         "teaser": "This large-scale auctioneering service needed native apps to compliment it's online bidding experience.",
@@ -14,6 +6,14 @@
         "isPublic": "true",
         "hasTallTeaser": "false",
         "color": "orange"
+    },
+    "mobify-cloud": {
+        "title": "Mobify Cloud",
+        "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
+        "roles": ["Product Design", "Front-End Development", "UX Research"],
+        "isPublic": "true",
+        "hasTallTeaser": "true",
+        "color": "purple"
     },
     "frequency": {
         "title": "Frequency",

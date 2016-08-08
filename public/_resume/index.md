@@ -7,7 +7,7 @@
 - Product Designer
 - February 2014 - Current
 
-[Mobify](http://www.mobify.com) is a Vancouver-based SaaS company with a platform focussed on mobile customer engagement across web and native apps. The platform is currently being used to power some of the web’s most active mobile eCommerce experiences such as Pure Formulas, Think Geek, Garmin, Bose and more.
+[Mobify](http://www.mobify.com) is a Vancouver-based SaaS company with a platform focused on mobile customer engagement across web and native apps. The platform is currently being used to power some of the web’s most active mobile eCommerce experiences such as Pure Formulas, Think Geek, Garmin, Bose and more.
 
 I started at Mobify as a co-op, and have since filled several positions. My work there has included:
 
