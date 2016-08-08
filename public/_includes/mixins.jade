@@ -10,7 +10,7 @@ mixin hero(image, page, mobile, video)
                 else 
                     img.a-fade-scale(src="../assets/images/work/#{page}/intro.png")
             if video
-                video(autoplay loop class="c-hero__video u-hide")
+                video(autoplay loop muted class="c-hero__video u-hide")
                     source(src="../assets/images/work/ritchie-brothers/#{video}.mp4" type="video/mp4")
 
 mixin image(layoutClasses, size, originalPath, thumbnailPath)
