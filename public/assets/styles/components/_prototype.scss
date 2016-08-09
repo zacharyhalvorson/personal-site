@@ -9,10 +9,10 @@
     overflow: hidden;
 
     &:hover {
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, .4);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, .3);
 
         .c-prototype__preview-text {
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, .4);
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, .3);
         }
 
         .c-prototype__thumbnail {
@@ -34,10 +34,11 @@
 }
 
 .c-prototype__thumbnail {
+    will-change: top;
     position: absolute;
     transition: top .3s ease-in-out;
     margin: auto;
-    top: 3rem; left: 0; right: 0;
+    top: 2.5rem; left: 0; right: 0;
     z-index: 1;
     width: auto;
     max-width: 80%;
