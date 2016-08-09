@@ -8,18 +8,20 @@
     box-shadow: 0 0 0 1px rgba(0, 0, 0, .2);
     overflow: hidden;
 
-    &:hover {
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, .3);
-
-        .c-prototype__preview-text {
+    @media (min-width: 45rem) {
+        &:hover {
             box-shadow: 0 0 0 1px rgba(0, 0, 0, .3);
-            span {
-                transform: scale3d(1.1,1.1,1.1);
-            }
-        }
 
-        .c-prototype__thumbnail {
-            transform: translateY(-.5rem);
+            .c-prototype__preview-text {
+                box-shadow: 0 0 0 1px rgba(0, 0, 0, .3);
+                span {
+                    transform: scale3d(1.1,1.1,1.1);
+                }
+            }
+
+            .c-prototype__thumbnail {
+                transform: translateY(-.5rem);
+            }
         }
     }
 }
