@@ -16,7 +16,7 @@
         }
 
         .c-prototype__thumbnail {
-            top: 2rem;
+            transform: translateY(-.5rem);
         }
     }
 }
@@ -34,9 +34,10 @@
 }
 
 .c-prototype__thumbnail {
-    will-change: top;
+    will-change: transform;
+    transition: transform .3s ease;
     position: absolute;
-    transition: top .3s ease-in-out;
+    margin-top: 0;
     margin: auto;
     top: 2.5rem; left: 0; right: 0;
     z-index: 1;
