@@ -15,14 +15,6 @@
         "hasTallTeaser": "false",
         "color": "orange"
     },
-    "london-drugs": {
-        "title": "LD Extras",
-        "teaser": "",
-        "roles": ["Product Design", "Front-End Development", "UX Research"],
-        "isPublic": "true",
-        "hasTallTeaser": "true",
-        "color": "tan"
-    },
     "mobify-cloud": {
         "title": "Mobify Cloud",
         "teaser": "This Mobify website versioning, testing, and deployment platform serves partners, customers, and developers.",
