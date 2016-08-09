@@ -83,6 +83,10 @@
             height: 49rem;
 
         }
+
+        @media (min-height: 60rem) {
+            height: 40rem;
+        }
     }
 
     picture img {
@@ -117,5 +121,11 @@
     @media (min-width: 85rem) {
         height: 35.9rem;
         bottom: -3rem;
+    }
+
+
+    @media (min-height: 60rem) {
+        height: 29.3rem;
+        bottom: -4.25rem;
     }
 }
