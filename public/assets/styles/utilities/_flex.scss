@@ -26,4 +26,14 @@
     > div:first-child {
     	margin-right: 20px;
     }
+
+    &.c--small-left {
+        > div:first-child {
+            width: 75%;
+        }
+
+        > div:nth-child(2) {
+            width: 25%;
+        }
+    }
 }

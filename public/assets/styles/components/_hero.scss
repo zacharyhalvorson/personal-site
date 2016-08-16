@@ -56,6 +56,10 @@
         background-image: url(/assets/images/work/mobify-cloud/hero-sm.jpg);
     }
 
+    &.c--connection-center::before {
+        background-image: url(/assets/images/work/connection-center/hero-sm.jpg);
+    }
+
     &.c--about::before {
         filter: none;
         opacity: 1;
@@ -78,6 +82,10 @@
         @media (min-width: 85rem) {
             height: 49rem;
 
+        }
+
+        @media (min-height: 60rem) {
+            height: 40rem;
         }
     }
 
@@ -113,5 +121,11 @@
     @media (min-width: 85rem) {
         height: 35.9rem;
         bottom: -3rem;
+    }
+
+
+    @media (min-height: 60rem) {
+        height: 29.3rem;
+        bottom: -4.25rem;
     }
 }

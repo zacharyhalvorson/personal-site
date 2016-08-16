@@ -76,7 +76,8 @@
 }
 
 .c-intro-face {
-    transition: all .3s ease-in-out;
+    will-change: transform;
+    transition: transform .3s ease;
     height: 6rem;
     margin-bottom: 0.75rem;
 

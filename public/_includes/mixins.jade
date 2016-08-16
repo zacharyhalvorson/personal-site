@@ -18,3 +18,10 @@ mixin image(layoutClasses, size, originalPath, thumbnailPath)
         figure(itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject")
             a(href="#{originalPath}" itemprop="contentUrl" data-size="#{size}")
                 img(class="#{layoutClasses}" src="#{thumbnailPath}" itemprop="thumbnail" alt="Image description")
+                    
+                    
+mixin prototype(linkToPrototype, previewText, thumbnail)
+    a(href="#{linkToPrototype}" class="c-prototype u-border-radius-1 u-margin-top-2 u-image-shadow-1" target="_blank")
+        .c-prototype__preview-text
+            span= previewText
+        img(src="#{thumbnail}" class="c-prototype__thumbnail")
