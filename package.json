@@ -1,6 +1,6 @@
 {
-  "name": "Zachary Halvorson's Personal Site",
-  "description": "Zachary halvorson's personal website for sharing his work as a software person.",
+  "name": "personal-site",
+  "description": "My personal website for sharing his work as a software person.",
   "version": "1.0.0",
   "author": "Zachary Halvorson",
   "dependencies": {
