@@ -1,13 +1,23 @@
 {
   "nodes": {
     "SitePage /dev-404-page/": {
+      "component": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
       "path": "/dev-404-page/",
+      "componentChunkName": "component---cache-dev-404-page-js",
+      "layout": "index",
+      "jsonName": "dev-404-page.json",
+      "internalComponentName": "ComponentDev404Page",
+      "updatedAt": 1505692564393,
+      "context": {},
+      "pluginCreator___NODE": "Plugin dev-404-page",
+      "pluginCreatorId": "Plugin dev-404-page",
+      "componentPath": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
       "id": "SitePage /dev-404-page/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "f91d29e10ba680b413138cf9ed86e655",
+        "contentDigest": "0c7ac66ef82ae802541c323a938312c4",
         "owner": "internal-data-bridge"
       }
     },
@@ -250,24 +260,128 @@
         "owner": "internal-data-bridge"
       }
     },
+    "Plugin gatsby-plugin-styled-components": {
+      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-styled-components",
+      "id": "Plugin gatsby-plugin-styled-components",
+      "name": "gatsby-plugin-styled-components",
+      "version": "1.0.5",
+      "pluginOptions": {
+        "plugins": []
+      },
+      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-styled-components",
+      "packageJson": {
+        "name": "gatsby-plugin-styled-components",
+        "description": "Gatsby plugin to add support for styled components",
+        "version": "1.0.5",
+        "main": "index.js",
+        "keywords": [
+          "gatsby",
+          "gatsby-plugin",
+          "styled-components"
+        ],
+        "author": "Guten Ye <ywzhaifei@gmail.com>",
+        "license": "MIT",
+        "dependencies": [
+          {
+            "name": "babel-runtime",
+            "version": "^6.26.0"
+          },
+          {
+            "name": "styled-components",
+            "version": "^2.0.0"
+          }
+        ],
+        "devDependencies": [
+          {
+            "name": "babel-cli",
+            "version": "^6.26.0"
+          }
+        ],
+        "peerDependencies": [],
+        "optionalDependecies": [],
+        "bundledDependecies": []
+      },
+      "parent": "SOURCE",
+      "children": [],
+      "internal": {
+        "contentDigest": "95489d121d83b617655649a60bef6478",
+        "type": "SitePlugin",
+        "owner": "internal-data-bridge"
+      }
+    },
+    "Plugin gatsby-plugin-typography": {
+      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-typography",
+      "id": "Plugin gatsby-plugin-typography",
+      "name": "gatsby-plugin-typography",
+      "version": "1.7.9",
+      "pluginOptions": {
+        "plugins": [],
+        "pathToConfigModule": "src/utils/typography.js"
+      },
+      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-typography",
+      "packageJson": {
+        "name": "gatsby-plugin-typography",
+        "description": "Gatsby plugin to setup server rendering of Typography.js' CSS",
+        "version": "1.7.9",
+        "main": "index.js",
+        "keywords": [
+          "gatsby",
+          "gatsby-plugin",
+          "typography",
+          "typography.js"
+        ],
+        "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+        "license": "MIT",
+        "dependencies": [
+          {
+            "name": "babel-runtime",
+            "version": "^6.26.0"
+          },
+          {
+            "name": "react-typography",
+            "version": "^0.16.1"
+          },
+          {
+            "name": "typography",
+            "version": "^0.16.0"
+          }
+        ],
+        "devDependencies": [
+          {
+            "name": "cross-env",
+            "version": "^5.0.5"
+          }
+        ],
+        "peerDependencies": [],
+        "optionalDependecies": [],
+        "bundledDependecies": []
+      },
+      "parent": "SOURCE",
+      "children": [],
+      "internal": {
+        "contentDigest": "ee196fb81c7c87e937147c8dcec128c5",
+        "type": "SitePlugin",
+        "owner": "internal-data-bridge"
+      }
+    },
     "Plugin default-site-plugin": {
       "resolve": "/Users/zachary/Repos/personal-site",
       "id": "Plugin default-site-plugin",
       "name": "default-site-plugin",
-      "version": "4492b3667245f2e293a43dee99bc333b",
+      "version": "0ba13b2709e9efeb351b6afdb18a34f8",
       "pluginOptions": {
         "plugins": []
       },
       "pluginFilepath": "/Users/zachary/Repos/personal-site",
       "packageJson": {
-        "name": "gatsby-starter-default",
-        "description": "Gatsby default starter",
+        "name": "personal-site",
+        "description": "My personal website for sharing his work as a software person.",
         "version": "1.0.0",
         "main": "n/a",
         "keywords": [
           "gatsby"
         ],
-        "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+        "author": "Zachary Halvorson",
         "license": "MIT",
         "dependencies": [
           {
@@ -281,6 +395,18 @@
           {
             "name": "gatsby-plugin-react-helmet",
             "version": "^1.0.5"
+          },
+          {
+            "name": "gatsby-plugin-styled-components",
+            "version": "^1.0.5"
+          },
+          {
+            "name": "gatsby-plugin-typography",
+            "version": "^1.7.9"
+          },
+          {
+            "name": "typography-theme-github",
+            "version": "^0.15.10"
           }
         ],
         "devDependencies": [
@@ -296,23 +422,25 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "f14af89f6e9538864837d73df3224d5a",
+        "contentDigest": "4cc6d384724cf450ecf576574902b434",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Site": {
       "siteMetadata": {
-        "title": "Gatsby Default Starter"
+        "title": "Zachary Halvorson"
       },
+      "port": "8000",
+      "host": "localhost",
       "pathPrefix": "",
       "polyfill": true,
-      "buildTime": "2017-09-17T23:26:14.829Z",
+      "buildTime": "2017-09-17T23:56:02.017Z",
       "id": "Site",
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "fc3407c0674042eda2996fa3bdb82f7d",
+        "contentDigest": "d4a18fb454ca6cb4de1aea14bc9f1576",
         "type": "Site",
         "owner": "internal-data-bridge"
       }
@@ -324,7 +452,7 @@
       "layout": "index",
       "jsonName": "404.json",
       "internalComponentName": "Component404",
-      "updatedAt": 1505690776432,
+      "updatedAt": 1505692564404,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -334,7 +462,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "c155b4710f3965767a1ec55c78f779fd",
+        "contentDigest": "1b16142abffa8ef56d71b55115d3948b",
         "owner": "internal-data-bridge"
       }
     },
@@ -345,7 +473,7 @@
       "layout": "index",
       "jsonName": "index.json",
       "internalComponentName": "ComponentIndex",
-      "updatedAt": 1505690776434,
+      "updatedAt": 1505692564406,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -355,7 +483,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "5fabf821f7f5cb90865d10b2217027ba",
+        "contentDigest": "a9be33b56777ee1e518530947029c75a",
         "owner": "internal-data-bridge"
       }
     },
@@ -366,7 +494,7 @@
       "layout": "index",
       "jsonName": "page-2.json",
       "internalComponentName": "ComponentPage2",
-      "updatedAt": 1505690776436,
+      "updatedAt": 1505692564408,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -376,7 +504,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "7479c582c340f446e02cacec7a55c03a",
+        "contentDigest": "5cd84106e32c7a281d7817c2a08ea383",
         "owner": "internal-data-bridge"
       }
     },
@@ -387,7 +515,7 @@
       "layout": "index",
       "jsonName": "404-html.json",
       "internalComponentName": "Component404Html",
-      "updatedAt": 1505690776443,
+      "updatedAt": 1505692564411,
       "context": {},
       "pluginCreator___NODE": "Plugin prod-404",
       "pluginCreatorId": "Plugin prod-404",
@@ -397,17 +525,21 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "54cd77f0a3048eceeb97ec86f94cb9b2",
+        "contentDigest": "e86c9313808f3ec8c06aaab1e10c9537",
         "owner": "internal-data-bridge"
       }
     }
   },
   "status": {
     "plugins": {},
-    "PLUGINS_HASH": "3a1756d5c78de0399feb59db53fcffdc"
+    "PLUGINS_HASH": "3f086363391b137a14d4fca3b724e928"
   },
   "componentDataDependencies": {
     "nodes": {},
-    "connections": {}
+    "connections": {
+      "SitePage": [
+        "/dev-404-page/"
+      ]
+    }
   }
 }
