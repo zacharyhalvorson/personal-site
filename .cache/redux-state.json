@@ -7,7 +7,7 @@
       "layout": "index",
       "jsonName": "dev-404-page.json",
       "internalComponentName": "ComponentDev404Page",
-      "updatedAt": 1505692564393,
+      "updatedAt": 1505692996350,
       "context": {},
       "pluginCreator___NODE": "Plugin dev-404-page",
       "pluginCreatorId": "Plugin dev-404-page",
@@ -17,7 +17,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "0c7ac66ef82ae802541c323a938312c4",
+        "contentDigest": "cec58ad822f324c12be4040909bb840c",
         "owner": "internal-data-bridge"
       }
     },
@@ -435,12 +435,12 @@
       "host": "localhost",
       "pathPrefix": "",
       "polyfill": true,
-      "buildTime": "2017-09-17T23:56:02.017Z",
+      "buildTime": "2017-09-18T00:03:13.988Z",
       "id": "Site",
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "d4a18fb454ca6cb4de1aea14bc9f1576",
+        "contentDigest": "f51bcc33500e6351365a0af7fac5129d",
         "type": "Site",
         "owner": "internal-data-bridge"
       }
@@ -452,7 +452,7 @@
       "layout": "index",
       "jsonName": "404.json",
       "internalComponentName": "Component404",
-      "updatedAt": 1505692564404,
+      "updatedAt": 1505692996358,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -462,7 +462,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "1b16142abffa8ef56d71b55115d3948b",
+        "contentDigest": "a67f9c315f5042dc4df8113a2c1f82e0",
         "owner": "internal-data-bridge"
       }
     },
@@ -473,7 +473,7 @@
       "layout": "index",
       "jsonName": "index.json",
       "internalComponentName": "ComponentIndex",
-      "updatedAt": 1505692564406,
+      "updatedAt": 1505692996360,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -483,7 +483,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "a9be33b56777ee1e518530947029c75a",
+        "contentDigest": "248b9f874b790e423f7dc9b02fde8b6e",
         "owner": "internal-data-bridge"
       }
     },
@@ -494,7 +494,7 @@
       "layout": "index",
       "jsonName": "page-2.json",
       "internalComponentName": "ComponentPage2",
-      "updatedAt": 1505692564408,
+      "updatedAt": 1505692996361,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -504,7 +504,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "5cd84106e32c7a281d7817c2a08ea383",
+        "contentDigest": "2ef92141066778e50dc2e784abff03bc",
         "owner": "internal-data-bridge"
       }
     },
@@ -515,7 +515,7 @@
       "layout": "index",
       "jsonName": "404-html.json",
       "internalComponentName": "Component404Html",
-      "updatedAt": 1505692564411,
+      "updatedAt": 1505692996371,
       "context": {},
       "pluginCreator___NODE": "Plugin prod-404",
       "pluginCreatorId": "Plugin prod-404",
@@ -525,7 +525,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "e86c9313808f3ec8c06aaab1e10c9537",
+        "contentDigest": "f77b390dad54cc300f5d88d77daaa6cb",
         "owner": "internal-data-bridge"
       }
     }
