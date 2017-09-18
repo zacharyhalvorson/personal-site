@@ -33,8 +33,8 @@ const IndexPage = () => (
 		<MyPhoto src={Me} alt="A photo of me." title="Nice to meet you!" />
 
     <p>I’ve worked on both web and native applications, and relish an opportunity to see a product through from research to implementation.</p>
-    <p>I’m currently with a start up in Vancouver, BC called Dooly. Building a business around a notes application that delivers realtime information to sales people to help them sell.</p>
-    <p>At Mobify, I shipped numerous mobile web and native projects, as well as brought a</p>
+    <p>Currently, I do the design stuff at a startup called <a target="_blank" href="https://dooly.ai">Dooly</a>. We make a note taking app that helps people sell.</p>
+		<p>As a product designer at <a target="_blank" href="https://mobify.com">Mobify</a>, I helped develop their Progressive Web App Framework, launched a marketing engagement tool called Connection Center, and did UI design and development for several native app projects including <a target="_blank" href="https://itunes.apple.com/ca/app/ritchie-bros./id1068567213">Ritchie Brothers</a>.</p>
 
 		<a href="mailto:hello@zacharyhalvorson.com">hello@zacharyhalvorson.com</a>
   </ContentWrapper>
