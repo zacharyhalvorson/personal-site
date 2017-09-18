@@ -19,6 +19,7 @@ const PageTitle = styled.h1`
 
 const ContentWrapper = styled.div`
 	margin: 0 auto;
+	margin-bottom: 2rem;
 	padding: 1rem;
 	max-width: 27rem;
 
@@ -66,7 +67,6 @@ const IndexPage = () => (
 			<p>Feel free to get in touch! 👋</p>
 			<a href="mailto:hello@zacharyhalvorson.com">hello@zacharyhalvorson.com</a>
 		</Text>
-
   </ContentWrapper>
 )
 
