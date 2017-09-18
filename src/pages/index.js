@@ -62,7 +62,7 @@ const IndexPage = () => (
 
 		<Text>
 			<p>I’ve worked on both web and native applications, and relish an opportunity to see a product through from research to implementation.</p>
-			<p>Currently, I do the design stuff at a startup called <a target="_blank" href="https://dooly.ai">Dooly</a>. We make a notetaking app that helps people sell.</p>
+			<p>Currently, I lead design at <a target="_blank" href="https://dooly.ai">Dooly</a>. We make a notetaking app that helps people sell.</p>
 			<p>As a product designer at <a target="_blank" href="https://mobify.com">Mobify</a>, I helped develop their Progressive Web App framework, launched a marketing engagement tool called Connection Center, and did UI design and development for several native app projects including <a target="_blank" href="https://itunes.apple.com/ca/app/ritchie-bros./id1068567213">Ritchie Bros.</a> for iOS and Android.</p>
 			<p>Feel free to get in touch! 👋</p>
 			<a href="mailto:hello@zacharyhalvorson.com">hello@zacharyhalvorson.com</a>
