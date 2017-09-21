@@ -11,6 +11,7 @@ const PageTitle = styled.h1`
 	text-transform: uppercase;
 	position: relative;
 	z-index: 2;
+	border-bottom: none;
 
 	@media (min-width: ${BREAK_ONE}) {
 		font-size: 3rem;
