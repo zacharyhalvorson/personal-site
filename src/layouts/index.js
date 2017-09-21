@@ -38,7 +38,7 @@ const TemplateWrapper = ({ children }) => (
 			<link
 				rel="icon"
 				type="image/x-icon"
-				href={__PATH_PREFIX__ + '/favicon.png'}
+				href={__PATH_PREFIX__ + '/favicon.ico'}
 			/>
 			<link
 				rel="apple-touch-icon-precomposed"
