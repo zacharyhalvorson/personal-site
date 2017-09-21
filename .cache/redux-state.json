@@ -1,13 +1,23 @@
 {
   "nodes": {
     "SitePage /dev-404-page/": {
+      "component": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
       "path": "/dev-404-page/",
+      "componentChunkName": "component---cache-dev-404-page-js",
+      "layout": "index",
+      "jsonName": "dev-404-page.json",
+      "internalComponentName": "ComponentDev404Page",
+      "updatedAt": 1506013171460,
+      "context": {},
+      "pluginCreator___NODE": "Plugin dev-404-page",
+      "pluginCreatorId": "Plugin dev-404-page",
+      "componentPath": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
       "id": "SitePage /dev-404-page/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "f91d29e10ba680b413138cf9ed86e655",
+        "contentDigest": "78de2416a4a9f08d95c8b00bf3065409",
         "owner": "internal-data-bridge"
       }
     },
@@ -421,14 +431,16 @@
       "siteMetadata": {
         "title": "Zachary Halvorson"
       },
+      "port": "8000",
+      "host": "localhost",
       "pathPrefix": "",
       "polyfill": true,
-      "buildTime": "2017-09-18T02:23:45.155Z",
+      "buildTime": "2017-09-21T16:59:28.731Z",
       "id": "Site",
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "12e0abfd52f9dfa103e377f5dcfd4446",
+        "contentDigest": "08eec1d6c32a32761e7973b3c286c686",
         "type": "Site",
         "owner": "internal-data-bridge"
       }
@@ -440,7 +452,7 @@
       "layout": "index",
       "jsonName": "404.json",
       "internalComponentName": "Component404",
-      "updatedAt": 1505701427124,
+      "updatedAt": 1506013171468,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -450,7 +462,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "5edd937343bb115daef9a86da3e7c1c8",
+        "contentDigest": "48fafcd5ef23aacf982722ad293e2d1a",
         "owner": "internal-data-bridge"
       }
     },
@@ -461,7 +473,7 @@
       "layout": "index",
       "jsonName": "index.json",
       "internalComponentName": "ComponentIndex",
-      "updatedAt": 1505701427125,
+      "updatedAt": 1506013171469,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -471,28 +483,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "5c372763737c189d7480f306256d0051",
-        "owner": "internal-data-bridge"
-      }
-    },
-    "SitePage /page-2/": {
-      "path": "/page-2/",
-      "component": "/Users/zachary/Repos/personal-site/src/pages/page-2.js",
-      "componentChunkName": "component---src-pages-page-2-js",
-      "layout": "index",
-      "jsonName": "page-2.json",
-      "internalComponentName": "ComponentPage2",
-      "updatedAt": 1505701427128,
-      "context": {},
-      "pluginCreator___NODE": "Plugin component-page-creator",
-      "pluginCreatorId": "Plugin component-page-creator",
-      "componentPath": "/Users/zachary/Repos/personal-site/src/pages/page-2.js",
-      "id": "SitePage /page-2/",
-      "parent": "SOURCE",
-      "children": [],
-      "internal": {
-        "type": "SitePage",
-        "contentDigest": "483c005e38e28c7173bcac5cf9ccc90a",
+        "contentDigest": "87722cc0901e5396b468c890a39d8d66",
         "owner": "internal-data-bridge"
       }
     },
@@ -503,7 +494,7 @@
       "layout": "index",
       "jsonName": "404-html.json",
       "internalComponentName": "Component404Html",
-      "updatedAt": 1505701427133,
+      "updatedAt": 1506013171471,
       "context": {},
       "pluginCreator___NODE": "Plugin prod-404",
       "pluginCreatorId": "Plugin prod-404",
@@ -513,7 +504,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "d0e9e6e20e48ea9b850b76160684896c",
+        "contentDigest": "211fbd2f51a904bef64a55d2919cfa5f",
         "owner": "internal-data-bridge"
       }
     }
