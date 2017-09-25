@@ -44,6 +44,14 @@ const TemplateWrapper = ({ children }) => (
 				rel="apple-touch-icon-precomposed"
 				href={__PATH_PREFIX__ + '/apple-touch-icon.png'}
 			/>
+			<script async src="https://www.googletagmanager.com/gtag/js?id=UA-39400249-1"></script>
+			<script>
+			  window.dataLayer = window.dataLayer || [];
+			  function gtag(){dataLayer.push(arguments)};
+			  gtag('js', new Date());
+
+			  gtag('config', 'UA-39400249-1');
+			</script>
     </Helmet>
     {children()}
   </div>
