@@ -1,0 +1,17 @@
+html {
+	background-color: #3E3A5F;
+}
+
+body {
+	color: white;
+}
+
+a {
+	color: #FFCEF4;
+	font-weight: 500;
+	transition: color .15s ease;
+	&:hover {
+		color: #02CCFF;
+		text-decoration: none;
+	}
+}
