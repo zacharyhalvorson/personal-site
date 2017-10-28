@@ -1,13 +1,23 @@
 {
   "nodes": {
     "SitePage /dev-404-page/": {
+      "component": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
       "path": "/dev-404-page/",
+      "componentChunkName": "component---cache-dev-404-page-js",
+      "layout": "index",
+      "jsonName": "dev-404-page.json",
+      "internalComponentName": "ComponentDev404Page",
+      "updatedAt": 1509226252812,
+      "context": {},
+      "pluginCreator___NODE": "Plugin dev-404-page",
+      "pluginCreatorId": "Plugin dev-404-page",
+      "componentPath": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
       "id": "SitePage /dev-404-page/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "f91d29e10ba680b413138cf9ed86e655",
+        "contentDigest": "2f370a3f7bee28b3f67269e22197cd5a",
         "owner": "internal-data-bridge"
       }
     },
@@ -421,14 +431,16 @@
       "siteMetadata": {
         "title": "Zachary Halvorson"
       },
+      "port": "8000",
+      "host": "localhost",
       "pathPrefix": "",
       "polyfill": true,
-      "buildTime": "2017-09-21T17:32:04.332Z",
+      "buildTime": "2017-10-28T21:30:50.160Z",
       "id": "Site",
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "4c717ab7b4ad6fa5dfe721d7b1a52ac0",
+        "contentDigest": "c91314b4e4fd52e3b717a1b8a912b4c5",
         "type": "Site",
         "owner": "internal-data-bridge"
       }
@@ -440,7 +452,7 @@
       "layout": "index",
       "jsonName": "404.json",
       "internalComponentName": "Component404",
-      "updatedAt": 1506015126634,
+      "updatedAt": 1509226252821,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -450,7 +462,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "37fb5a55ddd0c61e1b4660dad884e925",
+        "contentDigest": "5eb712533e5bf14bbbd197db44cef55a",
         "owner": "internal-data-bridge"
       }
     },
@@ -461,7 +473,7 @@
       "layout": "index",
       "jsonName": "index.json",
       "internalComponentName": "ComponentIndex",
-      "updatedAt": 1506015126636,
+      "updatedAt": 1509226252822,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -471,7 +483,28 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "ff67750696599d96daf9d51661ce6f7b",
+        "contentDigest": "66a974311f4c567309f887c87b21f276",
+        "owner": "internal-data-bridge"
+      }
+    },
+    "SitePage /resume/": {
+      "path": "/resume/",
+      "component": "/Users/zachary/Repos/personal-site/src/pages/resume.js",
+      "componentChunkName": "component---src-pages-resume-js",
+      "layout": "index",
+      "jsonName": "resume.json",
+      "internalComponentName": "ComponentResume",
+      "updatedAt": 1509226252822,
+      "context": {},
+      "pluginCreator___NODE": "Plugin component-page-creator",
+      "pluginCreatorId": "Plugin component-page-creator",
+      "componentPath": "/Users/zachary/Repos/personal-site/src/pages/resume.js",
+      "id": "SitePage /resume/",
+      "parent": "SOURCE",
+      "children": [],
+      "internal": {
+        "type": "SitePage",
+        "contentDigest": "1bf506a36859fd3ff5af3719df2f702a",
         "owner": "internal-data-bridge"
       }
     },
@@ -482,7 +515,7 @@
       "layout": "index",
       "jsonName": "404-html.json",
       "internalComponentName": "Component404Html",
-      "updatedAt": 1506015126643,
+      "updatedAt": 1509226252827,
       "context": {},
       "pluginCreator___NODE": "Plugin prod-404",
       "pluginCreatorId": "Plugin prod-404",
@@ -492,7 +525,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "5526831220a40f1a0d3247007910b1e3",
+        "contentDigest": "4e4d7a07d527f6e45132e2e66643ea35",
         "owner": "internal-data-bridge"
       }
     }

@@ -1,7 +1,7 @@
 {
     "data": {
         "allSitePage": {
-            "totalCount": 3,
+            "totalCount": 4,
             "edges": [
                 {
                     "node": {
@@ -11,6 +11,11 @@
                 {
                     "node": {
                         "path": "/"
+                    }
+                },
+                {
+                    "node": {
+                        "path": "/resume/"
                     }
                 },
                 {
