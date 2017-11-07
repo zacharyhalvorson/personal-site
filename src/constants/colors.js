@@ -1,0 +1,19 @@
+const LIGHT_GREEN = '#F7FFF9';
+const BG_COLOR = LIGHT_GREEN;
+
+const DARK_BLUE = '#3E3A5F';
+const TEXT_COLOR = DARK_BLUE;
+
+const PINK = '#FF91A6';
+const BLUE = '#5AC8FA';
+const ORANGE = '#FFBD5F'
+
+export {
+	BG_COLOR,
+	TEXT_COLOR,
+	LIGHT_GREEN,
+	DARK_BLUE,
+	PINK,
+	BLUE,
+	ORANGE,
+};
