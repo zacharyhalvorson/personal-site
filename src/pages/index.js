@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'gatsby-link'
-import styled from 'styled-components'
+import styled, { extend } from 'styled-components'
 
 import Me from '../assets/images/me.png'
 
@@ -8,17 +8,10 @@ import * as breaks from '../constants/breaks';
 
 import P from '../components/P';
 import ContentWrapper from '../components/ContentWrapper';
+import Heading from '../components/Heading';
 
-const HomePageTitle = styled.h1`
-	font-weight: 900;
-	text-transform: uppercase;
-	position: relative;
-	z-index: 2;
-	border-bottom: none;
-
-	@media (min-width: ${breaks.BREAK_ONE}) {
-		font-size: 3rem;
-	}
+const HomePageTitle = Heading.extend`
+	
 `
 
 const HomePagePhoto = styled.img`

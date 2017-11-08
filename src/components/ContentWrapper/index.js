@@ -10,7 +10,7 @@ const ContentWrapper = styled.div`
 	max-width: 27rem;
 
 	@media (min-width: ${breaks.BREAK_ONE}) {
-		max-width: 52rem;
+		max-width: 60rem;
 		padding: 2rem;
 	}
 `
