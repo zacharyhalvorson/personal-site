@@ -1,3 +1,10 @@
 {
+    "data": {
+        "site": {
+            "siteMetadata": {
+                "title": "Zachary Halvorson hello!"
+            }
+        }
+    },
     "pathContext": {}
 }

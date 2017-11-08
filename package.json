@@ -5,6 +5,7 @@
   "author": "Zachary Halvorson",
   "dependencies": {
     "gatsby": "^1.9.36",
+    "gatsby-image": "^1.0.21",
     "gatsby-link": "^1.6.15",
     "gatsby-plugin-react-helmet": "^1.0.5",
     "gatsby-plugin-styled-components": "^1.0.5",

@@ -6,13 +6,24 @@ import Me from '../assets/images/me.png'
 
 import * as breaks from '../constants/breaks';
 
+import * as Headings from '../components/Headings';
 import P from '../components/P';
 import ContentWrapper from '../components/ContentWrapper';
-import Heading from '../components/Heading';
 
-const HomePageTitle = Heading.extend`
-	
-`
+const SAMPLES = [
+	{
+		name: 'Dooly',
+		url: 'dooly',
+	},
+	{
+		name: 'Connection Center',
+		url: 'connection-center',
+	},
+	{
+		name: 'Ritchie Bros.',
+		url: 'ritchie-bros',
+	},
+]
 
 const HomePagePhoto = styled.img`
 	transform: translateY(-20%);
@@ -21,7 +32,7 @@ const HomePagePhoto = styled.img`
 	z-index: 1;
 	margin: 0 auto;
 	width: 60%;
-	opacity: 0.7;
+	opacity: 0.9;
 
 	@media (min-width: ${breaks.BREAK_ONE}) {
 		float: left;
@@ -39,9 +50,23 @@ const HomePageText = styled.div`
 	}
 `
 
-const IndexPage = () => (
+const ResetList = styled.ul`
+	list-style-type: none;
+	margin: 0;
+`
+
+const WorkSamples = ({ samples }) =>
+	<ResetList>
+		{samples.map((sample, index) =>
+			<li key={index}>
+				<Link to={sample.url}>{sample.name}</Link>
+			</li>
+		)}
+	</ResetList>
+
+export default ({ data }) =>
   <ContentWrapper>
-    <HomePageTitle>Zachary Halvorson is a digital product designer.</HomePageTitle>
+    <Headings.Hero>{data.site.siteMetadata.title} is a digital product designer.</Headings.Hero>
 
 		<HomePagePhoto src={Me} alt="A photo of me." title="Nice to meet you!" />
 
@@ -50,9 +75,18 @@ const IndexPage = () => (
 			<P>Currently, I lead design at <a target="_blank" href="https://dooly.ai">Dooly</a>. We make a notetaking app that helps people sell.</P>
 			<P>As a product designer at <a target="_blank" href="https://mobify.com">Mobify</a>, I helped develop their Progressive Web App framework, launched a marketing engagement tool called Connection Center, and did UI design and development for several native app projects including <a target="_blank" href="https://itunes.apple.com/ca/app/ritchie-bros./id1068567213">Ritchie Bros.</a> for iOS and Android.</P>
 			<P>Feel free to get in touch! 👋</P>
+			<Headings.H1>Work</Headings.H1>
+			<WorkSamples samples={SAMPLES} />
 			<a href="mailto:hello@zacharyhalvorson.com">hello@zacharyhalvorson.com</a>
 		</HomePageText>
   </ContentWrapper>
-)
 
-export default IndexPage
+export const query = graphql`
+  query LayoutQuery {
+    site {
+      siteMetadata {
+        title
+      }
+    }
+  }
+`

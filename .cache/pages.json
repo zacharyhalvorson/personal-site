@@ -14,6 +14,13 @@
         "path": "/404/"
     },
     {
+        "componentChunkName": "component---src-pages-dooly-js",
+        "layout": "index",
+        "layoutComponentChunkName": "component---src-layouts-index-js",
+        "jsonName": "dooly.json",
+        "path": "/dooly/"
+    },
+    {
         "componentChunkName": "component---src-pages-index-js",
         "layout": "index",
         "layoutComponentChunkName": "component---src-layouts-index-js",
