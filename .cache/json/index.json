@@ -1,9 +1,35 @@
 {
     "data": {
-        "site": {
-            "siteMetadata": {
-                "title": "Zachary Halvorson hello!"
-            }
+        "allMarkdownRemark": {
+            "totalCount": 2,
+            "edges": [
+                {
+                    "node": {
+                        "id": "/Users/zachary/Repos/personal-site/src/pages/connection-center.md absPath of file >>> MarkdownRemark",
+                        "frontmatter": {
+                            "title": "Connection Center",
+                            "date": "21 August, 2017"
+                        },
+                        "fields": {
+                            "slug": "/connection-center/"
+                        },
+                        "excerpt": "The Connection Center is a responsive web application built to enable targetted marketing for e-commerce retailers using Mobify’s platform…"
+                    }
+                },
+                {
+                    "node": {
+                        "id": "/Users/zachary/Repos/personal-site/src/pages/sweet-pandas-eating-sweets.md absPath of file >>> MarkdownRemark",
+                        "frontmatter": {
+                            "title": "Sweet Pandas Eating Sweets",
+                            "date": "10 August, 2017"
+                        },
+                        "fields": {
+                            "slug": "/sweet-pandas-eating-sweets/"
+                        },
+                        "excerpt": "Pandas are really sweet. Here's a video of a panda eating sweets."
+                    }
+                }
+            ]
         }
     },
     "pathContext": {}

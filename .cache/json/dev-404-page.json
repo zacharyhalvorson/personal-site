@@ -1,8 +1,18 @@
 {
     "data": {
         "allSitePage": {
-            "totalCount": 5,
+            "totalCount": 9,
             "edges": [
+                {
+                    "node": {
+                        "path": "/sweet-pandas-eating-sweets/"
+                    }
+                },
+                {
+                    "node": {
+                        "path": "/pandas-and-bananas/"
+                    }
+                },
                 {
                     "node": {
                         "path": "/404/"
@@ -20,12 +30,22 @@
                 },
                 {
                     "node": {
+                        "path": "/my-files/"
+                    }
+                },
+                {
+                    "node": {
                         "path": "/resume/"
                     }
                 },
                 {
                     "node": {
                         "path": "/404.html"
+                    }
+                },
+                {
+                    "node": {
+                        "path": "/connection-center/"
                     }
                 }
             ]

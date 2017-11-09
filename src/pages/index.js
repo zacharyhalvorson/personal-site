@@ -66,7 +66,7 @@ const WorkSamples = ({ samples }) =>
 
 export default ({ data }) =>
   <ContentWrapper>
-    <Headings.Hero>{data.site.siteMetadata.title} is a digital product designer.</Headings.Hero>
+    <Headings.Hero>Zachary Halvorson is a digital product designer.</Headings.Hero>
 
 		<HomePagePhoto src={Me} alt="A photo of me." title="Nice to meet you!" />
 
@@ -76,16 +76,44 @@ export default ({ data }) =>
 			<P>As a product designer at <a target="_blank" href="https://mobify.com">Mobify</a>, I helped develop their Progressive Web App framework, launched a marketing engagement tool called Connection Center, and did UI design and development for several native app projects including <a target="_blank" href="https://itunes.apple.com/ca/app/ritchie-bros./id1068567213">Ritchie Bros.</a> for iOS and Android.</P>
 			<P>Feel free to get in touch! 👋</P>
 			<Headings.H1>Work</Headings.H1>
-			<WorkSamples samples={SAMPLES} />
+			<h4>
+        {data.allMarkdownRemark.totalCount} Posts
+      </h4>
+      {data.allMarkdownRemark.edges.map(({ node }) =>
+				<div key={node.id}>
+					<Link
+						to={node.fields.slug}
+						>
+							<h2>
+								{node.frontmatter.title}{" "}
+								<span>— {node.frontmatter.date}</span>
+							</h2>
+							<p>
+								{node.excerpt}
+							</p>
+						</Link>
+				</div>
+      )}
 			<a href="mailto:hello@zacharyhalvorson.com">hello@zacharyhalvorson.com</a>
 		</HomePageText>
   </ContentWrapper>
 
 export const query = graphql`
-  query LayoutQuery {
-    site {
-      siteMetadata {
-        title
+  query IndexQuery {
+    allMarkdownRemark(sort: {fields: [frontmatter___date], order: DESC}) {
+      totalCount
+      edges {
+        node {
+          id
+          frontmatter {
+            title
+            date(formatString: "DD MMMM, YYYY")
+          }
+					fields {
+						slug
+					}
+          excerpt
+        }
       }
     }
   }

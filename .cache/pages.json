@@ -7,6 +7,20 @@
         "path": "/dev-404-page/"
     },
     {
+        "componentChunkName": "component---src-templates-blog-post-js",
+        "layout": "index",
+        "layoutComponentChunkName": "component---src-layouts-index-js",
+        "jsonName": "sweet-pandas-eating-sweets.json",
+        "path": "/sweet-pandas-eating-sweets/"
+    },
+    {
+        "componentChunkName": "component---src-templates-blog-post-js",
+        "layout": "index",
+        "layoutComponentChunkName": "component---src-layouts-index-js",
+        "jsonName": "pandas-and-bananas.json",
+        "path": "/pandas-and-bananas/"
+    },
+    {
         "componentChunkName": "component---src-pages-404-js",
         "layout": "index",
         "layoutComponentChunkName": "component---src-layouts-index-js",
@@ -28,6 +42,13 @@
         "path": "/"
     },
     {
+        "componentChunkName": "component---src-pages-my-files-js",
+        "layout": "index",
+        "layoutComponentChunkName": "component---src-layouts-index-js",
+        "jsonName": "my-files.json",
+        "path": "/my-files/"
+    },
+    {
         "componentChunkName": "component---src-pages-resume-js",
         "layout": "index",
         "layoutComponentChunkName": "component---src-layouts-index-js",
@@ -40,5 +61,12 @@
         "layoutComponentChunkName": "component---src-layouts-index-js",
         "jsonName": "404-html.json",
         "path": "/404.html"
+    },
+    {
+        "componentChunkName": "component---src-templates-blog-post-js",
+        "layout": "index",
+        "layoutComponentChunkName": "component---src-layouts-index-js",
+        "jsonName": "connection-center.json",
+        "path": "/connection-center/"
     }
 ]

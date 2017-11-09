@@ -1,8 +1,16 @@
 module.exports = {
   siteMetadata: {
-    title: `Zachary Halvorson hello!`,
+    title: `Zachary Halvorson Site Title`,
   },
   plugins: [
+		{
+			resolve: `gatsby-source-filesystem`,
+			options: {
+				name: `src`,
+				path: `${__dirname}/src/`,
+			},
+		},
+		`gatsby-transformer-remark`,
     `gatsby-plugin-react-helmet`,
     `gatsby-plugin-styled-components`,
 		{
