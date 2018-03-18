@@ -12,6 +12,8 @@
     "gatsby-plugin-typography": "^1.7.9",
     "gatsby-source-filesystem": "^1.5.8",
     "gatsby-transformer-remark": "^1.7.20",
+    "remark": "^8.0.0",
+    "remark-react": "^4.0.1",
     "typography-theme-github": "^0.15.10"
   },
   "keywords": [

@@ -1,4 +1,7 @@
-import React from "react"
+import React from 'react'
+import remark from 'remark'
+import reactRenderer from 'remark-react'
+import * as Headings from '../components/Headings'
 
 export default ({ data }) => {
 	const post = data.markdownRemark
@@ -6,7 +9,14 @@ export default ({ data }) => {
 	return (
 		<div>
 			<h1>{post.frontmatter.title}</h1>
-			<div dangerouslySetInnerHTML={{ __html: post.html }} />
+			<div>
+				{console.log(post.html)}
+				{
+					remark()
+						.use(reactRenderer)
+						.processSync(post.html).contents
+				}
+			</div>
 		</div>
 	)
 }

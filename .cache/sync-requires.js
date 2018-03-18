@@ -16,9 +16,9 @@ exports.json = {
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
   "dev-404-page.json": require("/Users/zachary/Repos/personal-site/.cache/json/dev-404-page.json"),
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "sweet-pandas-eating-sweets.json": require("/Users/zachary/Repos/personal-site/.cache/json/sweet-pandas-eating-sweets.json"),
+  "connection-center.json": require("/Users/zachary/Repos/personal-site/.cache/json/connection-center.json"),
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "pandas-and-bananas.json": require("/Users/zachary/Repos/personal-site/.cache/json/pandas-and-bananas.json"),
+  "sweet-pandas-eating-sweets.json": require("/Users/zachary/Repos/personal-site/.cache/json/sweet-pandas-eating-sweets.json"),
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
   "404.json": require("/Users/zachary/Repos/personal-site/.cache/json/404.json"),
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
@@ -30,9 +30,7 @@ exports.json = {
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
   "resume.json": require("/Users/zachary/Repos/personal-site/.cache/json/resume.json"),
   "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "404-html.json": require("/Users/zachary/Repos/personal-site/.cache/json/404-html.json"),
-  "layout-index.json": require("/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "connection-center.json": require("/Users/zachary/Repos/personal-site/.cache/json/connection-center.json")
+  "404-html.json": require("/Users/zachary/Repos/personal-site/.cache/json/404-html.json")
 }
 
 exports.layouts = {

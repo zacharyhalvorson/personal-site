@@ -10,6 +10,12 @@ As the Connection Center is a single page app, transitions are something we focu
 
 As this project matures, we’ve looked at refining the colour palette to be more flexible. Reducing the aesthetic use of colour, and focussing on establishing heirarchy through spacing and typography.
 
+![Push Editor](/images/connection-center/app-push-editor.png)
+![Push Editor](/images/connection-center/app-push-editor-mobile.png)
+
+![Push Editor](/images/connection-center/manage-test-browsers.png)
+![Push Editor](/images/connection-center/add-app-push.png)
+
 ## What Did I learn?
 
 This project was my first time working with a team to take a concept, and develop it into a viable product. Building prototypes to test if we’re going down the right track. Finding the right balance of desirable features, with feasible timelines. It was overall an exercise in how to ship something new. I was lucky to work with a talented team, and am happy with the result.

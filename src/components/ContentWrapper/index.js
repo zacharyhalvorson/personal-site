@@ -9,6 +9,12 @@ const ContentWrapper = styled.div`
 	padding: 1rem;
 	max-width: 27rem;
 
+	&::after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+
 	@media (min-width: ${breaks.BREAK_ONE}) {
 		max-width: 60rem;
 		padding: 2rem;

@@ -15,9 +15,9 @@ exports.json = {
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
   "dev-404-page.json": require("gatsby-module-loader?name=path---dev-404-page!/Users/zachary/Repos/personal-site/.cache/json/dev-404-page.json"),
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "sweet-pandas-eating-sweets.json": require("gatsby-module-loader?name=path---sweet-pandas-eating-sweets!/Users/zachary/Repos/personal-site/.cache/json/sweet-pandas-eating-sweets.json"),
+  "connection-center.json": require("gatsby-module-loader?name=path---connection-center!/Users/zachary/Repos/personal-site/.cache/json/connection-center.json"),
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "pandas-and-bananas.json": require("gatsby-module-loader?name=path---pandas-and-bananas!/Users/zachary/Repos/personal-site/.cache/json/pandas-and-bananas.json"),
+  "sweet-pandas-eating-sweets.json": require("gatsby-module-loader?name=path---sweet-pandas-eating-sweets!/Users/zachary/Repos/personal-site/.cache/json/sweet-pandas-eating-sweets.json"),
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
   "404.json": require("gatsby-module-loader?name=path---404!/Users/zachary/Repos/personal-site/.cache/json/404.json"),
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
@@ -29,9 +29,7 @@ exports.json = {
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
   "resume.json": require("gatsby-module-loader?name=path---resume!/Users/zachary/Repos/personal-site/.cache/json/resume.json"),
   "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "404-html.json": require("gatsby-module-loader?name=path---404-html!/Users/zachary/Repos/personal-site/.cache/json/404-html.json"),
-  "layout-index.json": require("gatsby-module-loader?name=path---!/Users/zachary/Repos/personal-site/.cache/json/layout-index.json"),
-  "connection-center.json": require("gatsby-module-loader?name=path---connection-center!/Users/zachary/Repos/personal-site/.cache/json/connection-center.json")
+  "404-html.json": require("gatsby-module-loader?name=path---404-html!/Users/zachary/Repos/personal-site/.cache/json/404-html.json")
 }
 
 exports.layouts = {

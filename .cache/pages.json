@@ -10,15 +10,15 @@
         "componentChunkName": "component---src-templates-blog-post-js",
         "layout": "index",
         "layoutComponentChunkName": "component---src-layouts-index-js",
-        "jsonName": "sweet-pandas-eating-sweets.json",
-        "path": "/sweet-pandas-eating-sweets/"
+        "jsonName": "connection-center.json",
+        "path": "/connection-center/"
     },
     {
         "componentChunkName": "component---src-templates-blog-post-js",
         "layout": "index",
         "layoutComponentChunkName": "component---src-layouts-index-js",
-        "jsonName": "pandas-and-bananas.json",
-        "path": "/pandas-and-bananas/"
+        "jsonName": "sweet-pandas-eating-sweets.json",
+        "path": "/sweet-pandas-eating-sweets/"
     },
     {
         "componentChunkName": "component---src-pages-404-js",
@@ -61,12 +61,5 @@
         "layoutComponentChunkName": "component---src-layouts-index-js",
         "jsonName": "404-html.json",
         "path": "/404.html"
-    },
-    {
-        "componentChunkName": "component---src-templates-blog-post-js",
-        "layout": "index",
-        "layoutComponentChunkName": "component---src-layouts-index-js",
-        "jsonName": "connection-center.json",
-        "path": "/connection-center/"
     }
 ]
