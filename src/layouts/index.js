@@ -5,35 +5,11 @@ import Helmet from 'react-helmet'
 
 import './index.css'
 
-const socialEmbed = {
-	cardType: "summary",
-	contentType: "website",
-	url: "http://www.zacharyhalvorson.com",
-	site: "@zachhalvorson",
-	title: "Zachary Halvorson",
-	description: "I'm a designer focused on digital interaction and product design.",
-	image: "http://zacharyhalvorson.com/embed-image.png"
-};
-
-const TemplateWrapper = ({ children }) => (
+const TemplateWrapper = ({ children, data }) => (
   <div>
     <Helmet
-      title="Zachary Halvorson"
-      meta={[
-        { name: 'description', content: 'Zachary Halvorson is a digital designer focused on digital interaction and product design.' },
-        { name: 'keywords', content: 'product, product design, ui design, ux design, design, vancouver' },
-				{ name: 'viewport', content: 'width=device-width' },
-				{ name: 'twitter:card', content: socialEmbed.cardType },
-				{ name: 'twitter:site', content: socialEmbed.site },
-				{ name: 'twitter:title', content: socialEmbed.title },
-				{ name: 'twitter:description', content: socialEmbed.description },
-				{ name: 'twitter:image', content: socialEmbed.image },
-				{ property: 'og:title', content: socialEmbed.title },
-				{ property: 'og:description', content: socialEmbed.description },
-				{ property: 'og:type', content: socialEmbed.contentType },
-				{ property: 'og:url', content: socialEmbed.url },
-				{ property: 'og:image', content: socialEmbed.image }
-      ]}
+      title={data.site.siteMetadata.title}
+      meta={data.site.siteMetadata.meta}
 		>
 			<link
 				rel="icon"
@@ -54,3 +30,14 @@ TemplateWrapper.propTypes = {
 }
 
 export default TemplateWrapper
+
+export const query = graphql`
+  query SiteTitleQuery {
+    site {
+      siteMetadata {
+        title,
+				meta...
+      }
+    }
+  }
+`

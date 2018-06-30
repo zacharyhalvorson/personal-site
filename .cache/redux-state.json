@@ -1,35 +1,35 @@
 {
   "nodes": {
     "SitePage /dev-404-page/": {
-      "component": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
+      "component": "/Users/zachary/Documents/GitHub/personal-site/.cache/dev-404-page.js",
       "path": "/dev-404-page/",
       "componentChunkName": "component---cache-dev-404-page-js",
       "layout": "index",
       "jsonName": "dev-404-page.json",
       "internalComponentName": "ComponentDev404Page",
-      "updatedAt": 1509226252812,
+      "updatedAt": 1524370462720,
       "context": {},
       "pluginCreator___NODE": "Plugin dev-404-page",
       "pluginCreatorId": "Plugin dev-404-page",
-      "componentPath": "/Users/zachary/Repos/personal-site/.cache/dev-404-page.js",
+      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/.cache/dev-404-page.js",
       "id": "SitePage /dev-404-page/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "2f370a3f7bee28b3f67269e22197cd5a",
+        "contentDigest": "d50bb9cc6185342f3352c79db56a1d37",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin component-page-creator": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/component-page-creator",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/component-page-creator",
       "id": "Plugin component-page-creator",
       "name": "component-page-creator",
       "version": "1.0.0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/component-page-creator",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/component-page-creator",
       "packageJson": {
         "name": "component-page-creator",
         "description": "An internal Gatsby plugin that creates pages from component files in src/pages",
@@ -50,20 +50,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "0359c0d23ac07530ca34e02d6ef16b05",
+        "contentDigest": "5d019774d2cd5252fffe360c99eaaa57",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin component-layout-creator": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/component-layout-creator",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/component-layout-creator",
       "id": "Plugin component-layout-creator",
       "name": "component-layout-creator",
       "version": "1.0.0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/component-layout-creator",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/component-layout-creator",
       "packageJson": {
         "name": "component-layout-creator",
         "description": "An internal Gatsby plugin that creates pages from component files in src/layouts",
@@ -84,20 +84,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "3e010d2165db004fa4ee9a43f168b303",
+        "contentDigest": "4eecc6290fc2f2fd827ca7b98752a740",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin internal-data-bridge": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/internal-data-bridge",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/internal-data-bridge",
       "id": "Plugin internal-data-bridge",
       "name": "internal-data-bridge",
       "version": "1.0.0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/internal-data-bridge",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/internal-data-bridge",
       "packageJson": {
         "name": "internal-data-bridge",
         "description": "An internal Gatsby plugin which creates data nodes from internal data",
@@ -114,20 +114,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "0afb699feea2f9c0eeeaf4ce96dd8861",
+        "contentDigest": "fe8d3be7c4919dfd02b06d4ebd2f4939",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin dev-404-page": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/dev-404-page",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/dev-404-page",
       "id": "Plugin dev-404-page",
       "name": "dev-404-page",
       "version": "1.0.0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/dev-404-page",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/dev-404-page",
       "packageJson": {
         "name": "dev-404-page",
         "description": "Internal plugin to add a 404 page in development with helpful information",
@@ -144,20 +144,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "c935aae5be002c5d0d2a7aa6b865fdcc",
+        "contentDigest": "08ce3a6d461fb81048f49b58b03c1ce4",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin prod-404": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/prod-404",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/prod-404",
       "id": "Plugin prod-404",
       "name": "prod-404",
       "version": "1.0.0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/prod-404",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/prod-404",
       "packageJson": {
         "name": "prod-404",
         "description": "Internal plugin to detect various flavors of 404 pages and ensure there's a 404.html path created as well to ensure compatability with static hosts",
@@ -174,20 +174,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "efe840590e0c7c2d60339e8835e096c5",
+        "contentDigest": "cbd6db42362e1e2603a367b8c3ef7667",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin query-runner": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/query-runner",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/query-runner",
       "id": "Plugin query-runner",
       "name": "query-runner",
       "version": "1.0.0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby/dist/internal-plugins/query-runner",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby/dist/internal-plugins/query-runner",
       "packageJson": {
         "name": "query-runner",
         "description": "Internal plugin for running queries",
@@ -204,20 +204,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "9f10ba36fdbd0f33022e638581414e1c",
+        "contentDigest": "a3201c8b23754b2faf54d4bb31033468",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin gatsby-plugin-react-helmet": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-react-helmet",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby-plugin-react-helmet",
       "id": "Plugin gatsby-plugin-react-helmet",
       "name": "gatsby-plugin-react-helmet",
       "version": "1.0.6",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-react-helmet",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby-plugin-react-helmet",
       "packageJson": {
         "name": "gatsby-plugin-react-helmet",
         "description": "Stub description for gatsby-plugin-react-helmet",
@@ -255,20 +255,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "898cd937bdcc842f8082fd29137acc6f",
+        "contentDigest": "6075215e07203d09882704f00874df32",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin gatsby-plugin-styled-components": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-styled-components",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby-plugin-styled-components",
       "id": "Plugin gatsby-plugin-styled-components",
       "name": "gatsby-plugin-styled-components",
       "version": "1.0.5",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-styled-components",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby-plugin-styled-components",
       "packageJson": {
         "name": "gatsby-plugin-styled-components",
         "description": "Gatsby plugin to add support for styled components",
@@ -304,13 +304,13 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "95489d121d83b617655649a60bef6478",
+        "contentDigest": "f7af10348918bc4c8946607ba772e47a",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin gatsby-plugin-typography": {
-      "resolve": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-typography",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby-plugin-typography",
       "id": "Plugin gatsby-plugin-typography",
       "name": "gatsby-plugin-typography",
       "version": "1.7.9",
@@ -318,7 +318,7 @@
         "plugins": [],
         "pathToConfigModule": "src/utils/typography.js"
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site/node_modules/gatsby-plugin-typography",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site/node_modules/gatsby-plugin-typography",
       "packageJson": {
         "name": "gatsby-plugin-typography",
         "description": "Gatsby plugin to setup server rendering of Typography.js' CSS",
@@ -359,20 +359,20 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "ee196fb81c7c87e937147c8dcec128c5",
+        "contentDigest": "54bb9f42030fb87a656404463ddbd688",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Plugin default-site-plugin": {
-      "resolve": "/Users/zachary/Repos/personal-site",
+      "resolve": "/Users/zachary/Documents/GitHub/personal-site",
       "id": "Plugin default-site-plugin",
       "name": "default-site-plugin",
-      "version": "0ba13b2709e9efeb351b6afdb18a34f8",
+      "version": "dde59c22b4407319a4ac3016e4acf7c0",
       "pluginOptions": {
         "plugins": []
       },
-      "pluginFilepath": "/Users/zachary/Repos/personal-site",
+      "pluginFilepath": "/Users/zachary/Documents/GitHub/personal-site",
       "packageJson": {
         "name": "personal-site",
         "description": "My personal website for sharing his work as a software person.",
@@ -422,117 +422,171 @@
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "4cc6d384724cf450ecf576574902b434",
+        "contentDigest": "26a67adc499592619596ab3fef45962c",
         "type": "SitePlugin",
         "owner": "internal-data-bridge"
       }
     },
     "Site": {
       "siteMetadata": {
-        "title": "Zachary Halvorson"
+        "title": "Zachary Halvorson 🐔",
+        "meta": [
+          {
+            "name": "description",
+            "content": "Zachary Halvorson is a digital designer focused on digital interaction and product design."
+          },
+          {
+            "name": "keywords",
+            "content": "product, product design, ui design, ux design, design, vancouver"
+          },
+          {
+            "name": "viewport",
+            "content": "width=device-width"
+          },
+          {
+            "name": "twitter:card",
+            "content": "summary"
+          },
+          {
+            "name": "twitter:site",
+            "content": "@zachhalvorson"
+          },
+          {
+            "name": "twitter:title",
+            "content": "Zachary Halvorson"
+          },
+          {
+            "name": "twitter:description",
+            "content": "I'm a designer focused on digital interaction and product design."
+          },
+          {
+            "name": "twitter:image",
+            "content": "http://zacharyhalvorson.com/embed-image.png"
+          },
+          {
+            "property": "og:title",
+            "content": "Zachary Halvorson"
+          },
+          {
+            "property": "og:description",
+            "content": "I'm a designer focused on digital interaction and product design."
+          },
+          {
+            "property": "og:type",
+            "content": "website"
+          },
+          {
+            "property": "og:url",
+            "content": "http://www.zacharyhalvorson.com"
+          },
+          {
+            "property": "og:image",
+            "content": "http://zacharyhalvorson.com/embed-image.png"
+          }
+        ]
       },
       "port": "8000",
       "host": "localhost",
       "pathPrefix": "",
       "polyfill": true,
-      "buildTime": "2017-10-28T21:30:50.160Z",
+      "buildTime": "2018-04-22T04:14:20.703Z",
       "id": "Site",
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "c91314b4e4fd52e3b717a1b8a912b4c5",
+        "contentDigest": "4744d8556e1bb18d04080f6c0f509390",
         "type": "Site",
         "owner": "internal-data-bridge"
       }
     },
     "SitePage /404/": {
       "path": "/404/",
-      "component": "/Users/zachary/Repos/personal-site/src/pages/404.js",
+      "component": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
       "componentChunkName": "component---src-pages-404-js",
       "layout": "index",
       "jsonName": "404.json",
       "internalComponentName": "Component404",
-      "updatedAt": 1509226252821,
+      "updatedAt": 1524370462736,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
-      "componentPath": "/Users/zachary/Repos/personal-site/src/pages/404.js",
+      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
       "id": "SitePage /404/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "5eb712533e5bf14bbbd197db44cef55a",
+        "contentDigest": "380438187eed7ab051f904f2debeb14c",
         "owner": "internal-data-bridge"
       }
     },
     "SitePage /": {
       "path": "/",
-      "component": "/Users/zachary/Repos/personal-site/src/pages/index.js",
+      "component": "/Users/zachary/Documents/GitHub/personal-site/src/pages/index.js",
       "componentChunkName": "component---src-pages-index-js",
       "layout": "index",
       "jsonName": "index.json",
       "internalComponentName": "ComponentIndex",
-      "updatedAt": 1509226252822,
+      "updatedAt": 1524370462738,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
-      "componentPath": "/Users/zachary/Repos/personal-site/src/pages/index.js",
+      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/src/pages/index.js",
       "id": "SitePage /",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "66a974311f4c567309f887c87b21f276",
+        "contentDigest": "1a536a28da6d227a3ec2207b1fa73adc",
         "owner": "internal-data-bridge"
       }
     },
     "SitePage /resume/": {
       "path": "/resume/",
-      "component": "/Users/zachary/Repos/personal-site/src/pages/resume.js",
+      "component": "/Users/zachary/Documents/GitHub/personal-site/src/pages/resume.js",
       "componentChunkName": "component---src-pages-resume-js",
       "layout": "index",
       "jsonName": "resume.json",
       "internalComponentName": "ComponentResume",
-      "updatedAt": 1509226252822,
+      "updatedAt": 1524370462739,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
-      "componentPath": "/Users/zachary/Repos/personal-site/src/pages/resume.js",
+      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/src/pages/resume.js",
       "id": "SitePage /resume/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "1bf506a36859fd3ff5af3719df2f702a",
+        "contentDigest": "dc7b5bd21e929a8aa61a0c7e99086821",
         "owner": "internal-data-bridge"
       }
     },
     "SitePage /404.html": {
       "path": "/404.html",
-      "component": "/Users/zachary/Repos/personal-site/src/pages/404.js",
+      "component": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
       "componentChunkName": "component---src-pages-404-js",
       "layout": "index",
       "jsonName": "404-html.json",
       "internalComponentName": "Component404Html",
-      "updatedAt": 1509226252827,
+      "updatedAt": 1524370462741,
       "context": {},
       "pluginCreator___NODE": "Plugin prod-404",
       "pluginCreatorId": "Plugin prod-404",
-      "componentPath": "/Users/zachary/Repos/personal-site/src/pages/404.js",
+      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
       "id": "SitePage /404.html",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "4e4d7a07d527f6e45132e2e66643ea35",
+        "contentDigest": "8d9eee18d27d447e8c9b8c78b5e01de9",
         "owner": "internal-data-bridge"
       }
     }
   },
   "status": {
     "plugins": {},
-    "PLUGINS_HASH": "3f086363391b137a14d4fca3b724e928"
+    "PLUGINS_HASH": "e0f7789a044fe6c1fea08b7e6b265b95"
   },
   "componentDataDependencies": {
     "nodes": {},
