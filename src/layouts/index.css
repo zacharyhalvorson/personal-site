@@ -29,12 +29,12 @@ a::after {
     position: absolute;
     left: 1px;
     right: 1px;
-    bottom: 3px;
+    bottom: 2px;
 }
 
 @media (min-width:25em) {
     a::after {
-        bottom: 3px;
+        bottom: 2px;
         opacity: 0
     }
 }
