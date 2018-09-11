@@ -40,10 +40,6 @@ const TemplateWrapper = ({ children }) => (
 				type="image/x-icon"
 				href={__PATH_PREFIX__ + '/favicon.ico'}
 			/>
-			<link
-				rel="apple-touch-icon-precomposed"
-				href={__PATH_PREFIX__ + '/apple-touch-icon.png'}
-			/>
     </Helmet>
     {children()}
   </div>
