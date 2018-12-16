@@ -2,6 +2,13 @@ body {
 	color: #3E3A5F;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #3E3A5F;
+    color: white;
+  }
+}
+
 a {
 	color: #F37B6A;
 	font-weight: 500;
