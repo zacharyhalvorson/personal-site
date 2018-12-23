@@ -1,23 +1,13 @@
 {
   "nodes": {
     "SitePage /dev-404-page/": {
-      "component": "/Users/zachary/Documents/GitHub/personal-site/.cache/dev-404-page.js",
       "path": "/dev-404-page/",
-      "componentChunkName": "component---cache-dev-404-page-js",
-      "layout": "index",
-      "jsonName": "dev-404-page.json",
-      "internalComponentName": "ComponentDev404Page",
-      "updatedAt": 1544997563310,
-      "context": {},
-      "pluginCreator___NODE": "Plugin dev-404-page",
-      "pluginCreatorId": "Plugin dev-404-page",
-      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/.cache/dev-404-page.js",
       "id": "SitePage /dev-404-page/",
       "parent": "SOURCE",
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "0eb1a335f4e528101efe8146784aef17",
+        "contentDigest": "f91d29e10ba680b413138cf9ed86e655",
         "owner": "internal-data-bridge"
       }
     },
@@ -431,38 +421,15 @@
       "siteMetadata": {
         "title": "Zachary Halvorson"
       },
-      "port": "8000",
-      "host": "localhost",
       "pathPrefix": "",
       "polyfill": true,
-      "buildTime": "2018-12-16T21:59:20.710Z",
+      "buildTime": "2018-12-16T22:17:14.038Z",
       "id": "Site",
       "parent": "SOURCE",
       "children": [],
       "internal": {
-        "contentDigest": "4c7ee9a52814c1c48f20449b6456fe8f",
+        "contentDigest": "8c94f2d00092c337d9ee5fad10e4e027",
         "type": "Site",
-        "owner": "internal-data-bridge"
-      }
-    },
-    "SitePage /404/": {
-      "path": "/404/",
-      "component": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
-      "componentChunkName": "component---src-pages-404-js",
-      "layout": "index",
-      "jsonName": "404.json",
-      "internalComponentName": "Component404",
-      "updatedAt": 1544997563319,
-      "context": {},
-      "pluginCreator___NODE": "Plugin component-page-creator",
-      "pluginCreatorId": "Plugin component-page-creator",
-      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
-      "id": "SitePage /404/",
-      "parent": "SOURCE",
-      "children": [],
-      "internal": {
-        "type": "SitePage",
-        "contentDigest": "0e0aa3f63209ab31a340ea4b1d0bb1bf",
         "owner": "internal-data-bridge"
       }
     },
@@ -473,7 +440,7 @@
       "layout": "index",
       "jsonName": "index.json",
       "internalComponentName": "ComponentIndex",
-      "updatedAt": 1544997563320,
+      "updatedAt": 1544998635935,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -483,7 +450,28 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "2525f3db46eeff224f13aaa46edde7c5",
+        "contentDigest": "bae813b48f9a41f333d0fc88641f4133",
+        "owner": "internal-data-bridge"
+      }
+    },
+    "SitePage /404/": {
+      "path": "/404/",
+      "component": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
+      "componentChunkName": "component---src-pages-404-js",
+      "layout": "index",
+      "jsonName": "404.json",
+      "internalComponentName": "Component404",
+      "updatedAt": 1544998635936,
+      "context": {},
+      "pluginCreator___NODE": "Plugin component-page-creator",
+      "pluginCreatorId": "Plugin component-page-creator",
+      "componentPath": "/Users/zachary/Documents/GitHub/personal-site/src/pages/404.js",
+      "id": "SitePage /404/",
+      "parent": "SOURCE",
+      "children": [],
+      "internal": {
+        "type": "SitePage",
+        "contentDigest": "438a9f6672162134910214b0ce86bf1a",
         "owner": "internal-data-bridge"
       }
     },
@@ -494,7 +482,7 @@
       "layout": "index",
       "jsonName": "resume.json",
       "internalComponentName": "ComponentResume",
-      "updatedAt": 1544997563321,
+      "updatedAt": 1544998635937,
       "context": {},
       "pluginCreator___NODE": "Plugin component-page-creator",
       "pluginCreatorId": "Plugin component-page-creator",
@@ -504,7 +492,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "2347e7f834b2aae4d2d99d7057b8ad3f",
+        "contentDigest": "599e666ad56f61255c7319626c3d4adf",
         "owner": "internal-data-bridge"
       }
     },
@@ -515,7 +503,7 @@
       "layout": "index",
       "jsonName": "404-html.json",
       "internalComponentName": "Component404Html",
-      "updatedAt": 1544997563323,
+      "updatedAt": 1544998635939,
       "context": {},
       "pluginCreator___NODE": "Plugin prod-404",
       "pluginCreatorId": "Plugin prod-404",
@@ -525,7 +513,7 @@
       "children": [],
       "internal": {
         "type": "SitePage",
-        "contentDigest": "71863c5965805256746f32b1fa9c3eeb",
+        "contentDigest": "cdf927055028d3d6d297af0e314e9932",
         "owner": "internal-data-bridge"
       }
     }

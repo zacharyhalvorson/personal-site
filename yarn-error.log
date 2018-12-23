@@ -1,14 +1,14 @@
 Arguments: 
-  /Users/zachary/.nvm/versions/node/v8.9.4/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js run depoly:production
+  /Users/zachary/.nvm/versions/node/v8.12.0/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js run deploy
 
 PATH: 
-  /Users/zachary/.gem/ruby/2.3.2/bin:/Users/zachary/.rubies/ruby-2.3.2/lib/ruby/gems/2.3.0/bin:/Users/zachary/.rubies/ruby-2.3.2/bin:/Users/zachary/.nvm/versions/node/v8.9.4/bin:/Users/zachary/bin:/usr/local/bin:/Users/zachary/Library/Python/2.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+  /Users/zachary/.gem/ruby/2.3.2/bin:/Users/zachary/.rubies/ruby-2.3.2/lib/ruby/gems/2.3.0/bin:/Users/zachary/.rubies/ruby-2.3.2/bin:/Users/zachary/.nvm/versions/node/v8.12.0/bin:/Users/zachary/bin:/usr/local/bin:/Users/zachary/Library/Python/2.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 Yarn version: 
   1.5.1
 
 Node version: 
-  8.9.4
+  8.12.0
 
 Platform: 
   darwin x64
@@ -7877,7 +7877,7 @@ Lockfile:
       strip-bom "^3.0.0"
 
 Trace: 
-  Error: Command "depoly:production" not found.
+  Error: Command "deploy" not found.
       at new MessageError (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:186:110)
       at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:87307:17
       at Generator.next (<anonymous>)
