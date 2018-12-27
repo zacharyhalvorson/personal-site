@@ -7,13 +7,12 @@ export const BioWrapper = styled.div`
 `
 
 export const Image = styled(Img)`
-  height: 60px;
-  width: 60px;
+  height: 100px;
+  width: 100px;
   border-radius: 50%;
 `
 
 export const Intro = styled.p`
-  font-size: .75rem;
   margin: 1rem 0;
 `
 

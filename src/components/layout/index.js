@@ -8,7 +8,7 @@ import GlobalStyle from '../global-style'
 
 import * as Styled from './style.js'
 
-export default ({ children }) => (
+export default ({ children, location }) => (
   <StaticQuery
     query={graphql`
       query {

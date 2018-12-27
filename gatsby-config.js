@@ -26,6 +26,17 @@ module.exports = {
       },
     },
     {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Zachary Halvorson`,
+        short_name: `zachary`,
+        start_url: `/`,
+        background_color: `#ffffff`,
+        theme_color: `#8899ff`,
+        display: `minimal-ui`,
+      },
+    },
+    {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `src`,
@@ -37,7 +48,7 @@ module.exports = {
     `gatsby-transformer-remark`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
-    `gatsby-plugin-offline`,
+  `gatsby-plugin-offline`,
     `gatsby-plugin-netlify`
   ],
 }

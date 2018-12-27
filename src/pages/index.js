@@ -3,20 +3,27 @@ import { graphql } from 'gatsby'
 
 import Bio from '../components/bio'
 import Layout from '../components/layout'
-import WorkList from '../components/work-list'
+import PostList from '../components/post-list'
+import Modal from '../components/modal'
+import Post from '../components/post'
 
-export default ({ data }) => {
-  const items = data.allMarkdownRemark.edges.map(({ node }) => ({
+export default ({ data, location }) => {
+  const posts = data.allMarkdownRemark.edges.map(({ node }) => ({
     id: node.id,
     slug: node.fields.slug,
     title: node.frontmatter.title,
+    html: node.html
   }))
 
   return (
-    <Layout>
+    <Layout location={location}>
       <Bio />
 
-      <WorkList items={items} />
+      <PostList posts={posts} />
+
+      <Modal>
+        <Post post={posts[0]}/>
+      </Modal>
     </Layout>
   )
 }
@@ -33,6 +40,7 @@ export const query = graphql`
       edges {
         node {
           id
+          html
           frontmatter {
             title
             date(formatString: "DD MMMM, YYYY")

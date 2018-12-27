@@ -17,7 +17,7 @@ export const TwoColumnLayout = styled.div`
       grid-column: col-start / span 1;
     }
 
-    & > *:last-child {
+    & > *:nth-child(2) {
       grid-column: col-start 2 / span 1;
     }
   }

@@ -4,7 +4,6 @@ import { Link } from 'gatsby'
 import truncate from '../../utils/truncate.js'
 
 export const CardLink = styled(Link)`
-  ${console.log(truncate)}
   display: inline-block;
   position: relative;
   overflow: hidden;
