@@ -24,7 +24,7 @@ export default () =>
 
         <Styled.Intro>
           {`Hi, my name is `}
-          <Styled.Name><span>Zach</span>ary Halvorson</Styled.Name>
+          <Styled.Name><h1>Zach</h1>ary Halvorson</Styled.Name>
         </Styled.Intro>
 
         <p>I design and code for kicks, but also cash.</p>
