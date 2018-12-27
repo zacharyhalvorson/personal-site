@@ -35,7 +35,7 @@ export const CardLink = styled(Link)`
     position: absolute;
     top: 0; right: 0; left: 0;
     height: 80%;
-    background-image: url(${props => props.teaserImage});
+    background-image: url(${props => props.teaser});
     background-size: cover;
   }
 

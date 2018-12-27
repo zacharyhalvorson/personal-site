@@ -1,10 +1,12 @@
 import styled from 'styled-components'
 
+import breakpoints from '../breakpoints'
+
 export const TwoColumnLayout = styled.div`
   width: 92%;
   margin: 0 auto;
 
-  @media (min-width: 680px) {
+  @media (min-width: ${breakpoints['two-column']}) {
     max-width: 960px;
     display: grid;
     grid-template-columns: repeat(2, [col-start] 1fr);

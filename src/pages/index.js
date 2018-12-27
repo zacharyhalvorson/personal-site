@@ -3,23 +3,23 @@ import { graphql } from 'gatsby'
 
 import Bio from '../components/bio'
 import Layout from '../components/layout'
-import Card from '../components/card'
+import WorkList from '../components/work-list'
 
-export default ({ data }) =>
-  <Layout>
-    <Bio />
+export default ({ data }) => {
+  const items = data.allMarkdownRemark.edges.map(({ node }) => ({
+    id: node.id,
+    slug: node.fields.slug,
+    title: node.frontmatter.title,
+  }))
 
-    <div>
-      {data.allMarkdownRemark.edges.map(({ node }) => (
-        <Card
-          key={node.id}
-          to={node.fields.slug}
-          title={node.frontmatter.title}
-        />
-      ))}
-    </div>
-  </Layout>
+  return (
+    <Layout>
+      <Bio />
 
+      <WorkList items={items} />
+    </Layout>
+  )
+}
 
 export const query = graphql`
   query {

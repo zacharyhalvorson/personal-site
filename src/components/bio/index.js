@@ -17,19 +17,19 @@ export default () =>
       }
     `}
     render={data => (
-      <div>
+      <Styled.BioWrapper>
         <Styled.Image
           alt="👋 Nice to meet you!" fluid={data.profileImage.childImageSharp.fluid}
         />
 
         <Styled.Intro>
           {`Hi, my name is `}
-          <Styled.Name><h1>Zach</h1>ary Halvorson</Styled.Name>
+          <Styled.Name><span>Zach</span>ary Halvorson</Styled.Name>
         </Styled.Intro>
 
         <p>I design and code for kicks, but also cash.</p>
         <p>I tend to focus on product thinking, design systems, prototyping, and interaction design.</p>
         <p>I'm currently leading design at Dooly, a note-taking that serves real-time enablement information people on customer calls.</p>
-      </div>
+      </Styled.BioWrapper>
     )}
   />
