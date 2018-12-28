@@ -1,7 +1,25 @@
 module.exports = {
   siteMetadata: {
     title: `Zachary Halvorson | Digital Product Designer`,
-    description: `This is my website. I like it quite a lot.`
+    description: `This is my website. I like it quite a lot.`,
+    socials: [
+      {
+        name: 'Github',
+        url: 'https://github.com/zacharyhalvorson',
+      },
+      {
+        name: 'Dribbble',
+        url: 'https://dribbble.com/zacharyhalvorson',
+      },
+      {
+        name: 'Twitter',
+        url: 'https://twitter.com/zachhalvorson',
+      },
+      {
+        name: 'Apple Music',
+        url: 'https://itunes.apple.com/profile/zacharyhalvorson',
+      },
+    ]
   },
   plugins: [
     {

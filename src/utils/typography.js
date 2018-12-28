@@ -17,6 +17,7 @@ export default new Typography({
   baseLineHeight: 1.666,
   scaleRatio: 2,
   headerWeight: 600,
+  headerColor: gray(30),
   bodyWeight: 'normal',
   boldWeight: 600,
   blockMarginBottom: 1 / 2,

@@ -2,6 +2,7 @@ export default {
   bg: {
     'default-light': 'white',
     'default-dark': 'black',
+    'highlight': '#FFF7E5',
   },
   text: {
     'default-light': 'black',

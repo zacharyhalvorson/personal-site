@@ -1,12 +1,33 @@
 import React from 'react'
 import { StaticQuery, graphql } from "gatsby"
 
+import SocialImage from '../../images/socials'
+
 import * as Styled from './style.js'
+
+const SocialsListItem = ({
+  url,
+  name,
+}) =>
+  <li>
+    <Styled.SocialsLink href={url} target="_blank" rel="noopener noreferrer">
+      <img src={SocialImage[name.replace(/\s/g, '')]} />
+      {name}
+    </Styled.SocialsLink>
+  </li>
 
 export default () =>
   <StaticQuery
     query={graphql`
       query {
+        site {
+          siteMetadata {
+            socials {
+              name
+              url
+            }
+          }
+        }
         profileImage: file(relativePath: {eq: "it-me.jpg"}) {
           childImageSharp {
             fluid(maxWidth: 300) {
@@ -18,18 +39,34 @@ export default () =>
     `}
     render={data => (
       <Styled.BioWrapper>
+
         <Styled.Image
-          alt="👋 Nice to meet you!" fluid={data.profileImage.childImageSharp.fluid}
+          alt="A photo of me."
+          title="👋 Nice to meet you!"
+          fluid={data.profileImage.childImageSharp.fluid}
         />
 
         <Styled.Intro>
-          {`Hi, my name is `}
-          <Styled.Name><span>Zach</span>ary Halvorson</Styled.Name>
+          <p>
+            {`Hey there, I'm `}
+            <Styled.Name>Zachary Halvorson.</Styled.Name>
+          </p>
+          <p>I design and code for kicks, but also cash.</p>
+          <p>I tend to focus on product strategy, prototyping, design systems, and interaction design.</p>
+          <p>I'm currently leading design at Dooly, a note-taking app that serves real-time enablement information people on customer calls.</p>
         </Styled.Intro>
 
-        <p>I design and code for kicks, but also cash.</p>
-        <p>I tend to focus on product thinking, design systems, prototyping, and interaction design.</p>
-        <p>I'm currently leading design at Dooly, a note-taking app that serves real-time enablement information people on customer calls.</p>
+
+        <h2>Follow me</h2>
+
+        <Styled.List>
+          {data.site.siteMetadata.socials.map(item =>
+            <SocialsListItem
+              name={item.name}
+              url={item.url}
+            />
+          )}
+        </Styled.List>
       </Styled.BioWrapper>
     )}
   />
