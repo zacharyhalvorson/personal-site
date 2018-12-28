@@ -1,11 +1,10 @@
 import React from 'react'
 import { graphql } from 'gatsby'
+import { Router, Location } from '@reach/router';
 
 import Bio from '../components/bio'
 import Layout from '../components/layout'
 import PostList from '../components/post-list'
-import Modal from '../components/modal'
-import Post from '../components/post'
 
 export default ({ data, location }) => {
   const posts = data.allMarkdownRemark.edges.map(({ node }) => ({
@@ -16,25 +15,16 @@ export default ({ data, location }) => {
   }))
 
   return (
-    <Layout location={location}>
-      <Bio />
-
-      <PostList posts={posts} />
-
-      <Modal>
-        <Post post={posts[0]}/>
-      </Modal>
+    <Layout
+      location={location}
+      posts={posts}
+    >
     </Layout>
   )
 }
 
 export const query = graphql`
   query {
-    site {
-      siteMetadata {
-        title
-      }
-    }
     allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
       totalCount
       edges {

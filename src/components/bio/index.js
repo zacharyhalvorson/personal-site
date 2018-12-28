@@ -29,7 +29,7 @@ export default () =>
 
         <p>I design and code for kicks, but also cash.</p>
         <p>I tend to focus on product thinking, design systems, prototyping, and interaction design.</p>
-        <p>I'm currently leading design at Dooly, a note-taking that serves real-time enablement information people on customer calls.</p>
+        <p>I'm currently leading design at Dooly, a note-taking app that serves real-time enablement information people on customer calls.</p>
       </Styled.BioWrapper>
     )}
   />
