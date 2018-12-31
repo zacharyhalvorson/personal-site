@@ -12,12 +12,12 @@ module.exports = {
         url: 'https://dribbble.com/zacharyhalvorson',
       },
       {
-        name: 'Twitter',
-        url: 'https://twitter.com/zachhalvorson',
-      },
-      {
         name: 'Apple Music',
         url: 'https://itunes.apple.com/profile/zacharyhalvorson',
+      },
+      {
+        name: 'Twitter',
+        url: 'https://twitter.com/zachhalvorson',
       },
     ]
   },

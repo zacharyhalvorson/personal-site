@@ -39,7 +39,6 @@ export default () =>
     `}
     render={data => (
       <Styled.BioWrapper>
-
         <Styled.Image
           alt="A photo of me."
           title="👋 Nice to meet you!"
@@ -53,7 +52,7 @@ export default () =>
           </p>
           <p>I design and code for kicks, but also cash.</p>
           <p>I tend to focus on product strategy, prototyping, design systems, and interaction design.</p>
-          <p>I'm currently leading design at Dooly, a note-taking app that serves real-time enablement information people on customer calls.</p>
+          <p>I'm currently leading design at <a href="https://dooly.ai" target="_blank" rel="noopener noreferrer">Dooly</a>, a note-taking app that serves real-time enablement information people on customer calls.</p>
         </Styled.Intro>
 
 
