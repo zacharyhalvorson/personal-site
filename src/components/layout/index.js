@@ -6,8 +6,8 @@ import { ThemeProvider } from 'styled-components'
 import Theme from '../theme'
 import GlobalStyle from '../global-style'
 
+import ProfilePhoto from '../profile-photo'
 import Bio from '../bio'
-import PostList from '../post-list'
 
 import * as Styled from './style.js'
 
@@ -61,9 +61,9 @@ export default ({ children, location }) => (
 
             <GlobalStyle />
 
-            <Bio />
+            <ProfilePhoto />
 
-            <PostList posts={posts} />
+            <Bio />
 
             {children}
           </Styled.TwoColumnLayout>

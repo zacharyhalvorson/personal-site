@@ -39,12 +39,6 @@ export default () =>
     `}
     render={data => (
       <Styled.BioWrapper>
-        <Styled.Image
-          alt="A photo of me."
-          title="👋 Nice to meet you!"
-          fluid={data.profileImage.childImageSharp.fluid}
-        />
-
         <Styled.Intro>
           <p>
             {`Hey there, I'm `}

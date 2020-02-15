@@ -2,8 +2,14 @@ import styled from 'styled-components'
 import Img from 'gatsby-image'
 import gray from 'gray-percentage'
 
+import breakpoints from '../breakpoints'
+
 export const BioWrapper = styled.div`
-  padding-top: 5vh;
+  padding-top: 0;
+
+  @media (min-width: ${breakpoints['two-column']}) {
+    padding-top: 5vh;
+  }
 `
 
 export const SocialsLink = styled.a`
@@ -49,10 +55,14 @@ export const Intro = styled.p`
 export const Name = styled.div`
   font-weight: 600;
   color: ${gray(30)};
-  font-size: 2.75rem;
+  font-size: 2rem;
   display: block;
   line-height: 1.125;
   margin-bottom: 1.5rem;
+
+  @media (min-width: ${breakpoints['two-column']}) {
+    font-size: 2.75rem;
+  }
 `
 
 export const List = styled.ul`
