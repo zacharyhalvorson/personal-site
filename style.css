@@ -10,7 +10,7 @@
   --border-radius-large: 12px;
   --border-radius-default: 6px;
 
-  --shadow-one: 0px 2px 12px 0px rgba(0, 0, 0, 0.25);
+  --shadow-one: 0px 2px 6px 0px rgba(0, 0, 0, 0.25);
 
   --break-two-column: 600px;
   --page-padding: 4vh;
@@ -23,7 +23,19 @@
       --base: #262626;
       --highlight: #E5D9BD;
 
-      --shadow-one: 0px 2px 12px 0px rgba(0, 0, 0, .75);
+      --shadow-one: 0px 2px 6px 0px rgba(0, 0, 0, .75);
+  }
+}
+
+@media (prefers-color-scheme: dark) and (min-width: 600px) {
+  :root {
+    --shadow-one: 0px 2px 12px 0px rgba(0, 0, 0, 0.75);
+  }
+}
+
+@media (min-width: 600px) {
+  :root {
+    --shadow-one: 0px 2px 12px 0px rgba(0, 0, 0, 0.25);
   }
 }
 
@@ -82,9 +94,9 @@ a, a:visited {
     padding: var(--page-padding) 0;
   }
 
-  .container > div:nth-child(2) {
-    padding-left: .5rem;
-    padding-right: .5rem;
+  .container > div {
+    padding-left: .75rem;
+    padding-right: .75rem;
     margin: 0 -.5rem;
   }
 
