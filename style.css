@@ -43,6 +43,7 @@ body {
   width: 90%;
   max-width: 720px;
   overflow: hidden;
+  font-family: 16px;
 }
 
 p {
