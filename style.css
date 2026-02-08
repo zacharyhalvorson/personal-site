@@ -1,5 +1,5 @@
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
   --text-default: #565656;
   --text-light: #817E7E;
@@ -197,6 +197,12 @@ a.socialsLink {
 .socialsLink:hover {
   background-color: var(--highlight);
   text-decoration: none;
+}
+
+.socialsLink:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
+  background-color: var(--highlight);
 }
 
 .socialsLink_githubLogo {
