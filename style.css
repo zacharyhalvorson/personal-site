@@ -205,11 +205,13 @@ a.socialsLink {
   background-color: var(--highlight);
 }
 
-.socialsLink_githubLogo {
+.socialsLink_githubLogo,
+.socialsLink_xLogo {
   display: none;
 }
 
-.socialsLink_githubLogo.-dark {
+.socialsLink_githubLogo.-dark,
+.socialsLink_xLogo.-dark {
   display: initial;
 }
 
@@ -218,11 +220,13 @@ a.socialsLink {
     color: var(--base);
   }
 
-  .socialsLink:not(:hover) .socialsLink_githubLogo.-dark {
+  .socialsLink:not(:hover) .socialsLink_githubLogo.-dark,
+  .socialsLink:not(:hover) .socialsLink_xLogo.-dark {
     display: none;
   }
 
-  .socialsLink:not(:hover) .socialsLink_githubLogo.-white {
+  .socialsLink:not(:hover) .socialsLink_githubLogo.-white,
+  .socialsLink:not(:hover) .socialsLink_xLogo.-white {
     display: initial;
   }
 }
