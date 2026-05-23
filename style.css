@@ -473,16 +473,6 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   font-size: 0.9375rem;
 }
 
-.colophon_note {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--rule);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-light);
-  letter-spacing: 0.02em;
-}
-
 /* ---------- entrance reveals (scroll-driven, zero JS) ---------- */
 
 @supports (animation-timeline: view()) {
@@ -540,7 +530,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   }
   html { scroll-snap-type: none; scroll-behavior: auto; }
   body { font-size: 11pt; line-height: 1.4; }
-  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials, .colophon_note { display: none !important; }
+  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials { display: none !important; }
   .chapter {
     min-height: 0;
     page-break-inside: avoid;
