@@ -1,74 +1,254 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./style.css">
-    <meta name="viewport" content="width=device-width">
     <link rel="canonical" href="https://www.zacharyhalvorson.com/">
+
+    <title>Zachary Halvorson — Product Designer</title>
+    <meta name="description" content="Zachary Halvorson is a product designer in Seattle working on AI wearables at Meta Reality Labs. Previously Clio, Dooly, BrainStation, and Mobify.">
+    <meta name="keywords" content="product design, ui design, ux design, ai design, wearables, seattle, vancouver">
+
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#262626" media="(prefers-color-scheme: dark)">
 
-    <title>Zachary Halvorson</title>
-    <meta name="description" content="Hi there&#44; I&#39;m Zachary Halvorson. I&#39;m a product designer who likes to make complicated things simple — currently designing for AI Wearables at Meta&#39;s Reality Labs." />
-
-    <meta name="keywords" content="product, product design, ui design, ux design, design, seattle">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@zachhalvorson">
-    <meta name="twitter:title" content="Zachary Halvorson">
-    <meta name="twitter:description" content="I&#39;m a product designer who likes to make complicated things simple — currently designing for AI Wearables at Meta&#39;s Reality Labs.">
-    <meta name="twitter:image" content="https://zacharyhalvorson.com/embed-image.png">
-    <meta property="og:title" content="Zachary Halvorson">
-    <meta property="og:description" content="I&#39;m a product designer who likes to make complicated things simple — currently designing for AI Wearables at Meta&#39;s Reality Labs.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.zacharyhalvorson.com">
-    <meta property="og:image" content="https://zacharyhalvorson.com/embed-image.png">
+    <meta property="og:url" content="https://www.zacharyhalvorson.com/">
+    <meta property="og:title" content="Zachary Halvorson — Product Designer">
+    <meta property="og:description" content="Product designer in Seattle working on AI wearables at Meta Reality Labs.">
+    <meta property="og:image" content="https://www.zacharyhalvorson.com/embed-image.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Zachary Halvorson — Product Designer">
+    <meta name="twitter:description" content="Product designer in Seattle working on AI wearables at Meta Reality Labs.">
+    <meta name="twitter:image" content="https://www.zacharyhalvorson.com/embed-image.png">
 
-    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   </head>
-  <body class="container">
-    <div>
-      <img
-        class="profilePhoto"
-        srcset="images/me/me-600w.jpg 600w,
-                images/me/me-400w.jpg 400w"
-        sizes="(min-width: 600px) 300px,
-               30vw"
-        src="images/me/me-400w.jpg"
-        fetchpriority="high"
-        decoding="async"
-        alt="Portrait photo of Zachary Halvorson." title="👋 Nice to meet you!"
-      >
-    </div>
-    <div>
-      <section class="bio">
-        <header>
-          <h1>
-            <span>Hi there, I'm </span>
-            <span>Zachary Halvorson.</span>
-          </h1>
-        </header>
-        <p>I'm a product designer who likes to make complicated things simple. Right now, that means designing for AI Wearables at <a href="https://meta.com" target="_blank" rel="noopener noreferrer">Meta</a>'s Reality Labs, where I've been part of launching category-defining products.</p>
-        <p>I believe great design comes from combining deep understanding and craft to build beautiful things that people love. My background spans product strategy, interaction design, design leadership, and front-end development — I've always built as much as I've designed.</p>
-        <p>Lately, I've been tinkering on a side project called <a href="https://tripcams.pizza" target="_blank" rel="noopener noreferrer" title="Try it out!">Trip Cams</a>, a web app that shows live highway camera feeds along your driving route so you can check road conditions before you hit the road.</p>
-        <p>If you'd like to connect, feel free to <a href="mailto:hello@zacharyhalvorson.com">email me</a>.</p>
+
+  <body>
+    <a class="skip" href="#intro">Skip to content</a>
+
+    <div class="progress" aria-hidden="true"></div>
+
+    <nav class="rail" aria-label="Sections">
+      <a href="#intro"><span class="rail_dot"></span><span class="rail_label">Intro</span></a>
+      <a href="#meta"><span class="rail_dot"></span><span class="rail_label">Meta</span></a>
+      <a href="#clio"><span class="rail_dot"></span><span class="rail_label">Clio</span></a>
+      <a href="#dooly"><span class="rail_dot"></span><span class="rail_label">Dooly</span></a>
+      <a href="#brainstation"><span class="rail_dot"></span><span class="rail_label">BrainStation</span></a>
+      <a href="#mobify"><span class="rail_dot"></span><span class="rail_label">Mobify</span></a>
+      <a href="#colophon"><span class="rail_dot"></span><span class="rail_label">Colophon</span></a>
+    </nav>
+
+    <main>
+
+      <!-- ---------- section: intro ---------- -->
+      <section id="intro" class="chapter chapter-intro" aria-labelledby="intro-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">01 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_kicker">Product designer · Seattle</p>
+          </header>
+          <div class="chapter_body">
+            <h1 id="intro-heading" class="display">Hi, I'm <span class="display_em">Zachary&nbsp;Halvorson.</span></h1>
+            <p class="lede">I'm a digital product designer with experience in Web, iOS, and Android. I enjoy seeing projects through from research to implementation, with skills that range from product strategy, to interaction and visual design, to front-end development and AI design.</p>
+
+            <picture class="intro_photo">
+              <source media="(min-width: 900px)" srcset="images/me/me-1200w.jpg 1200w, images/me/me-600w.jpg 600w" sizes="360px">
+              <img
+                src="images/me/me-600w.jpg"
+                srcset="images/me/me-600w.jpg 600w, images/me/me-400w.jpg 400w"
+                sizes="(min-width: 600px) 280px, 60vw"
+                width="600" height="600"
+                fetchpriority="high"
+                decoding="async"
+                alt="Portrait of Zachary Halvorson.">
+            </picture>
+
+            <ul class="socials list-reset">
+              <li><a class="socials_link" href="https://github.com/zacharyhalvorson" target="_blank" rel="noopener noreferrer">
+                <img class="socials_icon -dark" src="images/socials/github.svg" alt="" aria-hidden="true" decoding="async">
+                <img class="socials_icon -light" src="images/socials/github-white.svg" alt="" aria-hidden="true" decoding="async">
+                <span>GitHub</span>
+              </a></li>
+              <li><a class="socials_link" href="https://www.linkedin.com/in/zacharyhalvorson/" target="_blank" rel="noopener noreferrer">
+                <img class="socials_icon" src="images/socials/linkedin.svg" alt="" aria-hidden="true" decoding="async">
+                <span>LinkedIn</span>
+              </a></li>
+              <li><a class="socials_link" href="mailto:hello@zacharyhalvorson.com">
+                <span class="socials_icon socials_icon-glyph" aria-hidden="true">@</span>
+                <span>Email</span>
+              </a></li>
+            </ul>
+          </div>
+        </div>
+        <a class="chapter_next" href="#meta" aria-label="Scroll to next section">
+          <span>Scroll</span>
+          <span class="chapter_next_arrow" aria-hidden="true">↓</span>
+        </a>
       </section>
 
-      <ul class="list-reset">
-        <li><a class="socialsLink" href="https://github.com/zacharyhalvorson" target="_blank" rel="noopener noreferrer">
-          <img class="socialsLink_githubLogo -dark" src="./images/socials/github.svg" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <img class="socialsLink_githubLogo -white" src="./images/socials/github-white.svg" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <span>Github</span>
-        </a></li>
-        <li><a class="socialsLink" href="https://www.linkedin.com/in/zacharyhalvorson/" target="_blank" rel="noopener noreferrer">
-          <img src="./images/socials/linkedin.svg" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <span>LinkedIn</span>
-        </a></li>
-        <li><a class="socialsLink" href="https://itunes.apple.com/profile/zacharyhalvorson" target="_blank" rel="noopener noreferrer">
-          <img src="./images/socials/apple-music.png" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <span>Apple Music</span>
-        </a></li>
-      </ul>
-    </div>
+      <!-- ---------- section: meta reality labs ---------- -->
+      <section id="meta" class="chapter" aria-labelledby="meta-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">02 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_role">Product Designer</p>
+            <p class="chapter_when">
+              <time datetime="2020-08">Aug 2020</time> — Present
+            </p>
+            <p class="chapter_where">Seattle, WA</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="meta-heading" class="display"><span class="display_em">Meta</span> Reality Labs</h2>
+            <p class="lede">Currently focused on AI experiences on wearables. I've worked on AI smart glasses holistically — championing multiple devices and individual features from concept phase through launching into the market.</p>
+            <ul class="chapter_bullets">
+              <li>AI-native feature ideation, design, and execution.</li>
+              <li>Leveraging a deep understanding of networked devices to manage wearable connectivity.</li>
+              <li>Creating novel interactions and products stemming from this new product category.</li>
+              <li>Streaming video from glasses to mobile apps.</li>
+              <li>High-fidelity, code-based, technical prototyping of designs to influence product strategy.</li>
+              <li>Mentorship of other designers.</li>
+              <li>Assisting in user research of future product explorations.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: clio ---------- -->
+      <section id="clio" class="chapter" aria-labelledby="clio-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">03 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_role">Senior Product Designer · Design Lead</p>
+            <p class="chapter_when">
+              <time datetime="2019-03">Mar 2019</time> — <time datetime="2020-08">Aug 2020</time>
+            </p>
+            <p class="chapter_where">Vancouver, BC</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="clio-heading" class="display"><span class="display_em">Clio</span></h2>
+            <p class="lede">I led the design team for Clio Grow and Client Experience, one of Clio's three product portfolios. I designed and conceived of the Clio Scheduler — a product that headlined our large customer conference — grew as a design leader by helping to develop our critique process, and participated in Basecamp, Clio's management training program.</p>
+            <ul class="chapter_bullets">
+              <li>Daily design work across multiple feature teams.</li>
+              <li>Facilitated weekly design critiques within my portfolio.</li>
+              <li>Interviewing and continuously developing our design hiring process.</li>
+              <li>Driving overall design strategy, larger initiatives, and vision for the portfolio.</li>
+              <li>Weekly 1:1s with my reports, helping them develop and realize career goals.</li>
+              <li>Compensation reviews and leave approvals.</li>
+              <li>Determining design resource needs across the portfolio.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: dooly ---------- -->
+      <section id="dooly" class="chapter" aria-labelledby="dooly-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">04 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_role">Lead Designer</p>
+            <p class="chapter_when">
+              <time datetime="2016-10">Oct 2016</time> — <time datetime="2019-04">Apr 2019</time>
+            </p>
+            <p class="chapter_where">Vancouver, BC</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="dooly-heading" class="display"><span class="display_em">Dooly</span></h2>
+            <p class="lede">I was the first hire at this startup focused on bringing a consumer-grade experience to enterprise sales software. I joined pre-users and pre-revenue, and helped grow the business to dozens of enterprise accounts — including Asana, Intercom, and Contentful — with hundreds of daily active users.</p>
+            <ul class="chapter_bullets">
+              <li>Sole designer responsible for product design, brand, and marketing communications.</li>
+              <li>Contributed to front-end development on the product.</li>
+              <li>Worked across the entire surface: web app, marketing site, and brand system.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: brainstation ---------- -->
+      <section id="brainstation" class="chapter" aria-labelledby="brainstation-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">05 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_role">Lead Instructor</p>
+            <p class="chapter_when">
+              <time datetime="2017-03">Mar 2017</time> — Present
+            </p>
+            <p class="chapter_where">Vancouver, BC</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="brainstation-heading" class="display"><span class="display_em">BrainStation</span></h2>
+            <p class="lede">Once a week in the evenings, I lead an Intro to Web Development class. Across ten weeks, I help all kinds of people get started making things on the internet.</p>
+            <p class="aside">Teaching the fundamentals — HTML, CSS, a little JavaScript — keeps me honest. This site is hand-written for the same reason.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: mobify ---------- -->
+      <section id="mobify" class="chapter" aria-labelledby="mobify-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">06 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_role">Product Designer</p>
+            <p class="chapter_when">
+              <time datetime="2014-03">Mar 2014</time> — <time datetime="2016-10">Oct 2016</time>
+            </p>
+            <p class="chapter_where">Vancouver, BC</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="mobify-heading" class="display"><span class="display_em">Mobify</span></h2>
+            <p class="lede">I designed and developed products that enabled the development of mobile-focused commerce websites.</p>
+            <ul class="chapter_bullets">
+              <li>Product design and front-end development for a customer engagement platform — location-based marketing, and behaviour-driven web and app push notification delivery.</li>
+              <li>Design and front-end development for a mobile project testing and release console.</li>
+              <li>iOS and Android app design for our hybrid app framework, including client builds like Ritchie Bros. (iOS &amp; Android) and London Drugs LDExtras (iOS).</li>
+              <li>Built relationships with the partner developer network, customers, and in-house dev teams — facilitating user testing, interviews, and feedback on the platform.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: colophon / closing ---------- -->
+      <section id="colophon" class="chapter chapter-colophon" aria-labelledby="colophon-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">07 <span aria-hidden="true">/</span> 07</span>
+            <p class="chapter_kicker">Education &amp; contact</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="colophon-heading" class="display">Let's <span class="display_em">talk.</span></h2>
+            <p class="lede">If something here resonates — or if you'd just like to say hi — <a href="mailto:hello@zacharyhalvorson.com">drop me a line</a>.</p>
+
+            <dl class="education">
+              <div class="education_row">
+                <dt>
+                  <span class="education_school">Capilano University</span>
+                  <span class="education_place">North Vancouver, BC</span>
+                </dt>
+                <dd>
+                  <span class="education_degree">Interactive Design Diploma</span>
+                  <span class="education_when"><time datetime="2012">2012</time>–<time datetime="2014">2014</time></span>
+                </dd>
+              </div>
+              <div class="education_row">
+                <dt>
+                  <span class="education_school">University of Alberta</span>
+                  <span class="education_place">Edmonton, AB</span>
+                </dt>
+                <dd>
+                  <span class="education_degree">Bachelor of Education — Math major, Art minor</span>
+                  <span class="education_when"><time datetime="2004">2004</time>–<time datetime="2009">2009</time></span>
+                </dd>
+              </div>
+            </dl>
+
+            <p class="colophon_note">Hand-written HTML and CSS. No framework, no build step, no JavaScript. Best viewed with a scroll wheel.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
   </body>
 </html>

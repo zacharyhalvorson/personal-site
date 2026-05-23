@@ -2,49 +2,41 @@
 
 ## Project Overview
 
-Personal portfolio website for Zachary Halvorson — a product designer and prototyper based in Vancouver. Deployed at [www.zacharyhalvorson.com](https://www.zacharyhalvorson.com).
+Personal site for Zachary Halvorson — a product designer based in Seattle, currently at Meta Reality Labs. Deployed at [www.zacharyhalvorson.com](https://www.zacharyhalvorson.com).
 
-This is an intentionally minimal static site built with **plain HTML and CSS only**. No JavaScript frameworks, no build tools, no package manager. It was deliberately simplified from a previous Gatsby-based implementation.
+The site is a single-page, scroll-snapped narrative resume / portfolio: an intro section followed by one full-viewport section per career chapter (Meta → Clio → Dooly → BrainStation → Mobify), then a closing colophon with education and contact.
+
+Intentionally minimal: **plain HTML and CSS only**. No JavaScript, no frameworks, no build tools, no package manager.
 
 ## Tech Stack
 
 - **HTML5** — semantic markup
-- **CSS3** — custom properties, grid layout, media queries
-- **No JavaScript** (except redirect pages)
-- **No build step** — files are served as-is
+- **CSS3** — custom properties, grid, `scroll-snap`, scroll-driven animations, `clamp()`, `svh`
+- **No JavaScript**
+- **No build step** — files served as-is
 - **No package.json** — zero npm dependencies
 
 ## Repository Structure
 
 ```
 /
-├── index.html              # Main landing page (single entry point)
-├── style.css               # All styles (single stylesheet)
+├── index.html              # The entire site — intro + 5 job chapters + colophon
+├── style.css               # All styles
 ├── CNAME                   # GitHub Pages custom domain (www.zacharyhalvorson.com)
 ├── favicon.ico             # Favicon
 ├── favicon-152.png         # Apple touch icon (152px)
 ├── apple-touch-icon.png    # Apple touch icon
 ├── embed-image.png         # Open Graph / social preview image
-├── portfolio/
-│   └── index.html          # JS redirect to iCloud Keynote portfolio
-├── resume/
-│   └── index.html          # JS redirect to Dropbox Paper resume
 └── images/
-    ├── me/                 # Profile photos (multiple resolutions)
-    │   ├── me.jpg          # Full resolution
-    │   ├── me-1200w.jpg    # 1200px wide
-    │   ├── me-600w.jpg     # 600px wide
-    │   └── me-400w.jpg     # 400px wide
-    └── socials/            # Social media icons (SVG/PNG)
+    ├── me/                 # Profile photos (400w, 600w, 1200w, full)
+    └── socials/            # Social media icons (GitHub, LinkedIn, etc.)
 ```
-
-The `.cache/` directory is a leftover from the old Gatsby setup and is git-ignored.
 
 ## Development
 
-### Local Server
+### Local server
 
-There is no build step. To preview locally, use any static file server:
+No build step. Use any static server:
 
 ```sh
 python3 -m http.server 8000
@@ -54,49 +46,61 @@ npx serve .
 
 ### Deployment
 
-The site is deployed via **GitHub Pages** from the `master` branch. Push to `master` and the site updates automatically. The `CNAME` file configures the custom domain.
+Deployed via **GitHub Pages** from the `master` branch. Push to `master` and the site updates. The `CNAME` file configures the custom domain.
 
 ## Architecture & Conventions
 
 ### HTML (`index.html`)
 
-- Semantic HTML5 (`<header>`, `<section>`, proper `<meta>` tags)
-- Responsive images using `srcset` and `sizes` attributes
-- Performance: `fetchpriority="high"` on above-fold image, `loading="lazy"` on below-fold images
-- Accessibility: descriptive `alt` text on meaningful images, `aria-hidden="true"` on decorative icons
+- One `<main>` with seven scroll-snapped `<section class="chapter">` elements
+- Each chapter has the same skeleton: `.chapter_meta` (index, role, dates, location) on the left, `.chapter_body` (display heading, lede, bullets) on the right
+- Dates use `<time datetime="YYYY-MM">` for machine-readability
+- Fixed `<nav class="rail">` with anchor links to each section
+- Skip link to `#intro` for keyboard users
+- Responsive images via `<picture>` + `srcset`/`sizes`; `fetchpriority="high"` on the intro photo
+- Full Open Graph + Twitter Card meta block
 - External links use `target="_blank" rel="noopener noreferrer"`
 
 ### CSS (`style.css`)
 
 - **Mobile-first** responsive design
-- **CSS custom properties** for theming (defined in `:root`)
-- **Dark mode** via `@media (prefers-color-scheme: dark)`
-- Component sections separated by comments: `/* ---------- component: name ----------- */`
-- Naming: component-based (`.bio`, `.profilePhoto`, `.socialsLink`), with BEM-inspired elements (`.socialsLink_githubLogo`) and state modifiers (`.-dark`, `.-white`)
-- System font stack — no external font loading
-- Layout breakpoints: `600px` (two-column grid), `800px` (wider gap), `860px` (larger heading)
-- Two-column desktop layout: CSS Grid with `2fr 5fr` columns
+- **CSS custom properties** in `:root`, with full **dark mode** parity via `@media (prefers-color-scheme: dark)`
+- **Scroll-snap**: `html { scroll-snap-type: y mandatory }` + `.chapter { scroll-snap-align: start; min-height: 100svh }`
+- **Entrance reveals**: CSS scroll-driven animations (`animation-timeline: view()`) inside `@supports` — graceful degradation
+- **Scroll progress bar**: `animation-timeline: scroll(root)` on a fixed 2px top bar
+- **Reduced motion**: `@media (prefers-reduced-motion: reduce)` disables snap, smooth scroll, and all animations
+- **Print stylesheet**: flattens scroll-snap and prints as a clean resume
+- Component sections separated by comments: `/* ---------- chapter: meta column ---------- */`
+- Naming: `.chapter`, `.chapter_meta`, `.rail`, `.rail_dot`, etc. — component name then underscore-separated element. State modifiers prefixed with `-` (`.-dark`, `.-light`)
+- System font stack (sans + mono) — no external font loading
+- Layout breakpoint: `760px` (single column → two-column chapter grid)
 
-### Key CSS Variables
+### Key CSS variables
 
 | Variable | Light | Dark |
 |---|---|---|
-| `--text-default` | `#565656` | `white` |
-| `--text-light` | `#817E7E` | `#C4C4C4` |
-| `--base` | `white` | `#262626` |
-| `--highlight` | `#FFF7E5` | `#E5D9BD` |
-| `--link-color` | `#0099FF` | `#0099FF` |
+| `--text-default` | `#2a2a2a` | `#f2efe9` |
+| `--text-soft` | `#565656` | `#d3cfc6` |
+| `--text-light` | `#817e7e` | `#8f8a82` |
+| `--base` | `#fafaf7` | `#1c1b19` |
+| `--surface` | `#ffffff` | `#262522` |
+| `--highlight` | `#fff3d6` | `#4a3a16` |
+| `--highlight-deep` | `#f3e5b8` | `#6b5520` |
+| `--link` | `#0066cc` | `#7cc4ff` |
 
 ### Images
 
-Profile photos are provided at multiple resolutions for responsive loading. When adding or replacing images, provide variants at 400w and 600w minimum, and use `srcset`/`sizes` in the HTML.
+Profile photos are provided at multiple resolutions for responsive loading. When adding or replacing images, provide variants at 400w and 600w minimum, and use `srcset`/`sizes`.
 
 ## Guidelines for Changes
 
-- **Keep it simple.** This site is intentionally minimal. Do not add JavaScript frameworks, build tools, or CSS preprocessors.
+- **Keep it simple.** This site is intentionally minimal. Do not add JavaScript, build tools, or CSS preprocessors.
 - **Preserve the two-file architecture.** All markup in `index.html`, all styles in `style.css`.
 - **Maintain dark mode support.** Any new color values should have both light and dark variants via CSS custom properties.
-- **Maintain accessibility.** Use semantic HTML, proper alt text, and `aria-hidden` for decorative elements.
-- **Optimize images.** Provide multiple resolutions and use `srcset`/`sizes`. Use `loading="lazy"` for below-fold images.
-- **Test both color schemes.** Verify changes look correct in both light and dark mode.
-- **Test responsive layout.** Check mobile (< 600px) and desktop (>= 600px) layouts.
+- **Maintain accessibility.** Use semantic HTML, proper `alt` text, `aria-hidden` on decorative elements, visible focus rings, and the skip link.
+- **Respect `prefers-reduced-motion`.** New animations should be inside `@supports` and disabled in the reduced-motion block.
+- **Optimize images.** Provide multiple resolutions; use `srcset`/`sizes`; `loading="lazy"` for below-fold imagery.
+- **Test both color schemes.** Verify changes look correct in light and dark mode.
+- **Test responsive layout.** Check mobile (< 600px), tablet (~ 760px), and desktop.
+- **Test the print stylesheet.** This site IS the resume — `Cmd-P` should produce a clean printable page.
+- **Test with reduced motion.** Toggle the OS setting and confirm snap + reveals disable.
