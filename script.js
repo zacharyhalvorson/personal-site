@@ -107,7 +107,7 @@
       if (!down) return;
       down = false;
       var dx = e.clientX - x0, dy = e.clientY - y0;
-      var threshold = Math.max(50, ul.clientWidth * 0.16);
+      var threshold = Math.max(36, ul.clientWidth * 0.10);
       if (horizontal && Math.abs(dx) > threshold) settle(dx < 0 ? 1 : -1);
       else if (!moved) lightbox.open(items, active, ul);
       else settle(0);
