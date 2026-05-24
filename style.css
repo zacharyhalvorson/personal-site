@@ -433,19 +433,17 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   flex: none;
   transform:
     translateX(calc(var(--pos, 0) * 16px))
-    translateY(calc(var(--pos, 0) * 11px))
+    translateY(calc(var(--apos, 0) * 11px))
     rotate(calc(var(--pos, 0) * 1.6deg))
-    scale(calc(1 - var(--pos, 0) * 0.045));
+    scale(calc(1 - var(--apos, 0) * 0.045));
   transform-origin: center;
-  opacity: calc(1 - var(--pos, 0) * 0.16);
+  opacity: calc(1 - var(--apos, 0) * 0.18);
   transition: transform 0.38s var(--ease), opacity 0.38s var(--ease);
 }
-.media.is-stack .media_item.is-behind {
+.media.is-stack .media_item.is-hidden {
   opacity: 0;
-  transform: translateX(-32px) scale(0.95);
   pointer-events: none;
 }
-.media.is-stack .media_item.is-deep { opacity: 0; }
 
 /* ---------- lightbox (fullscreen) ---------- */
 

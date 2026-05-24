@@ -57,13 +57,14 @@
 
     function render() {
       lis.forEach(function (li, i) {
-        var pos = i - active;
+        var pos = i - active;                       // signed: <0 already seen, >0 upcoming
+        var apos = Math.min(Math.abs(pos), 3);
         li.style.transform = '';
         li.style.opacity = '';
-        li.style.setProperty('--pos', Math.max(0, Math.min(pos, 3)));
-        li.style.zIndex = pos < 0 ? 0 : items.length - pos;
-        li.classList.toggle('is-behind', pos < 0);
-        li.classList.toggle('is-deep', pos > 2);
+        li.style.setProperty('--pos', pos);
+        li.style.setProperty('--apos', apos);
+        li.style.zIndex = items.length - apos;
+        li.classList.toggle('is-hidden', apos > 2);
         li.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true');
       });
     }
@@ -76,6 +77,7 @@
       render();
     }
 
+    // ----- pointer drag (mouse + touch) -----
     var x0 = 0, y0 = 0, moved = false, down = false, horizontal = false;
     ul.addEventListener('dragstart', function (e) { e.preventDefault(); });
     ul.addEventListener('pointerdown', function (e) {
@@ -91,12 +93,14 @@
         horizontal = Math.abs(dx) > Math.abs(dy);
       }
       if (moved && horizontal) {
+        if (e.cancelable) e.preventDefault();        // don't let the drag scroll the page
         ul.classList.add('is-dragging');
         var atEdge = (active === 0 && dx > 0) || (active === items.length - 1 && dx < 0);
-        var eff = atEdge ? dx * 0.3 : dx; // resistance at the ends
+        var eff = atEdge ? dx * 0.3 : dx;            // resistance at the ends
         var front = lis[active];
         front.style.transform = 'translateX(' + eff + 'px) rotate(' + (eff * 0.02) + 'deg)';
         front.style.opacity = '1';
+        front.style.zIndex = items.length + 1;
       }
     });
     function release(e) {
@@ -110,6 +114,32 @@
     }
     ul.addEventListener('pointerup', release);
     ul.addEventListener('pointercancel', function () { if (down) { down = false; settle(0); } });
+
+    // ----- trackpad / wheel horizontal swipe -----
+    // A horizontal two-finger swipe fires wheel events; claim them so they
+    // leaf the stack instead of leaking into the page's vertical scroll-snap.
+    var wheelAcc = 0, wheelLock = false, wheelTimer, horizUntil = 0;
+    ul.addEventListener('wheel', function (e) {
+      var horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      var now = Date.now();
+      if (horizontal) horizUntil = now + 220;
+      // Genuine vertical scroll (no recent horizontal swipe) → let the page move.
+      if (!horizontal && now > horizUntil) return;
+      // Otherwise claim it: horizontal swipes AND their momentum tail, so an
+      // edge swipe can never leak into the page's vertical scroll-snap.
+      e.preventDefault();
+      if (wheelLock || !horizontal) return;
+      wheelAcc += e.deltaX;
+      if (Math.abs(wheelAcc) > 30) {
+        settle(wheelAcc > 0 ? 1 : -1);
+        wheelAcc = 0;
+        wheelLock = true;
+        clearTimeout(wheelTimer);
+        wheelTimer = setTimeout(function () { wheelLock = false; }, 450);
+      }
+    }, { passive: false });
+
+    // ----- keyboard -----
     ul.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowRight') { e.preventDefault(); settle(1); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); settle(-1); }
