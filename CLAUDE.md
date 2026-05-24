@@ -68,7 +68,7 @@ Deployed via **GitHub Pages** from the `master` branch. Push to `master` and the
 - A single hand-written IIFE, loaded with `defer`. No framework, no build, no dependencies.
 - Enhances every `<ul class="media" data-media>` block:
   - **One item** → click/Enter opens it fullscreen.
-  - **Multiple items** → a fanned, iMessage-style stack you leaf through inline (swipe, arrow keys, or hover chevrons); tap/click opens fullscreen.
+  - **Multiple items** → a fanned, iMessage-style stack with no visible chrome: the top card tracks your drag and settles on release (or arrow keys when focused); a plain tap/click opens fullscreen.
 - **Lightbox**: one shared native `<dialog>` (`showModal()` for focus trapping + Escape), with prev/next, counter, swipe, arrow keys, and backdrop-click to close. Supports `<img>` and `<video>`.
 - **Progressive enhancement is mandatory.** Media is authored as a plain `<ul>`/`<li>` list of `<img>`/`<video>`; with JS off it renders as a native scroll-snap strip. Keep it that way.
 

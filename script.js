@@ -41,66 +41,78 @@
     });
   }
 
-  // ---- multiple items: fanned stack with inline leafing ----
+  // ---- multiple items: fanned stack, no visible chrome ----
+  // The top card follows your finger as you drag (iMessage-style); release
+  // past a threshold to leaf, otherwise it springs back. A plain tap/click
+  // opens the fullscreen lightbox, where the nav buttons live.
   function setupStack(ul, items) {
     var lis = [].slice.call(ul.querySelectorAll('.media_item'));
     var active = 0;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'media_wrap';
-    ul.parentNode.insertBefore(wrap, ul);
-    wrap.appendChild(ul);
 
     ul.classList.add('is-stack');
     ul.setAttribute('role', 'group');
     ul.setAttribute('tabindex', '0');
     ul.setAttribute('aria-roledescription', 'media stack');
-    ul.setAttribute('aria-label', items.length + ' items — swipe or use arrow keys, click to expand');
-
-    var nav = document.createElement('div');
-    nav.className = 'media_nav';
-    var prev = makeBtn('‹', 'Previous');
-    var counter = document.createElement('span');
-    counter.className = 'media_counter';
-    var next = makeBtn('›', 'Next');
-    nav.append(prev, counter, next);
-    wrap.appendChild(nav);
+    ul.setAttribute('aria-label', items.length + ' items — drag to browse, click to expand');
 
     function render() {
       lis.forEach(function (li, i) {
         var pos = i - active;
+        li.style.transform = '';
+        li.style.opacity = '';
         li.style.setProperty('--pos', Math.max(0, Math.min(pos, 3)));
         li.style.zIndex = pos < 0 ? 0 : items.length - pos;
         li.classList.toggle('is-behind', pos < 0);
         li.classList.toggle('is-deep', pos > 2);
         li.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true');
       });
-      counter.textContent = (active + 1) + ' / ' + items.length;
-      prev.disabled = active === 0;
-      next.disabled = active === items.length - 1;
     }
-    function go(d) { active = Math.min(items.length - 1, Math.max(0, active + d)); render(); }
+    // settle: re-enable transitions, flush so the dragged position is the
+    // animation's start frame, then advance (or snap back with d === 0).
+    function settle(d) {
+      ul.classList.remove('is-dragging');
+      void ul.offsetWidth;
+      active = Math.min(items.length - 1, Math.max(0, active + d));
+      render();
+    }
 
-    prev.addEventListener('click', function (e) { e.stopPropagation(); go(-1); });
-    next.addEventListener('click', function (e) { e.stopPropagation(); go(1); });
-
-    // tap to expand vs. horizontal drag to leaf
-    var x0 = 0, y0 = 0, moved = false, down = false;
-    ul.addEventListener('pointerdown', function (e) { down = true; moved = false; x0 = e.clientX; y0 = e.clientY; });
-    ul.addEventListener('pointermove', function (e) {
-      if (down && (Math.abs(e.clientX - x0) > 10 || Math.abs(e.clientY - y0) > 10)) moved = true;
+    var x0 = 0, y0 = 0, moved = false, down = false, horizontal = false;
+    ul.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    ul.addEventListener('pointerdown', function (e) {
+      down = true; moved = false; horizontal = false;
+      x0 = e.clientX; y0 = e.clientY;
+      try { ul.setPointerCapture(e.pointerId); } catch (_) {}
     });
-    ul.addEventListener('pointerup', function (e) {
+    ul.addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - x0, dy = e.clientY - y0;
+      if (!moved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        moved = true;
+        horizontal = Math.abs(dx) > Math.abs(dy);
+      }
+      if (moved && horizontal) {
+        ul.classList.add('is-dragging');
+        var atEdge = (active === 0 && dx > 0) || (active === items.length - 1 && dx < 0);
+        var eff = atEdge ? dx * 0.3 : dx; // resistance at the ends
+        var front = lis[active];
+        front.style.transform = 'translateX(' + eff + 'px) rotate(' + (eff * 0.02) + 'deg)';
+        front.style.opacity = '1';
+      }
+    });
+    function release(e) {
       if (!down) return;
       down = false;
       var dx = e.clientX - x0, dy = e.clientY - y0;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+      var threshold = Math.max(50, ul.clientWidth * 0.16);
+      if (horizontal && Math.abs(dx) > threshold) settle(dx < 0 ? 1 : -1);
       else if (!moved) lightbox.open(items, active, ul);
-    });
-    ul.addEventListener('pointercancel', function () { down = false; });
+      else settle(0);
+    }
+    ul.addEventListener('pointerup', release);
+    ul.addEventListener('pointercancel', function () { if (down) { down = false; settle(0); } });
     ul.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); settle(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); settle(-1); }
       else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightbox.open(items, active, ul); }
     });
 
@@ -174,14 +186,5 @@
         btnNext.focus({ preventScroll: true });
       }
     };
-  }
-
-  function makeBtn(glyph, label) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'media_btn';
-    b.setAttribute('aria-label', label);
-    b.textContent = glyph;
-    return b;
   }
 })();
