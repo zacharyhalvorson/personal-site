@@ -294,39 +294,69 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   max-width: 38rem;
 }
 
-.aside {
+.tagline {
   margin: 0;
-  padding-left: 1rem;
-  border-left: 2px solid var(--highlight-deep);
-  font-size: 0.9375rem;
-  color: var(--text-light);
-  font-style: italic;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-default);
+  max-width: 32rem;
 }
 
-.chapter_bullets {
-  list-style: none;
+.meta-links {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.meta-links a { text-decoration: none; }
+.meta-links a:hover { text-decoration: underline; }
+
+/* ---------- chapter: project variant ---------- */
+
+.chapter-project .chapter_body {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  max-width: none;
+}
+
+@media (min-width: 980px) {
+  .chapter-project .chapter_body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+}
+
+.chapter_text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 34rem;
+}
+
+.chapter_figure {
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  margin-top: 0.25rem;
-  color: var(--text-soft);
-  font-size: 0.9375rem;
-  line-height: 1.5;
 }
 
-.chapter_bullets li {
-  position: relative;
-  padding-left: 1.25rem;
+.chapter_figure img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.35);
 }
 
-.chapter_bullets li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.65em;
-  width: 0.5rem;
-  height: 1px;
-  background: var(--text-light);
+.chapter_figure figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--text-light);
 }
 
 /* ---------- chapter: intro variant ---------- */
@@ -530,7 +560,8 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   }
   html { scroll-snap-type: none; scroll-behavior: auto; }
   body { font-size: 11pt; line-height: 1.4; }
-  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials { display: none !important; }
+  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials, .chapter_figure { display: none !important; }
+  .chapter-project .chapter_body { display: block; }
   .chapter {
     min-height: 0;
     page-break-inside: avoid;

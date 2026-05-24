@@ -4,7 +4,7 @@
 
 Personal site for Zachary Halvorson — a product designer based in Seattle, currently at Meta Reality Labs. Deployed at [www.zacharyhalvorson.com](https://www.zacharyhalvorson.com).
 
-The site is a single-page, scroll-snapped narrative resume / portfolio: an intro section followed by one full-viewport section per career chapter (Meta → Clio → Dooly → BrainStation → Mobify), then a closing colophon with education and contact.
+The site is a single-page, scroll-snapped portfolio: an intro section followed by one full-viewport section per project (Meta Ray-Ban Display → Ray-Ban Meta → Clio Scheduler → Dooly), each with a representative image, then a closing colophon with education and contact.
 
 Intentionally minimal: **plain HTML and CSS only**. No JavaScript, no frameworks, no build tools, no package manager.
 
@@ -29,7 +29,8 @@ Intentionally minimal: **plain HTML and CSS only**. No JavaScript, no frameworks
 ├── embed-image.png         # Open Graph / social preview image
 └── images/
     ├── me/                 # Profile photos (400w, 600w, 1200w, full)
-    └── socials/            # Social media icons (GitHub, LinkedIn, etc.)
+    ├── socials/            # Social media icons (GitHub, LinkedIn, etc.)
+    └── work/               # One representative image per project
 ```
 
 ## Development
