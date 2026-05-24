@@ -4,15 +4,15 @@
 
 Personal site for Zachary Halvorson — a product designer based in Seattle, currently at Meta Reality Labs. Deployed at [www.zacharyhalvorson.com](https://www.zacharyhalvorson.com).
 
-The site is a single-page, scroll-snapped narrative resume / portfolio: an intro section followed by one full-viewport section per career chapter (Meta → Clio → Dooly → BrainStation → Mobify), then a closing colophon with education and contact.
+The site is a single-page, scroll-snapped portfolio: an intro section followed by one full-viewport section per project (Meta Ray-Ban Display → Ray-Ban Meta → Clio Scheduler → Dooly), each with a representative image, then a closing colophon with education and contact.
 
-Intentionally minimal: **plain HTML and CSS only**. No JavaScript, no frameworks, no build tools, no package manager.
+Intentionally minimal: hand-written **HTML and CSS**, plus **one small vanilla-JS progressive-enhancement file** (`script.js`) that powers the project media stacks and fullscreen lightbox. No frameworks, no build tools, no package manager. With JS disabled, the site fully degrades (media falls back to a native scroll-snap strip).
 
 ## Tech Stack
 
 - **HTML5** — semantic markup
 - **CSS3** — custom properties, grid, `scroll-snap`, scroll-driven animations, `clamp()`, `svh`
-- **No JavaScript**
+- **Vanilla JS** — one small progressive-enhancement file (`script.js`), no framework, no build
 - **No build step** — files served as-is
 - **No package.json** — zero npm dependencies
 
@@ -20,8 +20,9 @@ Intentionally minimal: **plain HTML and CSS only**. No JavaScript, no frameworks
 
 ```
 /
-├── index.html              # The entire site — intro + 5 job chapters + colophon
+├── index.html              # The entire site — intro + 4 project chapters + colophon
 ├── style.css               # All styles
+├── script.js               # Progressive enhancement: media stacks + lightbox
 ├── CNAME                   # GitHub Pages custom domain (www.zacharyhalvorson.com)
 ├── favicon.ico             # Favicon
 ├── favicon-152.png         # Apple touch icon (152px)
@@ -29,7 +30,8 @@ Intentionally minimal: **plain HTML and CSS only**. No JavaScript, no frameworks
 ├── embed-image.png         # Open Graph / social preview image
 └── images/
     ├── me/                 # Profile photos (400w, 600w, 1200w, full)
-    └── socials/            # Social media icons (GitHub, LinkedIn, etc.)
+    ├── socials/            # Social media icons (GitHub, LinkedIn, etc.)
+    └── work/               # One representative image per project
 ```
 
 ## Development
@@ -60,6 +62,15 @@ Deployed via **GitHub Pages** from the `master` branch. Push to `master` and the
 - Responsive images via `<picture>` + `srcset`/`sizes`; `fetchpriority="high"` on the intro photo
 - Full Open Graph + Twitter Card meta block
 - External links use `target="_blank" rel="noopener noreferrer"`
+
+### JavaScript (`script.js`)
+
+- A single hand-written IIFE, loaded with `defer`. No framework, no build, no dependencies.
+- Enhances every `<ul class="media" data-media>` block:
+  - **One item** → click/Enter opens it fullscreen.
+  - **Multiple items** → a fanned, iMessage-style stack with no visible chrome: the top card tracks your drag and settles on release (or arrow keys when focused); a plain tap/click opens fullscreen.
+- **Lightbox**: one shared native `<dialog>` (`showModal()` for focus trapping + Escape), with prev/next, counter, swipe, arrow keys, and backdrop-click to close. Supports `<img>` and `<video>`.
+- **Progressive enhancement is mandatory.** Media is authored as a plain `<ul>`/`<li>` list of `<img>`/`<video>`; with JS off it renders as a native scroll-snap strip. Keep it that way.
 
 ### CSS (`style.css`)
 
@@ -94,8 +105,9 @@ Profile photos are provided at multiple resolutions for responsive loading. When
 
 ## Guidelines for Changes
 
-- **Keep it simple.** This site is intentionally minimal. Do not add JavaScript, build tools, or CSS preprocessors.
-- **Preserve the two-file architecture.** All markup in `index.html`, all styles in `style.css`.
+- **Keep it simple.** This site is intentionally minimal. No frameworks, no build tools, no CSS preprocessors, no npm. The only JavaScript is the single hand-written `script.js`; if you extend it, keep it vanilla and dependency-free.
+- **Preserve the file architecture.** All markup in `index.html`, all styles in `style.css`, all behavior in `script.js`.
+- **Everything must work without JS.** Any new interactive feature has to degrade gracefully when scripting is unavailable.
 - **Maintain dark mode support.** Any new color values should have both light and dark variants via CSS custom properties.
 - **Maintain accessibility.** Use semantic HTML, proper `alt` text, `aria-hidden` on decorative elements, visible focus rings, and the skip link.
 - **Respect `prefers-reduced-motion`.** New animations should be inside `@supports` and disabled in the reduced-motion block.
