@@ -417,7 +417,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   aspect-ratio: 4 / 3;
   cursor: grab;
   outline: none;
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
 }
 .media.is-stack.is-dragging { cursor: grabbing; }
