@@ -334,12 +334,12 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
    headings, tuned for body line-heights. <mark> is the semantic element
    for "important text"; default browser styling (solid yellow) is
    overridden. Color is left inherited so emphasis doesn't shift hue.
-   Uses --highlight-deep (the more saturated yellow) and a slightly taller
-   band than display_em — body text is small, so the mark needs a bit
-   more weight to register at the same prominence. */
+   Heaviness comes from a font-weight bump rather than a tall band, so
+   the mark stays a refined highlighter stripe instead of a solid blob. */
 mark {
-  background: linear-gradient(180deg, transparent 45%, var(--highlight-deep) 45%, var(--highlight-deep) 96%, transparent 96%);
+  background: linear-gradient(180deg, transparent 52%, var(--highlight-deep) 52%, var(--highlight-deep) 94%, transparent 94%);
   color: inherit;
+  font-weight: 600;
   padding: 0 0.05em;
 }
 /* Intro only: keep "Zach[ary] Halvorson" together so wrap never splits the
