@@ -427,7 +427,10 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
     grid-template-areas:
       "heading heading"
       "text    figure";
-    align-items: start;
+    /* Text and figure both sit centered in their row, so the text isn't
+       pinned to the top of a much taller stack box. Heading row is a single
+       cell so this only affects the text/figure alignment. */
+    align-items: center;
     column-gap: clamp(2rem, 5vw, 4rem);
     row-gap: clamp(1rem, 2vw, 1.75rem);
   }
