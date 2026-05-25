@@ -297,9 +297,12 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 
 .display_em {
   background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%, var(--highlight) 92%, transparent 92%);
-  /* Keep "Zach[ary] Halvorson" together so wrap never splits the name. The
-     inline-block on .display_shift would otherwise let the browser break
-     before "Halvorson" despite the &nbsp;. */
+}
+/* Intro only: keep "Zach[ary] Halvorson" together so wrap never splits the
+   name. The inline-block on .display_shift would otherwise let the browser
+   break before "Halvorson" despite the &nbsp;. Project chapter headings
+   (also using .display_em) need to wrap inside their narrower column. */
+.chapter-intro .display_em {
   white-space: nowrap;
 }
 
