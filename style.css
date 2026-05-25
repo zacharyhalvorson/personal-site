@@ -128,21 +128,22 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 
 .rail {
   position: fixed;
-  right: clamp(0.75rem, 2vw, 1.5rem);
+  right: clamp(0.375rem, 0.8vw, 0.75rem);
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  gap: 0.625rem;
   z-index: 15;
-  padding: 0.75rem 0.5rem;
+  padding: 0.75rem 0;
 }
 
 .rail a {
   display: flex;
+  /* dash on the right edge, label slides in from the right of the dash */
+  flex-direction: row-reverse;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.625rem;
+  gap: 0.5rem;
   color: var(--text-light);
   text-decoration: none;
   font-family: var(--font-mono);
@@ -151,27 +152,36 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   text-transform: uppercase;
 }
 
+/* Subtle horizontal dash; widens on hover/focus to invite tapping. */
 .rail_dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+  width: 8px;
+  height: 1.5px;
+  border-radius: 1px;
   background: var(--text-light);
-  opacity: 0.45;
-  transition: opacity 160ms var(--ease), transform 160ms var(--ease), background 160ms var(--ease);
+  opacity: 0.32;
   flex-shrink: 0;
+  transition: width 220ms var(--ease), opacity 220ms var(--ease), background 220ms var(--ease);
 }
 
 .rail_label {
   opacity: 0;
   transform: translateX(4px);
-  transition: opacity 160ms var(--ease), transform 160ms var(--ease);
+  transition: opacity 220ms var(--ease), transform 220ms var(--ease), color 220ms var(--ease);
+  white-space: nowrap;
 }
 
+/* Current section's dash: slightly longer + darker than the rest, but still
+   subtle. Hover/focus wins (full grow + label). */
+.rail a.is-current .rail_dot {
+  width: 16px;
+  opacity: 0.7;
+  background: var(--text-default);
+}
 .rail a:hover .rail_dot,
 .rail a:focus-visible .rail_dot {
+  width: 24px;
   opacity: 1;
   background: var(--text-default);
-  transform: scale(1.3);
 }
 .rail a:hover .rail_label,
 .rail a:focus-visible .rail_label {
@@ -219,9 +229,11 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 .chapter_meta {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  /* Tight base so when/where read as a pair under the role line. */
+  gap: 0.125rem;
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
   color: var(--text-light);
   letter-spacing: 0.02em;
 }
@@ -233,10 +245,11 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   color: var(--text-default);
   border-radius: 999px;
   font-size: 0.6875rem;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   align-self: flex-start;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .chapter_kicker {
@@ -246,9 +259,10 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 
 .chapter_role {
-  margin: 0;
+  margin: 0 0 0.4rem;
   color: var(--text-default);
   font-size: 0.9375rem;
+  line-height: 1.3;
   font-weight: 500;
   font-family: var(--font-sans);
   letter-spacing: 0;
@@ -274,10 +288,10 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 
 .display {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(2.25rem, 6vw, 4.5rem);
   line-height: 1.02;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.028em;
   color: var(--text-default);
 }
 
@@ -365,18 +379,24 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   margin: 0;
   aspect-ratio: 4 / 3;
 }
+.media_item {
+  /* drop-shadow follows the squircle clip-path on the inner img/video */
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.18));
+}
 .media_item img,
 .media_item video {
   display: block;
   width: 100%;
   height: 100%;
+  /* cover (not contain) so inactive cards in the stack — whose container uses
+     the active item's aspect — crop to fill instead of letterboxing. The
+     active card's aspect always matches its image, so no crop happens there. */
   object-fit: cover;
   -webkit-user-drag: none;
   user-select: none;
-  border-radius: 10px;
-  border: 1px solid var(--rule);
+  border-radius: 12px;
   background: var(--surface);
-  box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.35);
+  --smooth-r: 12px;
 }
 .media_item:has(video)::before,
 .media_item:has(video)::after {
@@ -414,7 +434,12 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   display: block;
   position: relative;
   overflow: visible;
-  aspect-ratio: 4 / 3;
+  /* Fixed bounding area — the stack no longer reshapes when the active card
+     changes. Each card inside is sized to its own natural aspect (via JS),
+     so a vertical phone screenshot becomes a tall narrow card and a 16:9
+     hero stays wide — but the page layout doesn't shift on swipe. */
+  width: 100%;
+  height: clamp(280px, 52svh, 520px);
   cursor: grab;
   outline: none;
   touch-action: none;
@@ -422,32 +447,58 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 .media.is-stack.is-dragging { cursor: grabbing; }
 .media.is-stack.is-dragging .media_item { transition: none; }
-.media.is-stack:focus-visible {
-  outline: 2px solid var(--link);
-  outline-offset: 8px;
-  border-radius: 14px;
-}
+/* No focus outline — the stack receives focus when the lightbox restores it
+   after dismissal, and a big blue ring around the figure is more distracting
+   than useful. The cards themselves are large click targets, and keyboard
+   users can still tab through socials / skip link / rail dots which keep
+   their visible focus indicators. */
+.media.is-stack { outline: none; }
+.media.is-stack:focus-visible { outline: none; }
 .media.is-stack .media_item {
   position: absolute;
+  /* center each card inside the fixed stack area; width/height are set
+     inline by JS to match each item's natural aspect ratio. */
   inset: 0;
+  margin: auto;
   flex: none;
+  /* Override the base aspect-ratio (used by the no-JS scroll strip) — in
+     stack mode each card has its own aspect via JS-set width/height. */
+  aspect-ratio: auto;
+  /* --stack-tx is set by JS per card so behind cards always poke past the
+     active card's edge — even when a narrow card sits behind a wider one. */
   transform:
-    translateX(calc(var(--pos, 0) * 16px))
+    translateX(var(--stack-tx, 0px))
     translateY(calc(var(--apos, 0) * 11px))
     rotate(calc(var(--pos, 0) * 1.6deg))
     scale(calc(1 - var(--apos, 0) * 0.045));
   transform-origin: center;
-  opacity: calc(1 - var(--apos, 0) * 0.18);
+  /* Cards behind the front stay fully opaque — they're a stack of real
+     artifacts, not faded ghosts. Only the lightbox dims non-active peeks. */
   transition: transform 0.38s var(--ease), opacity 0.38s var(--ease);
 }
 .media.is-stack .media_item.is-hidden {
   opacity: 0;
   pointer-events: none;
 }
+.media.is-stack .media_item.is-source {
+  visibility: hidden;
+}
+/* While the lightbox is open (some item is the source), hide everything in
+   the stack except the active card — otherwise the user sees the cards
+   behind re-crop as the container's aspect-ratio changes with navigation. */
+.media.is-stack:has(.is-source) .media_item:not(.is-front) {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--ease);
+}
 
-/* ---------- lightbox (fullscreen) ---------- */
+/* ---------- lightbox (fullscreen carousel) ---------- */
 
+/* Items are content-sized so vertical media stays narrow and the gap between
+   neighbours always reveals real media content as a peek. */
 .lightbox {
+  --lb-gap: 3vw;
+
   inset: 0;
   margin: 0;
   width: 100vw;
@@ -457,76 +508,155 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   padding: 0;
   border: none;
   background: transparent;
-  overflow: hidden;
+  /* clip (not hidden) — hidden still allows programmatic scrollLeft, which
+     browsers do automatically when focus lands on an offscreen child. */
+  overflow: clip;
+  outline: none;
+  color: #fff;
 }
 .lightbox::backdrop {
-  background: rgba(12, 11, 10, 0.92);
-  backdrop-filter: blur(4px);
+  background: rgba(8, 7, 6, 0);
+  backdrop-filter: blur(0px);
+  transition: background-color 0.32s var(--ease), backdrop-filter 0.32s var(--ease);
 }
-.lightbox_stage {
+.lightbox.is-open::backdrop {
+  background: rgba(8, 7, 6, 0.55);
+  backdrop-filter: blur(12px);
+}
+
+.lightbox_track {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: clamp(1rem, 5vw, 4rem);
-}
-.lightbox_media {
-  max-width: 92vw;
-  max-height: 84dvh;
-  width: auto;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 30px 90px -20px rgba(0, 0, 0, 0.7);
-}
-.lightbox_close,
-.lightbox_nav {
-  position: absolute;
-  z-index: 2;
-  border: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background 0.2s var(--ease);
+  gap: var(--lb-gap);
+  padding-inline: 50vw;
+  transform: translate3d(calc(var(--lb-tx, 0px) + var(--lb-drag, 0px)), 0, 0);
+  transition: transform 0.44s var(--ease);
+  will-change: transform;
+  /* none — JS owns every gesture; pan-y would let the browser pre-empt the
+     horizontal swipe before our pointer handler ever sees the move. */
+  touch-action: none;
 }
-.lightbox_close:hover,
-.lightbox_nav:hover { background: rgba(255, 255, 255, 0.28); }
-.lightbox_close:focus-visible,
-.lightbox_nav:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+.lightbox.is-dragging .lightbox_track { transition: none; }
+
+.lightbox_item {
+  /* width / height set inline by JS from each item's aspect ratio, so a tiny
+     phone screenshot scales up to a tall, narrow card and a wide hero stays
+     letterbox-free. Recomputed on viewport resize. */
+  position: relative;
+  flex: 0 0 auto;
+  /* Peeks start invisible so the morphing item is the only thing visible
+     when the lightbox opens; they fade in once the backdrop has darkened.
+     Active item scales up to full size while peeks rest at a touch smaller. */
+  opacity: 0;
+  transform: scale(1);
+  transform-origin: center;
+  transition:
+    opacity 0.32s var(--ease) 0.08s,
+    transform 0.36s var(--ease);
 }
-.lightbox_close {
-  top: 1rem;
-  right: 1rem;
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1.6rem;
+/* Peeks (non-active) shrink slightly once the lightbox is open. The active
+   item stays at scale 1 — its inner media has its own FLIP morph and we
+   don't want a CSS transform on the wrapper to interfere with that. */
+.lightbox.is-open .lightbox_item:not(.is-active) {
+  transform: scale(0.9);
 }
-.lightbox_nav {
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.8rem;
+.lightbox.is-open .lightbox_item { opacity: 1; }
+.lightbox_item.is-active { opacity: 1; }
+
+.lightbox_item {
+  /* drop-shadow follows the squircle clip-path on the inner img/video.
+     --lb-dim is 1 for the active item and < 1 for peeks so they read as a
+     touch darker — using brightness (not opacity) keeps them opaque so the
+     dark backdrop doesn't show through. */
+  --lb-dim: 1;
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.45)) brightness(var(--lb-dim));
+  transition: filter 0.36s var(--ease);
 }
-.lightbox_nav.-prev { left: clamp(0.5rem, 2vw, 1.5rem); }
-.lightbox_nav.-next { right: clamp(0.5rem, 2vw, 1.5rem); }
-.lightbox_counter {
+.lightbox.is-open .lightbox_item:not(.is-active) {
+  --lb-dim: 0.62;
+}
+.lightbox_item img,
+.lightbox_item video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Match the in-page stack so source and target are visually identical
+     during the morph. Container is sized to the media's aspect, so cover
+     just fills — no crop happens at the active size. */
+  object-fit: cover;
+  border-radius: 12px;
+  /* default smooth radius; overridden by JS so morph swap matches in-page */
+  --smooth-r: 12px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* peeked items are tappable, active image content is not (tap-to-close happens on backdrop) */
+.lightbox_item:not(.is-active) { cursor: pointer; }
+.lightbox_item:not(.is-active) img,
+.lightbox_item:not(.is-active) video { pointer-events: none; }
+
+/* ---------- lightbox: per-item caption pill ---------- */
+
+.lightbox_caption {
   position: absolute;
-  bottom: 1rem;
-  left: 0;
-  right: 0;
-  margin: 0;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.8);
+  bottom: max(env(safe-area-inset-bottom, 0px), 1.25rem);
+  left: 50%;
+  z-index: 4;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  color: rgba(255, 255, 255, 0.86);
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-50%, 6px, 0) scale(0.9);
+  transition:
+    width 0.34s var(--ease),
+    opacity 0.30s var(--ease),
+    transform 0.34s var(--ease);
 }
+.lightbox.is-open .lightbox_caption:not(.is-empty) {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
+.lightbox_caption_text {
+  display: inline-block;
+  transition: opacity 0.18s var(--ease);
+}
+/* Inline links inside captions: pill stays click-through so backdrop taps
+   still dismiss; the anchor opts back into events. */
+.lightbox_caption a {
+  pointer-events: auto;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.18s var(--ease);
+}
+.lightbox_caption a:hover {
+  text-decoration-color: rgba(255, 255, 255, 0.9);
+}
+/* fade the inner text out while the pill's width morphs to the new caption */
+.lightbox_caption.is-swapping .lightbox_caption_text { opacity: 0; }
+.lightbox_caption.is-empty { opacity: 0 !important; }
+
+/* Off-screen measuring ghost — same styles + content-sized so we can read
+   the natural width of the next caption before animating to it. */
+.lightbox_caption.is-ghost {
+  visibility: hidden;
+  opacity: 0 !important;
+  width: max-content;
+  transition: none;
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
+
 
 /* ---------- chapter: intro variant ---------- */
 
@@ -535,20 +665,24 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 
 .intro_photo {
-  width: clamp(140px, 28vw, 220px);
+  width: clamp(120px, 22vw, 180px);
   margin-top: 0.5rem;
+  /* drop-shadow follows the squircle clip-path; box-shadow would be rectangular */
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
 }
 .intro_photo img {
   width: 100%;
-  border-radius: 50%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  box-shadow: 0 8px 30px -10px rgba(0, 0, 0, 0.18);
+  /* corner radius is applied as a squircle via clip-path in script.js; this
+     fallback border-radius keeps a reasonable shape when JS is off. */
+  border-radius: 22%;
+  --smooth-r: 28px;
 }
 
 @media (min-width: 760px) {
   .chapter-intro .intro_photo {
-    width: clamp(180px, 22vw, 280px);
+    width: clamp(140px, 16vw, 200px);
   }
 }
 
