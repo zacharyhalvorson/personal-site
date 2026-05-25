@@ -82,7 +82,7 @@
     var narrow = window.matchMedia && window.matchMedia('(max-width: 599px)').matches;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (narrow || reduce) return;
-    setTimeout(function () { document.title = 'Zach Halvorson'; }, 5100);
+    setTimeout(function () { document.title = 'Zach Halvorson — Staff Product Designer'; }, 5100);
   })();
 
   // ---------- iOS-style squircle corners ----------
