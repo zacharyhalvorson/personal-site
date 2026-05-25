@@ -733,15 +733,23 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   left: 50%;
   z-index: 4;
   padding: 0.45rem 0.95rem;
-  border-radius: 999px;
+  /* Cap the pill so long captions wrap inside the viewport on narrow screens
+     instead of bleeding off both edges (the pill is centered via translateX
+     -50%, so anything wider than the viewport gets clipped at both ends). */
+  max-width: min(90vw, 40rem);
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(14px);
   color: rgba(255, 255, 255, 0.86);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.02em;
-  line-height: 1.3;
-  white-space: nowrap;
+  line-height: 1.35;
+  /* Wrap when the line would exceed the max-width; center the wrapped lines
+     so the bubble reads as a balanced caption rather than a left-aligned tag. */
+  white-space: normal;
+  text-align: center;
+  text-wrap: balance;
   pointer-events: none;
   opacity: 0;
   transform: translate3d(-50%, 6px, 0) scale(0.9);
@@ -776,7 +784,9 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 .lightbox_caption.is-empty { opacity: 0 !important; }
 
 /* Off-screen measuring ghost, same styles + content-sized so we can read
-   the natural width of the next caption before animating to it. */
+   the natural width of the next caption before animating to it. Inherits
+   max-width from the rule above so wide captions wrap at the same point in
+   both ghost and visible — JS measurement matches what the user will see. */
 .lightbox_caption.is-ghost {
   visibility: hidden;
   opacity: 0 !important;
