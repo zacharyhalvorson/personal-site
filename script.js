@@ -348,12 +348,32 @@
       else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightbox.open(items, active, lis[active], setActiveTo); }
     });
 
-    // Re-fit cards whenever the stack's bounding box could have changed.
-    // Re-render too: --stack-tx depends on card widths and would otherwise
-    // hold stale values from a wider viewport, pushing behind cards off-screen.
-    window.addEventListener('resize', function () { sizeCards(); render(); });
-    sizeCards();
-    render();
+    // Re-fit whenever the stack's box actually changes. On a cold cache,
+    // Safari can run this defer script before style.css has applied — at
+    // that point getBoundingClientRect returns the ul's natural content
+    // height (a 1920×1080 video at intrinsic size, say), and sizeCards
+    // stamps those huge numbers as inline width/height on every card,
+    // overflowing the page until refresh. The fit() gate keeps the stack
+    // hidden until the box's height is in its CSS-defined range, and a
+    // ResizeObserver re-fires when the stylesheet finally applies (or
+    // when the viewport / mobile address bar changes the box).
+    ul.style.visibility = 'hidden';
+    function fit() {
+      var r = ul.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      // .media.is-stack pins height to ≤ 520px (52svh). A box dramatically
+      // taller than the viewport means CSS hasn't applied yet; defer.
+      if (r.height > window.innerHeight) return;
+      sizeCards();
+      render();
+      ul.style.visibility = '';
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(fit).observe(ul);
+    } else {
+      window.addEventListener('resize', fit);
+    }
+    fit();
   }
 
   // ---- shared fullscreen carousel lightbox ----
