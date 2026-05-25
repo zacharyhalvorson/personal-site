@@ -333,9 +333,12 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 /* Inline body-text highlight: same highlighter gradient as the display
    headings, tuned for body line-heights. <mark> is the semantic element
    for "important text"; default browser styling (solid yellow) is
-   overridden. Color is left inherited so emphasis doesn't shift hue. */
+   overridden. Color is left inherited so emphasis doesn't shift hue.
+   Uses --highlight-deep (the more saturated yellow) and a slightly taller
+   band than display_em — body text is small, so the mark needs a bit
+   more weight to register at the same prominence. */
 mark {
-  background: linear-gradient(180deg, transparent 55%, var(--highlight) 55%, var(--highlight) 95%, transparent 95%);
+  background: linear-gradient(180deg, transparent 45%, var(--highlight-deep) 45%, var(--highlight-deep) 96%, transparent 96%);
   color: inherit;
   padding: 0 0.05em;
 }
