@@ -329,6 +329,16 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 .display_em {
   background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%, var(--highlight) 92%, transparent 92%);
 }
+
+/* Inline body-text highlight: same highlighter gradient as the display
+   headings, tuned for body line-heights. <mark> is the semantic element
+   for "important text"; default browser styling (solid yellow) is
+   overridden. Color is left inherited so emphasis doesn't shift hue. */
+mark {
+  background: linear-gradient(180deg, transparent 55%, var(--highlight) 55%, var(--highlight) 95%, transparent 95%);
+  color: inherit;
+  padding: 0 0.05em;
+}
 /* Intro only: keep "Zach[ary] Halvorson" together so wrap never splits the
    name. The inline-block on .display_shift would otherwise let the browser
    break before "Halvorson" despite the &nbsp;. Project chapter headings
@@ -1030,6 +1040,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
     line-height: 1.15;
   }
   .display_em { background: none; padding: 0; }
+  mark { background: none; padding: 0; color: inherit; }
   .lede { font-size: 11pt; }
   .chapter_index { background: none; padding: 0; }
   a { color: #000; text-decoration: underline; }
