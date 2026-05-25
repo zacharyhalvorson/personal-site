@@ -150,9 +150,11 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  /* No gap between links; each link's vertical padding does double duty as
+     visual spacing and as a touch target, so the cursor never falls into a
+     dead zone between dashes. */
   z-index: 15;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
 }
 
 .rail a {
@@ -161,6 +163,9 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+  /* Half of the previous inter-link gap on each side, so the visual rhythm
+     between dashes is preserved while adjacent links share an edge. */
+  padding-block: 0.3125rem;
   color: var(--text-light);
   text-decoration: none;
   font-family: var(--font-mono);
