@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./style.css?v=20260525k">
-    <script src="./script.js?v=20260525k" defer></script>
+    <link rel="stylesheet" href="./style.css?v=20260525m">
+    <script src="./script.js?v=20260525m" defer></script>
     <link rel="canonical" href="https://zacharyhalvorson.com/">
 
     <title>Zachary Halvorson</title>
@@ -26,6 +26,15 @@
 
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Preload the intro portrait (WebP, responsive). Starts the fetch
+         before the parser reaches the <picture> tag in the body, knocking
+         a few hundred ms off LCP on cellular. -->
+    <link rel="preload" as="image"
+          type="image/webp"
+          imagesrcset="media/me/me-400w.webp 400w, media/me/me-800w.webp 800w, media/me/me-1600w.webp 1600w"
+          imagesizes="(min-width: 900px) 360px, (min-width: 600px) 280px, 60vw"
+          fetchpriority="high">
   </head>
 
   <body>
@@ -56,12 +65,14 @@
             <p class="tagline">A burger-obsessed, Japanese-learning, fermentation-loving, codes-y designer. Here's some of the work I'm proud of.</p>
 
             <picture class="intro_photo">
-              <source media="(min-width: 900px)" srcset="media/me/me-1200w.jpg 1200w, media/me/me-600w.jpg 600w" sizes="360px">
+              <source type="image/webp"
+                      srcset="media/me/me-400w.webp 400w, media/me/me-800w.webp 800w, media/me/me-1600w.webp 1600w"
+                      sizes="(min-width: 900px) 360px, (min-width: 600px) 280px, 60vw">
               <img
-                src="media/me/me-600w.jpg"
-                srcset="media/me/me-600w.jpg 600w, media/me/me-400w.jpg 400w"
-                sizes="(min-width: 600px) 280px, 60vw"
-                width="600" height="600"
+                src="media/me/me-800w.jpg"
+                srcset="media/me/me-400w.jpg 400w, media/me/me-800w.jpg 800w, media/me/me-1600w.jpg 1600w"
+                sizes="(min-width: 900px) 360px, (min-width: 600px) 280px, 60vw"
+                width="800" height="800"
                 fetchpriority="high"
                 decoding="async"
                 alt="Portrait of Zachary Halvorson.">
@@ -99,7 +110,10 @@
                     <source src="media/work-samples/meta-rayban-display/handwriting-ad.mp4" type="video/mp4">
                   </video>
                 </li>
-                <li class="media_item" data-caption="Teleprompter, the in-lens reading flow"><img src="media/work-samples/meta-rayban-display/teleprompter.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Meta Ray-Ban Display Teleprompter, shown in the in-lens display view."></li>
+                <li class="media_item" data-caption="Teleprompter, the in-lens reading flow"><picture>
+                  <source type="image/webp" srcset="media/work-samples/meta-rayban-display/teleprompter-400w.webp 400w, media/work-samples/meta-rayban-display/teleprompter-800w.webp 800w, media/work-samples/meta-rayban-display/teleprompter.webp 1600w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/meta-rayban-display/teleprompter-800w.jpg" srcset="media/work-samples/meta-rayban-display/teleprompter-400w.jpg 400w, media/work-samples/meta-rayban-display/teleprompter-800w.jpg 800w, media/work-samples/meta-rayban-display/teleprompter.jpg 1600w" sizes="(min-width: 980px) 500px, 90vw" width="1600" height="900" loading="lazy" decoding="async" alt="Meta Ray-Ban Display Teleprompter, shown in the in-lens display view.">
+                </picture></li>
               </ul>
             </figure>
           </div>
@@ -121,7 +135,10 @@
             </div>
             <figure class="chapter_figure">
               <ul class="media list-reset" data-media>
-                <li class="media_item -bare" data-caption="Ray-Ban Meta"><img src="media/work-samples/rayban-meta/product.png" width="1500" height="1080" loading="lazy" decoding="async" alt="Ray-Ban Meta smart glasses, product shot."></li>
+                <li class="media_item -bare" data-caption="Ray-Ban Meta"><picture>
+                  <source type="image/webp" srcset="media/work-samples/rayban-meta/product-400w.webp 400w, media/work-samples/rayban-meta/product-800w.webp 800w, media/work-samples/rayban-meta/product.webp 1500w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/rayban-meta/product-800w.png" srcset="media/work-samples/rayban-meta/product-400w.png 400w, media/work-samples/rayban-meta/product-800w.png 800w" sizes="(min-width: 980px) 500px, 90vw" width="1500" height="1080" loading="lazy" decoding="async" alt="Ray-Ban Meta smart glasses, product shot.">
+                </picture></li>
                 <li class="media_item" data-caption="Meta Connect spotlight on livestreaming">
                   <video width="1920" height="1080" poster="media/work-samples/rayban-meta/meta-connect-livestreaming-poster.jpg" preload="none" muted playsinline>
                     <source src="media/work-samples/rayban-meta/meta-connect-livestreaming.mp4" type="video/mp4">
@@ -132,7 +149,10 @@
                     <source src="media/work-samples/rayban-meta/leclerc-ad.mp4" type="video/mp4">
                   </video>
                 </li>
-                <li class="media_item" data-caption='Spotted in the wild and on <a href="https://www.instagram.com/reels/C3ORgxrPGAS/" target="_blank" rel="noopener noreferrer">Kenji&apos;s reel</a> after I DMd him'><img src="media/work-samples/rayban-meta/kenji-livestream.png" width="1179" height="2556" loading="lazy" decoding="async" alt="Live broadcast viewer on mobile, Ray-Ban Meta livestream."></li>
+                <li class="media_item" data-caption='Spotted in the wild and on <a href="https://www.instagram.com/reels/C3ORgxrPGAS/" target="_blank" rel="noopener noreferrer">Kenji&apos;s reel</a> after I DMd him'><picture>
+                  <source type="image/webp" srcset="media/work-samples/rayban-meta/kenji-livestream-400w.webp 400w, media/work-samples/rayban-meta/kenji-livestream-800w.webp 800w, media/work-samples/rayban-meta/kenji-livestream.webp 1179w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/rayban-meta/kenji-livestream-800w.jpg" srcset="media/work-samples/rayban-meta/kenji-livestream-400w.jpg 400w, media/work-samples/rayban-meta/kenji-livestream-800w.jpg 800w, media/work-samples/rayban-meta/kenji-livestream.jpg 1179w" sizes="(min-width: 980px) 500px, 90vw" width="1179" height="2556" loading="lazy" decoding="async" alt="Live broadcast viewer on mobile, Ray-Ban Meta livestream.">
+                </picture></li>
               </ul>
             </figure>
           </div>
@@ -155,8 +175,14 @@
             </div>
             <figure class="chapter_figure">
               <ul class="media list-reset" data-media>
-                <li class="media_item" data-caption="Responsive booking interface"><img src="media/work-samples/scheduler/desktop.png" width="2260" height="2048" loading="lazy" decoding="async" alt="Clio Scheduler desktop booking dashboard."></li>
-                <li class="media_item" data-caption="Tablet booking view"><img src="media/work-samples/scheduler/tablet.png" width="1044" height="1366" loading="lazy" decoding="async" alt="Clio Scheduler tablet booking view."></li>
+                <li class="media_item" data-caption="Responsive booking interface"><picture>
+                  <source type="image/webp" srcset="media/work-samples/scheduler/desktop-400w.webp 400w, media/work-samples/scheduler/desktop-800w.webp 800w, media/work-samples/scheduler/desktop-1600w.webp 1600w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/scheduler/desktop-800w.jpg" srcset="media/work-samples/scheduler/desktop-400w.jpg 400w, media/work-samples/scheduler/desktop-800w.jpg 800w, media/work-samples/scheduler/desktop-1600w.jpg 1600w" sizes="(min-width: 980px) 500px, 90vw" width="1600" height="1450" loading="lazy" decoding="async" alt="Clio Scheduler desktop booking dashboard.">
+                </picture></li>
+                <li class="media_item" data-caption="Tablet booking view"><picture>
+                  <source type="image/webp" srcset="media/work-samples/scheduler/tablet-400w.webp 400w, media/work-samples/scheduler/tablet-800w.webp 800w, media/work-samples/scheduler/tablet.webp 1044w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/scheduler/tablet-800w.jpg" srcset="media/work-samples/scheduler/tablet-400w.jpg 400w, media/work-samples/scheduler/tablet-800w.jpg 800w, media/work-samples/scheduler/tablet.jpg 1044w" sizes="(min-width: 980px) 500px, 90vw" width="1044" height="1366" loading="lazy" decoding="async" alt="Clio Scheduler tablet booking view.">
+                </picture></li>
                 <li class="media_item" data-caption="What we shipped as a v1">
                   <video width="1044" height="1854" poster="media/work-samples/scheduler/mvp-poster.jpg" preload="none" muted playsinline>
                     <source src="media/work-samples/scheduler/mvp.mp4" type="video/mp4">
@@ -167,7 +193,10 @@
                     <source src="media/work-samples/scheduler/payments.mp4" type="video/mp4">
                   </video>
                 </li>
-                <li class="media_item" data-caption="Clio Con Announcement"><img src="media/work-samples/scheduler/clio-con.png" width="1744" height="906" loading="lazy" decoding="async" alt="Clio Scheduler announcement at Clio Con."></li>
+                <li class="media_item" data-caption="Clio Con Announcement"><picture>
+                  <source type="image/webp" srcset="media/work-samples/scheduler/clio-con-400w.webp 400w, media/work-samples/scheduler/clio-con-800w.webp 800w, media/work-samples/scheduler/clio-con-1600w.webp 1600w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/scheduler/clio-con-800w.jpg" srcset="media/work-samples/scheduler/clio-con-400w.jpg 400w, media/work-samples/scheduler/clio-con-800w.jpg 800w, media/work-samples/scheduler/clio-con-1600w.jpg 1600w" sizes="(min-width: 980px) 500px, 90vw" width="1600" height="832" loading="lazy" decoding="async" alt="Clio Scheduler announcement at Clio Con.">
+                </picture></li>
               </ul>
             </figure>
           </div>
@@ -186,19 +215,31 @@
           <div class="chapter_body">
             <h2 id="dooly-heading" class="display"><span class="display_em">Dooly</span></h2>
             <div class="chapter_text">
-              <p class="lede">As the first hire and sole designer, I joined pre-users and shaped Dooly end to end across product, brand, and front-end, building a note-taking tool that helps customer-facing teams have better meetings. We grew from zero to dozens of enterprise accounts, including Asana, Intercom, and Contentful.</p>
+              <p class="lede">As the first hire and sole designer, I joined pre-users and shaped Dooly end to end across product, brand, and front-end, building a note-taking tool that helps customer-facing teams have better meetings. We grew from zero to dozens of enterprise accounts, including Asana, Intercom, and Figma.</p>
             </div>
             <figure class="chapter_figure">
               <ul class="media list-reset" data-media>
-                <li class="media_item" data-caption="Consumer-minded enterprise sales enablement"><img src="media/work-samples/dooly/hero.jpeg" width="3840" height="2157" loading="lazy" decoding="async" alt="Dooly hero shot."></li>
-                <li class="media_item" data-caption="Home tab with today at a glance"><img src="media/work-samples/dooly/desktop.png" width="1021" height="1018" loading="lazy" decoding="async" alt="Dooly desktop meeting-notes interface."></li>
-                <li class="media_item" data-caption="Marketing site, branding &amp; build"><img src="media/work-samples/dooly/marketing-site.png" width="2616" height="2324" loading="lazy" decoding="async" alt="Dooly marketing site."></li>
+                <li class="media_item" data-caption="Consumer-minded enterprise sales enablement"><picture>
+                  <source type="image/webp" srcset="media/work-samples/dooly/hero-400w.webp 400w, media/work-samples/dooly/hero-800w.webp 800w, media/work-samples/dooly/hero-1600w.webp 1600w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/dooly/hero-800w.jpg" srcset="media/work-samples/dooly/hero-400w.jpg 400w, media/work-samples/dooly/hero-800w.jpg 800w, media/work-samples/dooly/hero-1600w.jpg 1600w" sizes="(min-width: 980px) 500px, 90vw" width="1600" height="898" loading="lazy" decoding="async" alt="Dooly hero shot.">
+                </picture></li>
+                <li class="media_item" data-caption="Home tab with today at a glance"><picture>
+                  <source type="image/webp" srcset="media/work-samples/dooly/desktop-400w.webp 400w, media/work-samples/dooly/desktop-800w.webp 800w, media/work-samples/dooly/desktop.webp 1021w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/dooly/desktop-800w.jpg" srcset="media/work-samples/dooly/desktop-400w.jpg 400w, media/work-samples/dooly/desktop-800w.jpg 800w, media/work-samples/dooly/desktop.jpg 1021w" sizes="(min-width: 980px) 500px, 90vw" width="1021" height="1018" loading="lazy" decoding="async" alt="Dooly desktop meeting-notes interface.">
+                </picture></li>
+                <li class="media_item" data-caption="Marketing site, branding &amp; build"><picture>
+                  <source type="image/webp" srcset="media/work-samples/dooly/marketing-site-400w.webp 400w, media/work-samples/dooly/marketing-site-800w.webp 800w, media/work-samples/dooly/marketing-site-1600w.webp 1600w" sizes="(min-width: 980px) 500px, 90vw">
+                  <img src="media/work-samples/dooly/marketing-site-800w.jpg" srcset="media/work-samples/dooly/marketing-site-400w.jpg 400w, media/work-samples/dooly/marketing-site-800w.jpg 800w, media/work-samples/dooly/marketing-site-1600w.jpg 1600w" sizes="(min-width: 980px) 500px, 90vw" width="1600" height="1422" loading="lazy" decoding="async" alt="Dooly marketing site.">
+                </picture></li>
                 <li class="media_item" data-caption="Onboarding flow">
                   <video width="1232" height="1058" poster="media/work-samples/dooly/onboarding-poster.jpg" preload="none" muted playsinline>
                     <source src="media/work-samples/dooly/onboarding.mp4" type="video/mp4">
                   </video>
                 </li>
-                <li class="media_item" data-caption="Mobile-first ethos unlocked mobile and Chrome extensions by default"><img src="media/work-samples/dooly/mobile.png" width="374" height="664" loading="lazy" decoding="async" alt="Dooly mobile app."></li>
+                <li class="media_item" data-caption="Mobile-first ethos unlocked mobile and Chrome extensions by default"><picture>
+                  <source type="image/webp" srcset="media/work-samples/dooly/mobile.webp">
+                  <img src="media/work-samples/dooly/mobile.jpg" width="374" height="664" loading="lazy" decoding="async" alt="Dooly mobile app.">
+                </picture></li>
               </ul>
             </figure>
           </div>

@@ -159,9 +159,13 @@
         };
       }
       var img = li.querySelector('img');
+      // Prefer currentSrc so the lightbox loads whatever variant the browser
+      // already picked (WebP from <picture><source>, the right responsive
+      // width via srcset/sizes). Falls back to the literal src attribute if
+      // currentSrc isn't populated yet (e.g., img hasn't been laid out).
       return {
         type: 'image',
-        src: img.getAttribute('src'),
+        src: img.currentSrc || img.getAttribute('src'),
         alt: img.alt || '',
         w: +img.getAttribute('width') || 4,
         h: +img.getAttribute('height') || 3,
@@ -435,7 +439,13 @@
           node.preload = 'metadata';
         } else {
           node = document.createElement('img');
-          node.src = it.src;
+          // Re-resolve from the in-page img at open time. `it.src` was
+          // captured at IIFE init when lazy images may not have selected a
+          // source yet (currentSrc was empty), so the cached value can be
+          // the JPG/PNG fallback. By open time the in-page img is in
+          // viewport — its currentSrc reflects the actually-loaded WebP.
+          var srcImg = it.el && it.el.querySelector('img');
+          node.src = (srcImg && srcImg.currentSrc) || it.src;
           node.alt = it.alt;
           node.draggable = false;
           node.decoding = 'async';
