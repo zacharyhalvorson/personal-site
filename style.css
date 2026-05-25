@@ -297,7 +297,65 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 
 .display_em {
   background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%, var(--highlight) 92%, transparent 92%);
-  padding: 0 0.05em;
+  /* Keep "Zach[ary] Halvorson" together so wrap never splits the name. The
+     inline-block on .display_shift would otherwise let the browser break
+     before "Halvorson" despite the &nbsp;. */
+  white-space: nowrap;
+}
+
+/* Force a break after "Hi there," at viewports where line 2 ("I'm Zachary
+   Halvorson") fits on its own line. That's two ranges:
+     - 600–759: single-column layout, the body is wide enough for line 2 and
+       forcing the break here prevents a post-collapse reflow back to 1 line.
+     - >=900: two-column layout has enough room for line 2 to fit.
+   In the gap (760–899) the two-column body is too narrow for a forced line 2,
+   so we let the heading wrap naturally to "Hi there, I'm" / "Zachary
+   Halvorson" — the nowrap on .display_em keeps the name together. */
+.display_break { display: none; }
+@media (min-width: 600px) and (max-width: 759px), (min-width: 900px) {
+  .display_break { display: inline; }
+}
+
+/* "ary" of Zachary softens, then collapses out, and Halvorson springs into
+   its new spot. Stays display:inline so the baseline matches surrounding
+   text; the collapse animates font-size to zero, which shrinks the text
+   width without creating an inline-block (which would shift the baseline). */
+.display_dim {
+  font-size: 1em;
+  /* Collapse and fade-out start together; fade-out finishes faster so the
+     text becomes invisible while only ~half the scale-down has happened.
+     The remaining collapse runs while invisible, no wonky tiny-text moment. */
+  animation:
+    name-shorten 1.4s var(--ease) 2.8s both,
+    name-collapse 0.6s var(--ease) 4.5s both,
+    name-fade-out 0.28s var(--ease) 4.5s both;
+}
+.display_shift {
+  display: inline-block;
+  animation: name-spring 0.55s cubic-bezier(0.34, 1.55, 0.55, 1) 4.95s both;
+}
+
+/* Narrow viewports: the heading wraps, putting "Halvorson" on its own line.
+   Animating it then looks broken — leave the full name static. */
+@media (max-width: 599px) {
+  .display_dim,
+  .display_shift { animation: none; }
+  .display_dim { opacity: 1; font-size: 1em; }
+  .display_shift { display: inline; transform: none; }
+}
+@keyframes name-shorten {
+  from { opacity: 1; }
+  to { opacity: 0.34; }
+}
+@keyframes name-fade-out {
+  to { opacity: 0; }
+}
+@keyframes name-collapse {
+  to { font-size: 0; }
+}
+@keyframes name-spring {
+  from { transform: translateX(6px); }
+  to   { transform: translateX(0); }
 }
 
 .lede {
@@ -454,6 +512,12 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   outline: none;
   touch-action: none;
   user-select: none;
+}
+/* On narrow viewports the figure was reserving far more vertical space than
+   most card aspects need, leaving dead air between the lede and the card.
+   Tighten it so chapters feel balanced on mobile. */
+@media (max-width: 759px) {
+  .media.is-stack { height: clamp(220px, 32svh, 320px); }
 }
 .media.is-stack.is-dragging { cursor: grabbing; }
 .media.is-stack.is-dragging .media_item { transition: none; }
@@ -672,6 +736,13 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 
 .chapter-intro .chapter_body {
   gap: 1.5rem;
+  /* Let the H1 use the full available width so "I'm Zachary Halvorson" fits
+     on one line after the forced "Hi there,"/break at wide viewports. The
+     tagline and photo keep their own size caps. */
+  max-width: none;
+}
+.chapter-intro .display {
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
 }
 
 .intro_photo {
@@ -686,8 +757,8 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   object-fit: cover;
   /* corner radius is applied as a squircle via clip-path in script.js; this
      fallback border-radius keeps a reasonable shape when JS is off. */
-  border-radius: 22%;
-  --smooth-r: 28px;
+  border-radius: 14%;
+  --smooth-r: 18px;
 }
 
 @media (min-width: 760px) {
@@ -856,6 +927,9 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  /* Keep the full name visible, no fade, no collapse, no spring, when motion is reduced. */
+  .display_dim { opacity: 1; font-size: 1em; }
+  .display_shift { display: inline; }
 }
 
 /* ---------- print: clean resume ---------- */

@@ -8,6 +8,17 @@
 (function () {
   'use strict';
 
+  // ---------- title animation: matches the "Zachary" -> "Zach" collapse ----------
+  // Mirrors the .display_dim collapse end (CSS: 4.5s delay + 0.6s duration).
+  // Skipped on narrow viewports and for reduced-motion users, who see the full
+  // name statically in the heading anyway.
+  (function () {
+    var narrow = window.matchMedia && window.matchMedia('(max-width: 599px)').matches;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (narrow || reduce) return;
+    setTimeout(function () { document.title = 'Zach Halvorson'; }, 5100);
+  })();
+
   // ---------- iOS-style squircle corners ----------
   // Approximation: single cubic Bezier per corner with extended influence
   // (smoothing = 1.4) so the curve eases in/out further from the corner than
@@ -283,7 +294,9 @@
     });
 
     // Re-fit cards whenever the stack's bounding box could have changed.
-    window.addEventListener('resize', sizeCards);
+    // Re-render too: --stack-tx depends on card widths and would otherwise
+    // hold stale values from a wider viewport, pushing behind cards off-screen.
+    window.addEventListener('resize', function () { sizeCards(); render(); });
     sizeCards();
     render();
   }
