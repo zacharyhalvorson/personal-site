@@ -57,6 +57,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Contain decorative overflow (stacked media transforms, card shadows) so
+     mobile browsers don't expose a horizontal pan. `clip` doesn't create a
+     scroll container, so the y-axis snap on <html> is unaffected. */
+  overflow-x: clip;
 }
 
 img, picture { display: block; max-width: 100%; height: auto; }
@@ -449,7 +453,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 .media_item {
   /* drop-shadow follows the squircle clip-path on the inner img/video */
-  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.18));
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.14));
 }
 .media_item img,
 .media_item video {
@@ -520,7 +524,10 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   height: clamp(280px, 52svh, 520px);
   cursor: grab;
   outline: none;
-  touch-action: none;
+  /* pan-y lets the browser own vertical scroll on the stack itself, so a swipe
+     up to reach the next section just works; JS still claims horizontal moves
+     for leafing through the cards. */
+  touch-action: pan-y;
   user-select: none;
 }
 /* On narrow viewports the figure was reserving far more vertical space than
@@ -563,6 +570,13 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 .media.is-stack .media_item.is-hidden {
   opacity: 0;
   pointer-events: none;
+}
+/* Rear cards wear a much softer shadow than the front card. Without this, the
+   front card's heavy drop-shadow lands on the white surface of the card behind
+   it and reads as a clipped, banded mess (especially obvious on light hero
+   images like Dooly). */
+.media.is-stack .media_item:not(.is-front) {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
 }
 .media.is-stack .media_item.is-source {
   visibility: hidden;
