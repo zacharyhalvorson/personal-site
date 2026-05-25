@@ -1,74 +1,264 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="./style.css">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./style.css?v=20260524p">
+    <script src="./script.js?v=20260524p" defer></script>
     <link rel="canonical" href="https://www.zacharyhalvorson.com/">
+
+    <title>Zachary Halvorson</title>
+    <meta name="description" content="Selected work by Zachary Halvorson, a product designer in Seattle. From AI smart glasses at Meta Reality Labs to the Clio Scheduler and Dooly.">
+    <meta name="keywords" content="product design, portfolio, ui design, ux design, ai design, wearables, seattle">
+
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#262626" media="(prefers-color-scheme: dark)">
 
-    <title>Zachary Halvorson</title>
-    <meta name="description" content="Hi there&#44; I&#39;m Zachary Halvorson. I&#39;m a product designer who likes to make complicated things simple — currently designing for AI Wearables at Meta&#39;s Reality Labs." />
-
-    <meta name="keywords" content="product, product design, ui design, ux design, design, seattle">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@zachhalvorson">
-    <meta name="twitter:title" content="Zachary Halvorson">
-    <meta name="twitter:description" content="I&#39;m a product designer who likes to make complicated things simple — currently designing for AI Wearables at Meta&#39;s Reality Labs.">
-    <meta name="twitter:image" content="https://zacharyhalvorson.com/embed-image.png">
-    <meta property="og:title" content="Zachary Halvorson">
-    <meta property="og:description" content="I&#39;m a product designer who likes to make complicated things simple — currently designing for AI Wearables at Meta&#39;s Reality Labs.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.zacharyhalvorson.com">
-    <meta property="og:image" content="https://zacharyhalvorson.com/embed-image.png">
+    <meta property="og:url" content="https://www.zacharyhalvorson.com/">
+    <meta property="og:title" content="Zachary Halvorson, Product Designer">
+    <meta property="og:description" content="Selected work by a product designer in Seattle. AI smart glasses at Meta Reality Labs, the Clio Scheduler, and Dooly.">
+    <meta property="og:image" content="https://www.zacharyhalvorson.com/embed-image.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Zachary Halvorson, Product Designer">
+    <meta name="twitter:description" content="Selected work by a product designer in Seattle. AI smart glasses at Meta Reality Labs, the Clio Scheduler, and Dooly.">
+    <meta name="twitter:image" content="https://www.zacharyhalvorson.com/embed-image.png">
 
-    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   </head>
-  <body class="container">
-    <div>
-      <img
-        class="profilePhoto"
-        srcset="images/me/me-600w.jpg 600w,
-                images/me/me-400w.jpg 400w"
-        sizes="(min-width: 600px) 300px,
-               30vw"
-        src="images/me/me-400w.jpg"
-        fetchpriority="high"
-        decoding="async"
-        alt="Portrait photo of Zachary Halvorson." title="👋 Nice to meet you!"
-      >
-    </div>
-    <div>
-      <section class="bio">
-        <header>
-          <h1>
-            <span>Hi there, I'm </span>
-            <span>Zachary Halvorson.</span>
-          </h1>
-        </header>
-        <p>I'm a product designer who likes to make complicated things simple. Right now, that means designing for AI Wearables at <a href="https://meta.com" target="_blank" rel="noopener noreferrer">Meta</a>'s Reality Labs, where I've been part of launching category-defining products.</p>
-        <p>I believe great design comes from combining deep understanding and craft to build beautiful things that people love. My background spans product strategy, interaction design, design leadership, and front-end development — I've always built as much as I've designed.</p>
-        <p>Lately, I've been tinkering on a side project called <a href="https://tripcams.pizza" target="_blank" rel="noopener noreferrer" title="Try it out!">Trip Cams</a>, a web app that shows live highway camera feeds along your driving route so you can check road conditions before you hit the road.</p>
-        <p>If you'd like to connect, feel free to <a href="mailto:hello@zacharyhalvorson.com">email me</a>.</p>
+
+  <body>
+    <a class="skip" href="#intro">Skip to content</a>
+
+    <div class="progress" aria-hidden="true"></div>
+
+    <nav class="rail" aria-label="Sections">
+      <a href="#intro"><span class="rail_dot"></span><span class="rail_label">Intro</span></a>
+      <a href="#display"><span class="rail_dot"></span><span class="rail_label">MRB Display</span></a>
+      <a href="#rayban"><span class="rail_dot"></span><span class="rail_label">Ray-Ban Meta</span></a>
+      <a href="#clio"><span class="rail_dot"></span><span class="rail_label">Clio Scheduler</span></a>
+      <a href="#dooly"><span class="rail_dot"></span><span class="rail_label">Dooly</span></a>
+      <a href="#hello"><span class="rail_dot"></span><span class="rail_label">Thanks</span></a>
+    </nav>
+
+    <main>
+
+      <!-- ---------- section: intro ---------- -->
+      <section id="intro" class="chapter chapter-intro" aria-labelledby="intro-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">01 <span aria-hidden="true">/</span> 06</span>
+            <p class="chapter_kicker">Product Designer · Seattle</p>
+          </header>
+          <div class="chapter_body">
+            <h1 id="intro-heading" class="display">Hi there,<br class="display_break"> I'm <span class="display_em">Zach<span class="display_dim">ary</span>&nbsp;<span class="display_shift">Halvorson</span></span></h1>
+            <p class="tagline">A burger-obsessed, Japanese-learning, fermentation-loving, codes-y designer. Here's some of the work I'm proud of.</p>
+
+            <picture class="intro_photo">
+              <source media="(min-width: 900px)" srcset="media/me/me-1200w.jpg 1200w, media/me/me-600w.jpg 600w" sizes="360px">
+              <img
+                src="media/me/me-600w.jpg"
+                srcset="media/me/me-600w.jpg 600w, media/me/me-400w.jpg 400w"
+                sizes="(min-width: 600px) 280px, 60vw"
+                width="600" height="600"
+                fetchpriority="high"
+                decoding="async"
+                alt="Portrait of Zachary Halvorson.">
+            </picture>
+
+            <ul class="socials list-reset">
+              <li><a class="socials_link" href="https://github.com/zacharyhalvorson" target="_blank" rel="noopener noreferrer">
+                <img class="socials_icon -dark" src="media/socials/github.svg" alt="" aria-hidden="true" decoding="async">
+                <img class="socials_icon -light" src="media/socials/github-white.svg" alt="" aria-hidden="true" decoding="async">
+                <span>GitHub</span>
+              </a></li>
+              <li><a class="socials_link" href="https://www.linkedin.com/in/zacharyhalvorson/" target="_blank" rel="noopener noreferrer">
+                <img class="socials_icon" src="media/socials/linkedin.svg" alt="" aria-hidden="true" decoding="async">
+                <span>LinkedIn</span>
+              </a></li>
+              <li><a class="socials_link" href="mailto:hello@zacharyhalvorson.com">
+                <span class="socials_icon socials_icon-glyph" aria-hidden="true">@</span>
+                <span>Email</span>
+              </a></li>
+            </ul>
+          </div>
+        </div>
+        <a class="chapter_next" href="#display" aria-label="Scroll to first project">
+          <span>Work</span>
+          <span class="chapter_next_arrow" aria-hidden="true">↓</span>
+        </a>
       </section>
 
-      <ul class="list-reset">
-        <li><a class="socialsLink" href="https://github.com/zacharyhalvorson" target="_blank" rel="noopener noreferrer">
-          <img class="socialsLink_githubLogo -dark" src="./images/socials/github.svg" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <img class="socialsLink_githubLogo -white" src="./images/socials/github-white.svg" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <span>Github</span>
-        </a></li>
-        <li><a class="socialsLink" href="https://www.linkedin.com/in/zacharyhalvorson/" target="_blank" rel="noopener noreferrer">
-          <img src="./images/socials/linkedin.svg" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <span>LinkedIn</span>
-        </a></li>
-        <li><a class="socialsLink" href="https://itunes.apple.com/profile/zacharyhalvorson" target="_blank" rel="noopener noreferrer">
-          <img src="./images/socials/apple-music.png" alt="" loading="lazy" decoding="async" aria-hidden="true">
-          <span>Apple Music</span>
-        </a></li>
-      </ul>
-    </div>
+      <!-- ---------- section: meta ray-ban display ---------- -->
+      <section id="display" class="chapter chapter-project" aria-labelledby="display-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">02 <span aria-hidden="true">/</span> 06</span>
+            <p class="chapter_role">Staff Product Designer · Meta Reality Labs</p>
+            <p class="chapter_where">Seattle, WA</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="display-heading" class="display"><span class="display_em">Meta Ray-Ban Display</span></h2>
+            <div class="chapter_text">
+              <p class="lede">I shaped the design of several flagship features on Meta Ray-Ban Display such as Teleprompter, EMG handwriting input, the suite of Time apps, and the music player. More AI-native experiences are still to come as part of my prior work on the AI Foundations team.</p>
+            </div>
+            <figure class="chapter_figure">
+              <ul class="media list-reset" data-media>
+                <li class="media_item" data-caption="EMG handwriting input">
+                  <video width="1920" height="1080" poster="media/work-samples/meta-rayban-display/handwriting-demo-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/meta-rayban-display/handwriting-demo.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption="Handwriting launch creative">
+                  <video width="1280" height="720" poster="media/work-samples/meta-rayban-display/handwriting-ad-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/meta-rayban-display/handwriting-ad.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption="Teleprompter, the in-lens reading flow"><img src="media/work-samples/meta-rayban-display/teleprompter.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Meta Ray-Ban Display Teleprompter, shown in the in-lens display view."></li>
+              </ul>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: ray-ban meta ---------- -->
+      <section id="rayban" class="chapter chapter-project" aria-labelledby="rayban-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">03 <span aria-hidden="true">/</span> 06</span>
+            <p class="chapter_role">Staff Product Designer · Meta Reality Labs</p>
+            <p class="chapter_where">Seattle, WA</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="rayban-heading" class="display"><span class="display_em">Ray-Ban Meta</span></h2>
+            <div class="chapter_text">
+              <p class="lede">I worked on this category-defining product since it was in its Discovery phase, helping define the privacy-focused interaction model and leading the design for both live-streaming and POV video calling across Meta's family of apps. Ray-Ban Meta headlined Meta Connect, and has led to many similar products across the AI wearables industry.</p>
+            </div>
+            <figure class="chapter_figure">
+              <ul class="media list-reset" data-media>
+                <li class="media_item -bare" data-caption="Ray-Ban Meta"><img src="media/work-samples/rayban-meta/product.png" width="1500" height="1080" loading="lazy" decoding="async" alt="Ray-Ban Meta smart glasses, product shot."></li>
+                <li class="media_item" data-caption="Live broadcast at Meta Connect">
+                  <video width="1920" height="1080" poster="media/work-samples/rayban-meta/meta-connect-livestreaming-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/rayban-meta/meta-connect-livestreaming.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption="Charles Leclerc launch film">
+                  <video width="1080" height="1920" poster="media/work-samples/rayban-meta/leclerc-ad-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/rayban-meta/leclerc-ad.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption='Spotted in the wild, on <a href="https://www.instagram.com/reels/C3ORgxrPGAS/" target="_blank" rel="noopener noreferrer">Kenji&apos;s reel</a>'><img src="media/work-samples/rayban-meta/kenji-livestream.png" width="1179" height="2556" loading="lazy" decoding="async" alt="Live broadcast viewer on mobile, Ray-Ban Meta livestream."></li>
+              </ul>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: clio scheduler ---------- -->
+      <section id="clio" class="chapter chapter-project" aria-labelledby="clio-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">04 <span aria-hidden="true">/</span> 06</span>
+            <p class="chapter_role">Design Lead · Clio</p>
+            <p class="chapter_when"><time datetime="2019-03">2019</time> to <time datetime="2020-08">2020</time></p>
+            <p class="chapter_where">Vancouver, BC</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="clio-heading" class="display"><span class="display_em">Clio Scheduler</span></h2>
+            <div class="chapter_text">
+              <p class="lede">I led design for Clio's Client Experience portfolio and conceived the Clio Scheduler, an online booking product for law firms that headlined Clio's customer conference. Clio is the world's leading legal practice platform, used in 130+ countries.</p>
+            </div>
+            <figure class="chapter_figure">
+              <ul class="media list-reset" data-media>
+                <li class="media_item" data-caption="Booking dashboard, as design lead"><img src="media/work-samples/scheduler/desktop.png" width="2260" height="2048" loading="lazy" decoding="async" alt="Clio Scheduler desktop booking dashboard."></li>
+                <li class="media_item" data-caption="Tablet booking view"><img src="media/work-samples/scheduler/tablet.png" width="1044" height="1366" loading="lazy" decoding="async" alt="Clio Scheduler tablet booking view."></li>
+                <li class="media_item" data-caption="MVP prototype">
+                  <video width="1044" height="1854" poster="media/work-samples/scheduler/mvp-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/scheduler/mvp.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption="Scheduling + payments">
+                  <video width="1044" height="1854" poster="media/work-samples/scheduler/payments-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/scheduler/payments.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption="Clio Con Announcement"><img src="media/work-samples/scheduler/clio-con.png" width="1744" height="906" loading="lazy" decoding="async" alt="Clio Scheduler announcement at Clio Con."></li>
+              </ul>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: dooly ---------- -->
+      <section id="dooly" class="chapter chapter-project" aria-labelledby="dooly-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">05 <span aria-hidden="true">/</span> 06</span>
+            <p class="chapter_role">Lead Designer · Dooly</p>
+            <p class="chapter_when"><time datetime="2016-10">2016</time> to <time datetime="2019-04">2019</time></p>
+            <p class="chapter_where">Vancouver, BC</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="dooly-heading" class="display"><span class="display_em">Dooly</span></h2>
+            <div class="chapter_text">
+              <p class="lede">As the first hire and sole designer, I shaped Dooly end to end across product, brand, and front-end, building a note-taking tool that helps customer-facing teams have better meetings. We grew from zero to dozens of enterprise accounts, including Asana, Intercom, and Contentful.</p>
+            </div>
+            <figure class="chapter_figure">
+              <ul class="media list-reset" data-media>
+                <li class="media_item" data-caption="Dooly. First hire, sole designer"><img src="media/work-samples/dooly/hero.jpeg" width="3840" height="2157" loading="lazy" decoding="async" alt="Dooly hero shot."></li>
+                <li class="media_item" data-caption="Meeting notes, desktop"><img src="media/work-samples/dooly/desktop.png" width="1021" height="1018" loading="lazy" decoding="async" alt="Dooly desktop meeting-notes interface."></li>
+                <li class="media_item" data-caption="Marketing site, branding &amp; build"><img src="media/work-samples/dooly/marketing-site.png" width="2616" height="2324" loading="lazy" decoding="async" alt="Dooly marketing site."></li>
+                <li class="media_item" data-caption="Onboarding flow">
+                  <video width="1232" height="1058" poster="media/work-samples/dooly/onboarding-poster.jpg" preload="none" muted playsinline>
+                    <source src="media/work-samples/dooly/onboarding.mp4" type="video/mp4">
+                  </video>
+                </li>
+                <li class="media_item" data-caption="Mobile companion"><img src="media/work-samples/dooly/mobile.png" width="374" height="664" loading="lazy" decoding="async" alt="Dooly mobile app."></li>
+              </ul>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- section: hello / closing ---------- -->
+      <section id="hello" class="chapter chapter-colophon" aria-labelledby="hello-heading">
+        <div class="chapter_inner">
+          <header class="chapter_meta">
+            <span class="chapter_index">06 <span aria-hidden="true">/</span> 06</span>
+            <p class="chapter_kicker">Education &amp; contact</p>
+          </header>
+          <div class="chapter_body">
+            <h2 id="hello-heading" class="display">Thanks for <span class="display_em">scrolling.</span></h2>
+            <p class="lede">I'm currently looking for my next role. If you've got questions, want to learn more, or have something you'd like to build together, <a href="mailto:hello@zacharyhalvorson.com">feel free to reach out</a>.</p>
+            <p class="lede">On the side I'm building <a href="https://tripcams.pizza" target="_blank" rel="noopener noreferrer">Trip Cams</a>, a road-trip companion that surfaces live highway cameras along your route, and a personal playground for AI design and development. Feature requests welcome!</p>
+
+            <dl class="education">
+              <div class="education_row">
+                <dt>
+                  <span class="education_school">Capilano University</span>
+                  <span class="education_place">North Vancouver, BC</span>
+                </dt>
+                <dd>
+                  <span class="education_degree">Interactive Design Diploma</span>
+                  <span class="education_when"><time datetime="2012">2012</time>–<time datetime="2014">2014</time></span>
+                </dd>
+              </div>
+              <div class="education_row">
+                <dt>
+                  <span class="education_school">University of Alberta</span>
+                  <span class="education_place">Edmonton, AB</span>
+                </dt>
+                <dd>
+                  <span class="education_degree">Bachelor of Education, Math major, Art minor</span>
+                  <span class="education_when"><time datetime="2004">2004</time>–<time datetime="2009">2009</time></span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+    </main>
   </body>
 </html>

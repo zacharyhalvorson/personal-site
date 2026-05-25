@@ -1,228 +1,982 @@
+/* ---------- tokens ---------- */
+
 :root {
-  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --text-default: #2a2a2a;
+  --text-soft: #565656;
+  --text-light: #817e7e;
+  --base: #fafaf7;
+  --surface: #ffffff;
+  --rule: rgba(0, 0, 0, 0.08);
+  --highlight: #fff3d6;
+  --highlight-deep: #f3e5b8;
+  --link: #0066cc;
+  --link-hover: #003f80;
 
-  --text-default: #565656;
-  --text-light: #817E7E;
-  --base: white;
-  --highlight: #FFF7E5;
-  --link-color: #0099FF;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 
-  --border-radius-large: 12px;
-  --border-radius-default: 6px;
+  --max: 64rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
 
-  --shadow-one: 0px 2px 6px 0px rgba(0, 0, 0, 0.25);
-
-  --break-two-column: 600px;
-  --page-padding: 4vh;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-      --text-default: white;
-      --text-light: #C4C4C4;
-      --base: #262626;
-      --highlight: #E5D9BD;
-
-      --shadow-one: 0px 2px 8px 0px rgba(0, 0, 0, .5);
+    --text-default: #f2efe9;
+    --text-soft: #d3cfc6;
+    --text-light: #8f8a82;
+    --base: #1c1b19;
+    --surface: #262522;
+    --rule: rgba(255, 255, 255, 0.1);
+    --highlight: #4a3a16;
+    --highlight-deep: #6b5520;
+    --link: #7cc4ff;
+    --link-hover: #b3dcff;
   }
 }
 
-@media (prefers-color-scheme: dark) and (min-width: 600px) {
-  :root {
-    --shadow-one: 0px 2px 12px 0px rgba(0, 0, 0, 0.75);
-  }
+/* ---------- reset & base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+  -webkit-text-size-adjust: 100%;
 }
 
-@media (min-width: 600px) {
-  :root {
-    --shadow-one: 0px 2px 12px 0px rgba(0, 0, 0, 0.25);
-  }
-}
-
-@media (max-height: 400px) {
-  :root {
-      --page-padding: 8vh;
-  }
-}
-
-/* ---------- component: globals ----------- */
 body {
-  font-family: var(--font-stack);
-  color: var(--text-default);
-  background-color: var(--base);
-
-  margin: 0 auto;
-  width: 90%;
-  max-width: 720px;
-  overflow: hidden;
-  font-size: 16px;
-}
-
-p {
-  line-height: 1.325;
   margin: 0;
-}
-
-p + p {
-  margin: .75rem 0;
-}
-
-a, a:visited {
-  color: var(--link-color);
-}
-
-.list-reset {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-}
-
-/* ---------- component: container ----------- */
-.container {
-  padding: var(--page-padding) 0;
-  overflow-y: scroll;
-  overflow-x: visible;
-}
-
-@media (min-width: 600px) {
-  .container {
-    padding: 0;
-    overflow-y: initial;
-  }
-
-  .container > div {
-    padding: var(--page-padding) 0;
-  }
-
-  .container > div {
-    padding-left: .75rem;
-    padding-right: .75rem;
-    margin: 0 -.5rem;
-  }
-
-  .container {
-    display: grid;
-    height: 100vh;
-    grid-template-columns: 2fr 5fr;
-    grid-column-gap: 2rem;
-    max-width: 720px;
-    margin: 0 auto;
-  }
-
-  .container > div {
-    overflow-y: scroll;
-  }
-}
-@media (min-width: 800px) {
-  .container {
-    grid-column-gap: 3rem;
-  }
-}
-
-/* ---------- component: bio ----------- */
-.bio h1 {
-  margin-top: 0;
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-}
-
-.bio {
-  margin-bottom: 1.5rem;
-}
-
-.bio h1 span:first-child {
-  font-size: 1.25rem;
-  font-weight: bold;
-  display: block;
-  color: var(--text-light);
-  margin-bottom: 0;
-}
-
-@media (min-width: 600px) {
-  .bio h1 {
-    font-size: 2rem;
-    margin-bottom: 1.25rem;
-  }
-}
-
-@media (min-width: 860px) {
-  .bio h1 {
-    font-size: 3rem;
-  }
-}
-
-/* ---------- component: profilePhoto ----------- */
-
-.profilePhoto {
-  width: 30%;
-  max-width: 100%;
-  border-radius: var(--border-radius-large);
-  box-shadow: var(--shadow-one);
-  margin-bottom: 1rem;
-}
-
-@media (min-width: 600px) {
-  .profilePhoto {
-    width: 100%;
-    margin-bottom: initial;
-  }
-}
-
-/* ---------- component: socialsLink ----------- */
-
-a.socialsLink {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 3rem;
-  width: 100%;
-  padding: 0 .5rem 0 3rem;
-  margin: 0 -.5rem;
-  transition: .15s ease background-color;
-  border-radius: var(--border-radius-default);
-  font-size: .875rem;
-  max-width: 20rem;
+  background: var(--base);
   color: var(--text-default);
-  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-.socialsLink img {
-  width: 1.75rem;
+img, picture { display: block; max-width: 100%; height: auto; }
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: color 120ms var(--ease);
+}
+a:hover { color: var(--link-hover); }
+a:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+ul, ol, dl, dd { margin: 0; padding: 0; }
+.list-reset { list-style: none; }
+
+::selection {
+  background: var(--highlight-deep);
+  color: var(--text-default);
+}
+
+/* ---------- accessibility: skip link ---------- */
+
+.skip {
   position: absolute;
-  left: .5rem;
+  left: 1rem;
+  top: -3rem;
+  z-index: 100;
+  padding: 0.5rem 0.875rem;
+  background: var(--surface);
+  color: var(--text-default);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.skip:focus { top: 1rem; }
+
+/* ---------- progress bar (scroll-driven) ---------- */
+
+.progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--highlight-deep);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 20;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .progress {
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes progress-grow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+}
+
+/* ---------- rail nav ---------- */
+
+.rail {
+  position: fixed;
+  right: clamp(0.375rem, 0.8vw, 0.75rem);
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  z-index: 15;
+  padding: 0.75rem 0;
 }
 
-.socialsLink:hover {
-  background-color: var(--highlight);
+.rail a {
+  display: flex;
+  /* dash on the right edge, label slides in from the right of the dash */
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
   text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.socialsLink:focus-visible {
-  outline: 2px solid var(--link-color);
-  outline-offset: 2px;
-  background-color: var(--highlight);
+/* Subtle horizontal dash; widens on hover/focus to invite tapping. */
+.rail_dot {
+  width: 8px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--text-light);
+  opacity: 0.32;
+  flex-shrink: 0;
+  transition: width 220ms var(--ease), opacity 220ms var(--ease), background 220ms var(--ease);
 }
 
-.socialsLink_githubLogo {
-  display: none;
+.rail_label {
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 220ms var(--ease), transform 220ms var(--ease), color 220ms var(--ease);
+  white-space: nowrap;
 }
 
-.socialsLink_githubLogo.-dark {
-  display: initial;
+/* Current section's dash: slightly longer + darker than the rest, but still
+   subtle. Hover/focus wins (full grow + label). */
+.rail a.is-current .rail_dot {
+  width: 16px;
+  opacity: 0.7;
+  background: var(--text-default);
+}
+.rail a:hover .rail_dot,
+.rail a:focus-visible .rail_dot {
+  width: 24px;
+  opacity: 1;
+  background: var(--text-default);
+}
+.rail a:hover .rail_label,
+.rail a:focus-visible .rail_label {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--text-default);
 }
 
+@media (max-width: 599px) {
+  .rail { display: none; }
+}
+
+/* ---------- chapter (shared) ---------- */
+
+.chapter {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  padding: clamp(3rem, 8vh, 6rem) var(--gutter);
+  position: relative;
+  border-bottom: 1px solid var(--rule);
+}
+.chapter:last-of-type { border-bottom: none; }
+
+.chapter_inner {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+@media (min-width: 760px) {
+  .chapter_inner {
+    grid-template-columns: 14rem 1fr;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+}
+
+/* ---------- chapter: meta column ---------- */
+
+.chapter_meta {
+  display: flex;
+  flex-direction: column;
+  /* Tight base so when/where read as a pair under the role line. */
+  gap: 0.125rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-light);
+  letter-spacing: 0.02em;
+}
+
+.chapter_index {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  background: var(--highlight);
+  color: var(--text-default);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  align-self: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.chapter_kicker {
+  margin: 0;
+  color: var(--text-default);
+  font-size: 0.875rem;
+}
+
+.chapter_role {
+  margin: 0 0 0.4rem;
+  color: var(--text-default);
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+
+.chapter_when,
+.chapter_where {
+  margin: 0;
+}
+
+.chapter_when time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- chapter: body column ---------- */
+
+.chapter_body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 42rem;
+}
+
+.display {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--text-default);
+}
+
+.display_em {
+  background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%, var(--highlight) 92%, transparent 92%);
+}
+/* Intro only: keep "Zach[ary] Halvorson" together so wrap never splits the
+   name. The inline-block on .display_shift would otherwise let the browser
+   break before "Halvorson" despite the &nbsp;. Project chapter headings
+   (also using .display_em) need to wrap inside their narrower column. */
+.chapter-intro .display_em {
+  white-space: nowrap;
+}
+
+/* Force a break after "Hi there," at viewports where line 2 ("I'm Zachary
+   Halvorson") fits on its own line. That's two ranges:
+     - 600–759: single-column layout, the body is wide enough for line 2 and
+       forcing the break here prevents a post-collapse reflow back to 1 line.
+     - >=900: two-column layout has enough room for line 2 to fit.
+   In the gap (760–899) the two-column body is too narrow for a forced line 2,
+   so we let the heading wrap naturally to "Hi there, I'm" / "Zachary
+   Halvorson" — the nowrap on .display_em keeps the name together. */
+.display_break { display: none; }
+@media (min-width: 600px) and (max-width: 759px), (min-width: 900px) {
+  .display_break { display: inline; }
+}
+
+/* "ary" of Zachary softens, then collapses out, and Halvorson springs into
+   its new spot. Stays display:inline so the baseline matches surrounding
+   text; the collapse animates font-size to zero, which shrinks the text
+   width without creating an inline-block (which would shift the baseline). */
+.display_dim {
+  font-size: 1em;
+  /* Collapse and fade-out start together; fade-out finishes faster so the
+     text becomes invisible while only ~half the scale-down has happened.
+     The remaining collapse runs while invisible, no wonky tiny-text moment. */
+  animation:
+    name-shorten 1.4s var(--ease) 2.8s both,
+    name-collapse 0.6s var(--ease) 4.5s both,
+    name-fade-out 0.28s var(--ease) 4.5s both;
+}
+.display_shift {
+  display: inline-block;
+  animation: name-spring 0.55s cubic-bezier(0.34, 1.55, 0.55, 1) 4.95s both;
+}
+
+/* Narrow viewports: the heading wraps, putting "Halvorson" on its own line.
+   Animating it then looks broken — leave the full name static. */
+@media (max-width: 599px) {
+  .display_dim,
+  .display_shift { animation: none; }
+  .display_dim { opacity: 1; font-size: 1em; }
+  .display_shift { display: inline; transform: none; }
+}
+@keyframes name-shorten {
+  from { opacity: 1; }
+  to { opacity: 0.34; }
+}
+@keyframes name-fade-out {
+  to { opacity: 0; }
+}
+@keyframes name-collapse {
+  to { font-size: 0; }
+}
+@keyframes name-spring {
+  from { transform: translateX(6px); }
+  to   { transform: translateX(0); }
+}
+
+.lede {
+  margin: 0;
+  font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--text-soft);
+  max-width: 38rem;
+}
+
+.tagline {
+  margin: 0;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-default);
+  max-width: 32rem;
+}
+
+.meta-links {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.meta-links a { text-decoration: none; }
+.meta-links a:hover { text-decoration: underline; }
+
+/* ---------- chapter: project variant ---------- */
+
+.chapter-project .chapter_body {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  max-width: none;
+}
+
+@media (min-width: 980px) {
+  .chapter-project .chapter_body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-areas:
+      "heading heading"
+      "text    figure";
+    align-items: start;
+    column-gap: clamp(2rem, 5vw, 4rem);
+    row-gap: clamp(1rem, 2vw, 1.75rem);
+  }
+  .chapter-project .chapter_body > .display { grid-area: heading; }
+  .chapter-project .chapter_body > .chapter_text { grid-area: text; }
+  .chapter-project .chapter_body > .chapter_figure { grid-area: figure; }
+}
+
+.chapter_text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 34rem;
+}
+
+.chapter_figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.chapter_figure figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--text-light);
+}
+
+/* ---------- media: base (no-JS scroll strip) ---------- */
+
+.media {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  border-radius: 10px;
+}
+.media_item {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+}
+.media_item {
+  /* drop-shadow follows the squircle clip-path on the inner img/video */
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.18));
+}
+.media_item img,
+.media_item video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* cover (not contain) so inactive cards in the stack, whose container uses
+     the active item's aspect, crop to fill instead of letterboxing. The
+     active card's aspect always matches its image, so no crop happens there. */
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+  border-radius: 12px;
+  background: var(--surface);
+  --smooth-r: 12px;
+}
+/* -bare: transparent product shots, no card surface, no clipped corners, no card shadow */
+.media_item.-bare { filter: none; }
+.media_item.-bare img,
+.media_item.-bare video {
+  background: transparent;
+  --smooth-r: 0;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+.media_item:has(video)::before,
+.media_item:has(video)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.media_item:has(video)::before {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(15, 15, 15, 0.5);
+  transform: translate(-50%, -50%);
+}
+.media_item:has(video)::after {
+  border-style: solid;
+  border-width: 0.62rem 0 0.62rem 1.05rem;
+  border-color: transparent transparent transparent #fff;
+  transform: translate(-30%, -50%);
+}
+
+/* ---------- media: enhanced (JS on) ---------- */
+
+.media.is-zoomable { cursor: zoom-in; }
+.media.is-zoomable:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.media.is-stack {
+  display: block;
+  position: relative;
+  overflow: visible;
+  /* Fixed bounding area, the stack no longer reshapes when the active card
+     changes. Each card inside is sized to its own natural aspect (via JS),
+     so a vertical phone screenshot becomes a tall narrow card and a 16:9
+     hero stays wide, but the page layout doesn't shift on swipe. */
+  width: 100%;
+  height: clamp(280px, 52svh, 520px);
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+}
+/* On narrow viewports the figure was reserving far more vertical space than
+   most card aspects need, leaving dead air between the lede and the card.
+   Tighten it so chapters feel balanced on mobile. */
+@media (max-width: 759px) {
+  .media.is-stack { height: clamp(220px, 32svh, 320px); }
+}
+.media.is-stack.is-dragging { cursor: grabbing; }
+.media.is-stack.is-dragging .media_item { transition: none; }
+/* No focus outline, the stack receives focus when the lightbox restores it
+   after dismissal, and a big blue ring around the figure is more distracting
+   than useful. The cards themselves are large click targets, and keyboard
+   users can still tab through socials / skip link / rail dots which keep
+   their visible focus indicators. */
+.media.is-stack { outline: none; }
+.media.is-stack:focus-visible { outline: none; }
+.media.is-stack .media_item {
+  position: absolute;
+  /* center each card inside the fixed stack area; width/height are set
+     inline by JS to match each item's natural aspect ratio. */
+  inset: 0;
+  margin: auto;
+  flex: none;
+  /* Override the base aspect-ratio (used by the no-JS scroll strip), in
+     stack mode each card has its own aspect via JS-set width/height. */
+  aspect-ratio: auto;
+  /* --stack-tx is set by JS per card so behind cards always poke past the
+     active card's edge, even when a narrow card sits behind a wider one. */
+  transform:
+    translateX(var(--stack-tx, 0px))
+    translateY(calc(var(--apos, 0) * 11px))
+    rotate(calc(var(--pos, 0) * 1.6deg))
+    scale(calc(1 - var(--apos, 0) * 0.045));
+  transform-origin: center;
+  /* Cards behind the front stay fully opaque, they're a stack of real
+     artifacts, not faded ghosts. Only the lightbox dims non-active peeks. */
+  transition: transform 0.38s var(--ease), opacity 0.38s var(--ease);
+}
+.media.is-stack .media_item.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.media.is-stack .media_item.is-source {
+  visibility: hidden;
+}
+/* While the lightbox is open (some item is the source), hide everything in
+   the stack except the active card, otherwise the user sees the cards
+   behind re-crop as the container's aspect-ratio changes with navigation. */
+.media.is-stack:has(.is-source) .media_item:not(.is-front) {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--ease);
+}
+
+/* ---------- lightbox (fullscreen carousel) ---------- */
+
+/* Items are content-sized so vertical media stays narrow and the gap between
+   neighbours always reveals real media content as a peek. */
+.lightbox {
+  --lb-gap: 3vw;
+
+  inset: 0;
+  margin: 0;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: none;
+  background: transparent;
+  /* clip (not hidden), hidden still allows programmatic scrollLeft, which
+     browsers do automatically when focus lands on an offscreen child. */
+  overflow: clip;
+  outline: none;
+  color: #fff;
+}
+.lightbox::backdrop {
+  background: rgba(8, 7, 6, 0);
+  backdrop-filter: blur(0px);
+  transition: background-color 0.32s var(--ease), backdrop-filter 0.32s var(--ease);
+}
+.lightbox.is-open::backdrop {
+  background: rgba(8, 7, 6, 0.55);
+  backdrop-filter: blur(12px);
+}
+
+.lightbox_track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap);
+  padding-inline: 50vw;
+  transform: translate3d(calc(var(--lb-tx, 0px) + var(--lb-drag, 0px)), 0, 0);
+  transition: transform 0.44s var(--ease);
+  will-change: transform;
+  /* none, JS owns every gesture; pan-y would let the browser pre-empt the
+     horizontal swipe before our pointer handler ever sees the move. */
+  touch-action: none;
+}
+.lightbox.is-dragging .lightbox_track { transition: none; }
+
+.lightbox_item {
+  /* width / height set inline by JS from each item's aspect ratio, so a tiny
+     phone screenshot scales up to a tall, narrow card and a wide hero stays
+     letterbox-free. Recomputed on viewport resize. */
+  position: relative;
+  flex: 0 0 auto;
+  /* Peeks start invisible so the morphing item is the only thing visible
+     when the lightbox opens; they fade in once the backdrop has darkened.
+     Active item scales up to full size while peeks rest at a touch smaller. */
+  opacity: 0;
+  transform: scale(1);
+  transform-origin: center;
+  transition:
+    opacity 0.32s var(--ease) 0.08s,
+    transform 0.36s var(--ease);
+}
+/* Peeks (non-active) shrink slightly once the lightbox is open. The active
+   item stays at scale 1,its inner media has its own FLIP morph and we
+   don't want a CSS transform on the wrapper to interfere with that. */
+.lightbox.is-open .lightbox_item:not(.is-active) {
+  transform: scale(0.9);
+}
+.lightbox.is-open .lightbox_item { opacity: 1; }
+.lightbox_item.is-active { opacity: 1; }
+
+.lightbox_item {
+  /* drop-shadow follows the squircle clip-path on the inner img/video.
+     --lb-dim is 1 for the active item and < 1 for peeks so they read as a
+     touch darker, using brightness (not opacity) keeps them opaque so the
+     dark backdrop doesn't show through. */
+  --lb-dim: 1;
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.45)) brightness(var(--lb-dim));
+  transition: filter 0.36s var(--ease);
+}
+.lightbox.is-open .lightbox_item:not(.is-active) {
+  --lb-dim: 0.62;
+}
+.lightbox_item img,
+.lightbox_item video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Match the in-page stack so source and target are visually identical
+     during the morph. Container is sized to the media's aspect, so cover
+     just fills, no crop happens at the active size. */
+  object-fit: cover;
+  border-radius: 12px;
+  /* default smooth radius; overridden by JS so morph swap matches in-page */
+  --smooth-r: 12px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* peeked items are tappable, active image content is not (tap-to-close happens on backdrop) */
+.lightbox_item:not(.is-active) { cursor: pointer; }
+.lightbox_item:not(.is-active) img,
+.lightbox_item:not(.is-active) video { pointer-events: none; }
+
+/* ---------- lightbox: per-item caption pill ---------- */
+
+.lightbox_caption {
+  position: absolute;
+  bottom: max(env(safe-area-inset-bottom, 0px), 1.25rem);
+  left: 50%;
+  z-index: 4;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  color: rgba(255, 255, 255, 0.86);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-50%, 6px, 0) scale(0.9);
+  transition:
+    width 0.34s var(--ease),
+    opacity 0.30s var(--ease),
+    transform 0.34s var(--ease);
+}
+.lightbox.is-open .lightbox_caption:not(.is-empty) {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
+.lightbox_caption_text {
+  display: inline-block;
+  transition: opacity 0.18s var(--ease);
+}
+/* Inline links inside captions: pill stays click-through so backdrop taps
+   still dismiss; the anchor opts back into events. */
+.lightbox_caption a {
+  pointer-events: auto;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.18s var(--ease);
+}
+.lightbox_caption a:hover {
+  text-decoration-color: rgba(255, 255, 255, 0.9);
+}
+/* fade the inner text out while the pill's width morphs to the new caption */
+.lightbox_caption.is-swapping .lightbox_caption_text { opacity: 0; }
+.lightbox_caption.is-empty { opacity: 0 !important; }
+
+/* Off-screen measuring ghost, same styles + content-sized so we can read
+   the natural width of the next caption before animating to it. */
+.lightbox_caption.is-ghost {
+  visibility: hidden;
+  opacity: 0 !important;
+  width: max-content;
+  transition: none;
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
+
+
+/* ---------- chapter: intro variant ---------- */
+
+.chapter-intro .chapter_body {
+  gap: 1.5rem;
+  /* Let the H1 use the full available width so "I'm Zachary Halvorson" fits
+     on one line after the forced "Hi there,"/break at wide viewports. The
+     tagline and photo keep their own size caps. */
+  max-width: none;
+}
+.chapter-intro .display {
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+}
+
+.intro_photo {
+  width: clamp(120px, 22vw, 180px);
+  margin-top: 0.5rem;
+  /* drop-shadow follows the squircle clip-path; box-shadow would be rectangular */
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
+}
+.intro_photo img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  /* corner radius is applied as a squircle via clip-path in script.js; this
+     fallback border-radius keeps a reasonable shape when JS is off. */
+  border-radius: 14%;
+  --smooth-r: 18px;
+}
+
+@media (min-width: 760px) {
+  .chapter-intro .intro_photo {
+    width: clamp(140px, 16vw, 200px);
+  }
+}
+
+/* ---------- socials ---------- */
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.socials_link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem 0.5rem 0.625rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-default);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: border-color 160ms var(--ease), background 160ms var(--ease), transform 160ms var(--ease);
+}
+
+.socials_link:hover {
+  border-color: var(--text-light);
+  background: var(--highlight);
+  color: var(--text-default);
+  transform: translateY(-1px);
+}
+
+.socials_icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+.socials_icon-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-soft);
+}
+
+.socials_icon.-light { display: none; }
 @media (prefers-color-scheme: dark) {
-  a.socialsLink:hover {
-    color: var(--base);
+  .socials_icon.-dark { display: none; }
+  .socials_icon.-light { display: block; }
+}
+
+/* ---------- chapter: next arrow (intro only) ---------- */
+
+.chapter_next {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1.25rem, 4vh, 2rem);
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--text-light);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.chapter_next:hover { color: var(--text-default); }
+.chapter_next_arrow {
+  font-size: 1rem;
+  animation: nudge 1.8s var(--ease) infinite;
+}
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
+
+/* ---------- chapter: colophon variant ---------- */
+
+.education {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+.education_row {
+  display: grid;
+  gap: 0.25rem;
+}
+@media (min-width: 560px) {
+  .education_row {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+.education dt, .education dd { margin: 0; }
+.education_school {
+  display: block;
+  font-weight: 500;
+  color: var(--text-default);
+  font-size: 0.9375rem;
+}
+.education_place,
+.education_when {
+  display: block;
+  color: var(--text-light);
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+}
+.education_degree {
+  display: block;
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+}
+
+/* ---------- entrance reveals (scroll-driven, zero JS) ---------- */
+
+@supports (animation-timeline: view()) {
+  .chapter_meta,
+  .chapter_body > * {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
   }
 
-  .socialsLink:not(:hover) .socialsLink_githubLogo.-dark {
-    display: none;
-  }
+  .chapter_body > *:nth-child(2) { animation-range: entry 8%  entry 65%; }
+  .chapter_body > *:nth-child(3) { animation-range: entry 14% entry 72%; }
+  .chapter_body > *:nth-child(4) { animation-range: entry 20% entry 78%; }
+  .chapter_body > *:nth-child(5) { animation-range: entry 26% entry 84%; }
 
-  .socialsLink:not(:hover) .socialsLink_githubLogo.-white {
-    display: initial;
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  .chapter { scroll-snap-align: none; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  /* Keep the full name visible, no fade, no collapse, no spring, when motion is reduced. */
+  .display_dim { opacity: 1; font-size: 1em; }
+  .display_shift { display: inline; }
+}
+
+/* ---------- print: clean resume ---------- */
+
+@media print {
+  :root {
+    --text-default: #000;
+    --text-soft: #222;
+    --text-light: #555;
+    --base: #fff;
+    --surface: #fff;
+    --rule: #ccc;
+    --highlight: transparent;
+    --highlight-deep: transparent;
+  }
+  html { scroll-snap-type: none; scroll-behavior: auto; }
+  body { font-size: 11pt; line-height: 1.4; }
+  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials, .chapter_figure, .lightbox { display: none !important; }
+  .chapter-project .chapter_body { display: block; }
+  .chapter {
+    min-height: 0;
+    page-break-inside: avoid;
+    padding: 0.5rem 0;
+    border: none;
+    border-top: 1px solid var(--rule);
+  }
+  .chapter:first-of-type { border-top: none; }
+  .chapter_inner {
+    grid-template-columns: 9rem 1fr;
+    gap: 1.5rem;
+  }
+  .display {
+    font-size: 18pt;
+    line-height: 1.15;
+  }
+  .display_em { background: none; padding: 0; }
+  .lede { font-size: 11pt; }
+  .chapter_index { background: none; padding: 0; }
+  a { color: #000; text-decoration: underline; }
 }
