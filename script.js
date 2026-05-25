@@ -41,6 +41,29 @@
   // pick it up explicitly. `popstate` only fires on history navigation, never
   // on plain anchor-link clicks — those still get the CSS smooth-scroll.
   window.addEventListener('popstate', anchorScroll);
+  // In-page hash links (Work ↓, rail nav, skip link). The native anchor-click
+  // scroll lands instantly on this site — `scroll-snap-type: y mandatory`
+  // short-circuits the CSS `scroll-behavior: smooth` animation — so hijack
+  // it and drive the scroll from JS with an explicit smooth scrollIntoView.
+  // Reduced-motion users still jump.
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var hash = a.getAttribute('href');
+    if (hash.length < 2) return;
+    var id;
+    try { id = decodeURIComponent(hash.slice(1)); } catch (_) { id = hash.slice(1); }
+    var target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    // Update URL without firing popstate (which would jump instantly via
+    // anchorScroll). pushState records the entry so back/forward still work.
+    if (location.hash !== hash) history.pushState(null, '', hash);
+  });
   // bfcache restore (iOS Safari / Firefox back from external link). The
   // browser preserves scrollY across bfcache, so we don't re-pin; just
   // re-assert manual restoration in case the browser reset it on the
