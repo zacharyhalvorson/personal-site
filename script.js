@@ -588,7 +588,24 @@
       if (!html) return;
 
       capGhostTxt.innerHTML = html;
-      var newW = capGhostEl.offsetWidth;
+      void capGhostEl.offsetWidth;
+      // Measure the actual rendered line widths inside the ghost (one rect
+      // per line). The longest one + horizontal padding is the bubble's
+      // hugging width: short captions stay narrow, long ones wrap inside
+      // their max-width and the bubble shrinks to the longest wrapped line
+      // instead of sitting at the max-width cap.
+      var range = document.createRange();
+      range.selectNodeContents(capGhostTxt);
+      var rects = range.getClientRects();
+      var maxLineW = 0;
+      for (var ri = 0; ri < rects.length; ri++) {
+        if (rects[ri].width > maxLineW) maxLineW = rects[ri].width;
+      }
+      var cs = getComputedStyle(capEl);
+      var paddingX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      // +1 px guards against sub-pixel rounding that would otherwise force
+      // a re-wrap into the visible bubble.
+      var newW = Math.ceil(maxLineW + paddingX) + 1;
 
       if (instant) {
         capEl.style.transition = 'none';
