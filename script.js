@@ -14,24 +14,28 @@
   // the intro name-collapse animation shift section boundaries, and the
   // mandatory snap yanks to whatever section is now nearest — sometimes a
   // different one further down. Take over: honour an explicit URL hash,
-  // otherwise pin to the top.
+  // otherwise pin to the top. `behavior: 'instant'` is mandatory because
+  // `html { scroll-behavior: smooth }` would otherwise turn the pin into a
+  // visible glide on every load.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   function anchorScroll() {
     var hash = location.hash && location.hash.length > 1 ? location.hash.slice(1) : '';
     if (hash) {
       var el = document.getElementById(hash);
-      if (el) { el.scrollIntoView({ block: 'start', behavior: 'auto' }); return; }
+      if (el) { el.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'instant' }); return; }
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }
-  // DOMContentLoaded handles the initial pin; the load handler runs again
-  // after images settle in case layout has shifted us out of alignment.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', anchorScroll);
-  } else {
-    anchorScroll();
-  }
-  window.addEventListener('load', anchorScroll);
+  // Initial pin runs as soon as the script executes (defer guarantees the DOM
+  // is parsed); the `load` re-pin catches layout shifts from late images, but
+  // bails out if the reader has already scrolled, otherwise it would yank
+  // them back to the top on a slow connection.
+  var userScrolled = false;
+  anchorScroll();
+  addEventListener('scroll', function () { userScrolled = true; }, { passive: true, once: true });
+  window.addEventListener('load', function () {
+    if (!userScrolled) anchorScroll();
+  });
 
   // ---------- title animation: matches the "Zachary" -> "Zach" collapse ----------
   // Mirrors the .display_dim collapse end (CSS: 4.5s delay + 0.6s duration).
@@ -255,19 +259,21 @@
     ul.addEventListener('pointermove', function (e) {
       if (!down) return;
       var dx = e.clientX - x0, dy = e.clientY - y0;
-      // Lock the gesture early and biased toward horizontal: with `touch-action:
-      // pan-y` the browser will pan vertically during the few pixels before we
-      // call preventDefault, and on a mandatory-snap page even a couple of
-      // upward pixels can tip the snap to the previous section. Lock as soon
-      // as the motion is plausibly horizontal; require more travel before
-      // committing to vertical so an obvious sideways flick never leaks into
-      // a page scroll.
-      if (!moved) {
-        if (Math.abs(dx) > 5 && Math.abs(dx) >= Math.abs(dy)) {
-          moved = true; horizontal = true;
-        } else if (Math.abs(dy) > 10) {
-          moved = true; horizontal = false;
-        }
+      // Two-stage detection. We need preventDefault to fire early — with
+      // `touch-action: pan-y` the browser would otherwise pan vertically
+      // during the first frames of a horizontal swipe, and on a mandatory-snap
+      // page even a couple of upward pixels can tip the snap to the previous
+      // section. But we also can't set `moved` early, because the release path
+      // treats `!moved` as a tap (opens the lightbox), and a sloppy tap with
+      // a few px of finger drift must still count as a tap. So claim
+      // `preventDefault` at 5px of clearly-horizontal motion, but only commit
+      // to `moved` at the usual 8px tap/swipe boundary.
+      if (Math.abs(dx) > 5 && Math.abs(dx) > Math.abs(dy)) {
+        if (e.cancelable) e.preventDefault();
+      }
+      if (!moved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        moved = true;
+        horizontal = Math.abs(dx) > Math.abs(dy);
       }
       if (moved && horizontal) {
         if (e.cancelable) e.preventDefault();
