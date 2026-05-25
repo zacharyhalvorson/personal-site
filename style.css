@@ -45,6 +45,11 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 0;
   -webkit-text-size-adjust: 100%;
+  /* Mirror the body's clip on the actual scroll container. Without this,
+     iOS Safari still pans horizontally because the layout overflow from the
+     stacked-card transforms contributes to html's scrollWidth even though
+     body has overflow-x: clip painting them off-screen. */
+  overflow-x: clip;
 }
 
 body {

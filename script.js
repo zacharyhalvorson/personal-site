@@ -8,6 +8,31 @@
 (function () {
   'use strict';
 
+  // ---------- scroll restoration ----------
+  // `scroll-snap-type: y mandatory` + the browser's auto scroll-restore is a
+  // bad pair: the browser restores the prior scrollY, then images, fonts, and
+  // the intro name-collapse animation shift section boundaries, and the
+  // mandatory snap yanks to whatever section is now nearest — sometimes a
+  // different one further down. Take over: honour an explicit URL hash,
+  // otherwise pin to the top.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  function anchorScroll() {
+    var hash = location.hash && location.hash.length > 1 ? location.hash.slice(1) : '';
+    if (hash) {
+      var el = document.getElementById(hash);
+      if (el) { el.scrollIntoView({ block: 'start', behavior: 'auto' }); return; }
+    }
+    window.scrollTo(0, 0);
+  }
+  // DOMContentLoaded handles the initial pin; the load handler runs again
+  // after images settle in case layout has shifted us out of alignment.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', anchorScroll);
+  } else {
+    anchorScroll();
+  }
+  window.addEventListener('load', anchorScroll);
+
   // ---------- title animation: matches the "Zachary" -> "Zach" collapse ----------
   // Mirrors the .display_dim collapse end (CSS: 4.5s delay + 0.6s duration).
   // Skipped on narrow viewports and for reduced-motion users, who see the full
@@ -230,9 +255,19 @@
     ul.addEventListener('pointermove', function (e) {
       if (!down) return;
       var dx = e.clientX - x0, dy = e.clientY - y0;
-      if (!moved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
-        moved = true;
-        horizontal = Math.abs(dx) > Math.abs(dy);
+      // Lock the gesture early and biased toward horizontal: with `touch-action:
+      // pan-y` the browser will pan vertically during the few pixels before we
+      // call preventDefault, and on a mandatory-snap page even a couple of
+      // upward pixels can tip the snap to the previous section. Lock as soon
+      // as the motion is plausibly horizontal; require more travel before
+      // committing to vertical so an obvious sideways flick never leaks into
+      // a page scroll.
+      if (!moved) {
+        if (Math.abs(dx) > 5 && Math.abs(dx) >= Math.abs(dy)) {
+          moved = true; horizontal = true;
+        } else if (Math.abs(dy) > 10) {
+          moved = true; horizontal = false;
+        }
       }
       if (moved && horizontal) {
         if (e.cancelable) e.preventDefault();
