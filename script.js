@@ -144,11 +144,11 @@
     ul.setAttribute('role', 'group');
     ul.setAttribute('tabindex', '0');
     ul.setAttribute('aria-roledescription', 'media stack');
-    ul.setAttribute('aria-label', items.length + ' items — drag to browse, tap to expand');
+    ul.setAttribute('aria-label', items.length + ' items. Drag to browse, tap to expand');
 
     // Size each card to its own natural aspect, fitting within the stack's
     // bounding box. The stack itself stays at the CSS-fixed size, so swiping
-    // never resizes the container — only the card inside changes shape.
+    // never resizes the container, only the card inside changes shape.
     function sizeCards() {
       var r = ul.getBoundingClientRect();
       var boxW = r.width, boxH = r.height;
@@ -200,7 +200,7 @@
       active = Math.min(items.length - 1, Math.max(0, active + d));
       render();
     }
-    // External sync — called by the lightbox after a navigation so the
+    // External sync, called by the lightbox after a navigation so the
     // in-page stack matches what the user just left on. The morph close
     // then lands on the right (and now visible) source item.
     function setActiveTo(i) {
@@ -239,7 +239,7 @@
       down = false;
       var dx = e.clientX - x0;
       var dt = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
-      // Distance OR a fast flick commits — same logic as the lightbox track.
+      // Distance OR a fast flick commits, same logic as the lightbox track.
       var distOK = Math.abs(dx) > Math.max(28, ul.clientWidth * 0.08);
       var velocity = dt > 0 ? Math.abs(dx) / dt : 0;
       var flickOK = velocity > 0.45 && Math.abs(dx) > 16;
@@ -251,7 +251,7 @@
     ul.addEventListener('pointercancel', function () { if (down) { down = false; settle(0); } });
 
     // Trackpad/Magic-Mouse horizontal flick: same gesture model as the
-    // lightbox — accumulate deltaX, commit once per burst, reset on idle.
+    // lightbox, accumulate deltaX, commit once per burst, reset on idle.
     // Pure vertical wheel is left alone so the page can scroll-snap.
     var wheelAcc = 0, wheelCommitted = false, wheelIdle = null, horizUntil = 0;
     ul.addEventListener('wheel', function (e) {
@@ -260,7 +260,7 @@
       if (h) horizUntil = now + 200;
       if (!h && now > horizUntil) return;        // genuine vertical scroll → let the page have it
       e.preventDefault();
-      if (!h) return;                            // momentum tail after a horizontal swipe — swallow
+      if (!h) return;                            // momentum tail after a horizontal swipe, swallow
 
       if (!wheelCommitted) {
         wheelAcc += e.deltaX;
@@ -339,7 +339,7 @@
           node.src = it.src;
           if (it.poster) node.poster = it.poster;
           node.playsInline = true;
-          // Start unmuted — setActive will fall back to muted only if the
+          // Start unmuted, setActive will fall back to muted only if the
           // browser blocks audio autoplay. Opening the lightbox is a user
           // gesture, so most browsers will allow audio.
           node.muted = false;
@@ -424,7 +424,7 @@
         var media = el.firstChild;
         if (!media) return;
         if (media.tagName === 'VIDEO') {
-          // No native controls — the entire fullscreen frame is dismiss-on-tap,
+          // No native controls, the entire fullscreen frame is dismiss-on-tap,
           // and a control strip would steal touches from the active media.
           media.controls = false;
           if (on) {
@@ -452,7 +452,7 @@
       // Sync the active item's squircle radius to its in-page source so the
       // visual corner radius matches at the morph swap moment. The layout
       // radius scales inversely with the morph's transform scale, so layout
-      // R = baseR * (target/source) — when scaled by (source/target) at swap,
+      // R = baseR * (target/source), when scaled by (source/target) at swap,
       // visual R == baseR (== in-page).
       syncActiveSquircle();
       syncCaption(current[idx] && current[idx].caption, opts && opts.force);
@@ -509,7 +509,7 @@
       return 'translate(' + fx + 'px, ' + fy + 'px) scale(' + sx + ', ' + sy + ')';
     }
 
-    // Pre-place the active media at the source rect SYNCHRONOUSLY — called
+    // Pre-place the active media at the source rect SYNCHRONOUSLY, called
     // right after showModal so the very first paint has the morphing element
     // already at the in-page position (no fullscreen-flash on entry).
     function placeAtSource() {
@@ -544,7 +544,7 @@
     }
 
     // Grab the current frame off a playing video as a data URL so the in-page
-    // <video> can wear it as a poster — that way the shrink lands on the exact
+    // <video> can wear it as a poster, that way the shrink lands on the exact
     // frame the user was watching, with no flicker back to the original poster.
     function captureFrame(video) {
       if (!video || !video.videoWidth) return null;
@@ -555,7 +555,7 @@
         c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
         return c.toDataURL('image/jpeg', 0.85);
       } catch (_) {
-        return null;  // tainted canvas (cross-origin) — fall back to original poster
+        return null;  // tainted canvas (cross-origin), fall back to original poster
       }
     }
 
@@ -564,7 +564,7 @@
 
       // The in-page stack has `transition: aspect-ratio 0.38s` plus per-card
       // transitions. If we sync and immediately measure, getBoundingClientRect
-      // returns a mid-transition rect — the morph would land where the stack
+      // returns a mid-transition rect, the morph would land where the stack
       // *is right now*, not where it'll end up. The lightbox covers the stack
       // so transitions during close are invisible anyway; snap them off,
       // measure on the final layout, then restore once the morph is done.
@@ -581,7 +581,7 @@
       }
       if (stackEl) void stackEl.offsetWidth; // flush layout to final state
 
-      // Move is-source to whatever stack item we'll actually morph back to —
+      // Move is-source to whatever stack item we'll actually morph back to,
       // otherwise both the old source (.is-source) and the new front are
       // visible simultaneously and the user sees a double-image.
       var nextSource = (current[idx] && current[idx].el) || sourceEl;
@@ -635,11 +635,11 @@
     // Listen on the DIALOG, not the track. The track has a translateX
     // transform applied (to page between items), which moves its bounding
     // box off-screen. That means backdrop taps in the viewport don't hit
-    // the track — `elementFromPoint` returns the dialog instead. Listening
+    // the track,`elementFromPoint` returns the dialog instead. Listening
     // on the dialog catches every tap, anywhere in the lightbox.
     var sx0 = 0, sy0 = 0, sxt = 0, dragging = false, mvd = false, hor = false;
     dlg.addEventListener('pointerdown', function (e) {
-      // Anchors inside the caption have their own click semantics — don't
+      // Anchors inside the caption have their own click semantics, don't
       // start a drag/tap (which would dismiss the lightbox under the link
       // navigation).
       if (e.target.closest && e.target.closest('a')) return;
@@ -672,7 +672,7 @@
       var dt = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - sxt;
       dlg.classList.remove('is-dragging');
       dlg.style.setProperty('--lb-drag', '0px');
-      // Commit on either a meaningful distance OR a fast flick — the latter
+      // Commit on either a meaningful distance OR a fast flick, the latter
       // lets quick mobile swipes (under the distance threshold) still page.
       var distOK = Math.abs(dx) > Math.max(36, window.innerWidth * 0.07);
       var velocity = dt > 0 ? Math.abs(dx) / dt : 0; // px/ms
@@ -681,7 +681,7 @@
       if (mvd && hor && (distOK || flickOK)) {
         setActive(idx + (dx < 0 ? 1 : -1));
       } else if (totalMove < 14 || !hor) {
-        // Tap — no movement, slight finger jitter, or vertical drag. All
+        // Tap, no movement, slight finger jitter, or vertical drag. All
         // count as "off the swipe gesture", so the user expects dismiss /
         // peek-tap behaviour rather than an aborted swipe.
         handleTap(e);
@@ -728,13 +728,13 @@
     // small deltaX values, then trail off into inertia. Treat one continuous
     // burst as one gesture: accumulate deltaX, commit once when it crosses
     // the threshold, and reset on idle (≥160 ms with no wheel event). That
-    // way a single two-finger swipe pages once — inertia events don't keep
+    // way a single two-finger swipe pages once, inertia events don't keep
     // pushing through several items.
     var wheelAcc = 0, wheelCommitted = false, wheelIdle = null;
     dlg.addEventListener('wheel', function (e) {
       if (morphing) return;
       var h = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      // Vertical wheel inside the modal can't scroll anything — swallow it.
+      // Vertical wheel inside the modal can't scroll anything, swallow it.
       if (!h) { e.preventDefault(); return; }
       e.preventDefault();
 
@@ -795,7 +795,7 @@
         track.style.transition = '';
 
         // Pre-place the active media at the source rect IN THE SAME FRAME as
-        // showModal — when the browser paints the dialog for the first time,
+        // showModal, when the browser paints the dialog for the first time,
         // the morphing element is already at the in-page position, so the
         // user sees no fullscreen-then-shrink flash.
         var pre = placeAtSource();

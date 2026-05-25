@@ -388,8 +388,8 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   display: block;
   width: 100%;
   height: 100%;
-  /* cover (not contain) so inactive cards in the stack — whose container uses
-     the active item's aspect — crop to fill instead of letterboxing. The
+  /* cover (not contain) so inactive cards in the stack, whose container uses
+     the active item's aspect, crop to fill instead of letterboxing. The
      active card's aspect always matches its image, so no crop happens there. */
   object-fit: cover;
   -webkit-user-drag: none;
@@ -398,6 +398,16 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   background: var(--surface);
   --smooth-r: 12px;
 }
+/* -bare: transparent product shots, no card surface, no clipped corners, no card shadow */
+.media_item.-bare { filter: none; }
+.media_item.-bare img,
+.media_item.-bare video {
+  background: transparent;
+  --smooth-r: 0;
+  border-radius: 0;
+  object-fit: contain;
+}
+
 .media_item:has(video)::before,
 .media_item:has(video)::after {
   content: "";
@@ -434,10 +444,10 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   display: block;
   position: relative;
   overflow: visible;
-  /* Fixed bounding area — the stack no longer reshapes when the active card
+  /* Fixed bounding area, the stack no longer reshapes when the active card
      changes. Each card inside is sized to its own natural aspect (via JS),
      so a vertical phone screenshot becomes a tall narrow card and a 16:9
-     hero stays wide — but the page layout doesn't shift on swipe. */
+     hero stays wide, but the page layout doesn't shift on swipe. */
   width: 100%;
   height: clamp(280px, 52svh, 520px);
   cursor: grab;
@@ -447,7 +457,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 .media.is-stack.is-dragging { cursor: grabbing; }
 .media.is-stack.is-dragging .media_item { transition: none; }
-/* No focus outline — the stack receives focus when the lightbox restores it
+/* No focus outline, the stack receives focus when the lightbox restores it
    after dismissal, and a big blue ring around the figure is more distracting
    than useful. The cards themselves are large click targets, and keyboard
    users can still tab through socials / skip link / rail dots which keep
@@ -461,18 +471,18 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   inset: 0;
   margin: auto;
   flex: none;
-  /* Override the base aspect-ratio (used by the no-JS scroll strip) — in
+  /* Override the base aspect-ratio (used by the no-JS scroll strip), in
      stack mode each card has its own aspect via JS-set width/height. */
   aspect-ratio: auto;
   /* --stack-tx is set by JS per card so behind cards always poke past the
-     active card's edge — even when a narrow card sits behind a wider one. */
+     active card's edge, even when a narrow card sits behind a wider one. */
   transform:
     translateX(var(--stack-tx, 0px))
     translateY(calc(var(--apos, 0) * 11px))
     rotate(calc(var(--pos, 0) * 1.6deg))
     scale(calc(1 - var(--apos, 0) * 0.045));
   transform-origin: center;
-  /* Cards behind the front stay fully opaque — they're a stack of real
+  /* Cards behind the front stay fully opaque, they're a stack of real
      artifacts, not faded ghosts. Only the lightbox dims non-active peeks. */
   transition: transform 0.38s var(--ease), opacity 0.38s var(--ease);
 }
@@ -484,7 +494,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   visibility: hidden;
 }
 /* While the lightbox is open (some item is the source), hide everything in
-   the stack except the active card — otherwise the user sees the cards
+   the stack except the active card, otherwise the user sees the cards
    behind re-crop as the container's aspect-ratio changes with navigation. */
 .media.is-stack:has(.is-source) .media_item:not(.is-front) {
   opacity: 0;
@@ -508,7 +518,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   padding: 0;
   border: none;
   background: transparent;
-  /* clip (not hidden) — hidden still allows programmatic scrollLeft, which
+  /* clip (not hidden), hidden still allows programmatic scrollLeft, which
      browsers do automatically when focus lands on an offscreen child. */
   overflow: clip;
   outline: none;
@@ -534,7 +544,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   transform: translate3d(calc(var(--lb-tx, 0px) + var(--lb-drag, 0px)), 0, 0);
   transition: transform 0.44s var(--ease);
   will-change: transform;
-  /* none — JS owns every gesture; pan-y would let the browser pre-empt the
+  /* none, JS owns every gesture; pan-y would let the browser pre-empt the
      horizontal swipe before our pointer handler ever sees the move. */
   touch-action: none;
 }
@@ -557,7 +567,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
     transform 0.36s var(--ease);
 }
 /* Peeks (non-active) shrink slightly once the lightbox is open. The active
-   item stays at scale 1 — its inner media has its own FLIP morph and we
+   item stays at scale 1,its inner media has its own FLIP morph and we
    don't want a CSS transform on the wrapper to interfere with that. */
 .lightbox.is-open .lightbox_item:not(.is-active) {
   transform: scale(0.9);
@@ -568,7 +578,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 .lightbox_item {
   /* drop-shadow follows the squircle clip-path on the inner img/video.
      --lb-dim is 1 for the active item and < 1 for peeks so they read as a
-     touch darker — using brightness (not opacity) keeps them opaque so the
+     touch darker, using brightness (not opacity) keeps them opaque so the
      dark backdrop doesn't show through. */
   --lb-dim: 1;
   filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.45)) brightness(var(--lb-dim));
@@ -584,7 +594,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   height: 100%;
   /* Match the in-page stack so source and target are visually identical
      during the morph. Container is sized to the media's aspect, so cover
-     just fills — no crop happens at the active size. */
+     just fills, no crop happens at the active size. */
   object-fit: cover;
   border-radius: 12px;
   /* default smooth radius; overridden by JS so morph swap matches in-page */
@@ -647,7 +657,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 .lightbox_caption.is-swapping .lightbox_caption_text { opacity: 0; }
 .lightbox_caption.is-empty { opacity: 0 !important; }
 
-/* Off-screen measuring ghost — same styles + content-sized so we can read
+/* Off-screen measuring ghost, same styles + content-sized so we can read
    the natural width of the next caption before animating to it. */
 .lightbox_caption.is-ghost {
   visibility: hidden;
