@@ -398,9 +398,16 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 @media (min-width: 980px) {
   .chapter-project .chapter_body {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    align-items: center;
-    gap: clamp(2rem, 5vw, 4rem);
+    grid-template-areas:
+      "heading heading"
+      "text    figure";
+    align-items: start;
+    column-gap: clamp(2rem, 5vw, 4rem);
+    row-gap: clamp(1rem, 2vw, 1.75rem);
   }
+  .chapter-project .chapter_body > .display { grid-area: heading; }
+  .chapter-project .chapter_body > .chapter_text { grid-area: text; }
+  .chapter-project .chapter_body > .chapter_figure { grid-area: figure; }
 }
 
 .chapter_text {
