@@ -36,6 +36,20 @@
   window.addEventListener('load', function () {
     if (!userScrolled) anchorScroll();
   });
+  // History traversal (back/forward across in-page hash links). Browser-level
+  // auto-scroll-to-hash is suppressed by scrollRestoration='manual', so we
+  // pick it up explicitly. `popstate` only fires on history navigation, never
+  // on plain anchor-link clicks — those still get the CSS smooth-scroll.
+  window.addEventListener('popstate', anchorScroll);
+  // bfcache restore (iOS Safari / Firefox back from external link). The
+  // browser preserves scrollY across bfcache, so we don't re-pin; just
+  // re-assert manual restoration in case the browser reset it on the
+  // restored entry.
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted && 'scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  });
 
   // ---------- title animation: matches the "Zachary" -> "Zach" collapse ----------
   // Mirrors the .display_dim collapse end (CSS: 4.5s delay + 0.6s duration).

@@ -48,7 +48,10 @@ html {
   /* Mirror the body's clip on the actual scroll container. Without this,
      iOS Safari still pans horizontally because the layout overflow from the
      stacked-card transforms contributes to html's scrollWidth even though
-     body has overflow-x: clip painting them off-screen. */
+     body has overflow-x: clip painting them off-screen. iOS Safari < 16
+     doesn't understand `clip` — `hidden` is the older equivalent and the
+     `clip` declaration that follows takes precedence on engines that do. */
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -64,7 +67,9 @@ body {
   text-rendering: optimizeLegibility;
   /* Contain decorative overflow (stacked media transforms, card shadows) so
      mobile browsers don't expose a horizontal pan. `clip` doesn't create a
-     scroll container, so the y-axis snap on <html> is unaffected. */
+     scroll container, so the y-axis snap on <html> is unaffected; the
+     `hidden` fallback is for iOS Safari < 16. */
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
