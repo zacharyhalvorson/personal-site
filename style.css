@@ -254,9 +254,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   padding-inline-start: var(--gutter);
   padding-inline-end: var(--gutter-end);
   position: relative;
-  border-bottom: 1px solid var(--rule);
 }
-.chapter:last-of-type { border-bottom: none; }
 
 .chapter_inner {
   width: 100%;
