@@ -1149,19 +1149,24 @@
           var frame = captureFrame(tgt);
           if (ovCtrl) ovCtrl.style.display = savedCtrlDisplay || '';
           if (ovKnob) ovKnob.style.display = savedKnobDisplay || '';
-          if (frame) src.setAttribute('poster', frame);
+          if (frame) {
+            src.setAttribute('poster', frame);
+            // Decode the new poster off-screen in parallel with the
+            // morph. Without this, Safari defers decoding on a still-
+            // hidden <video> until it becomes visible at dismiss,
+            // flashing the old poster (or nothing) for a frame. With an
+            // off-screen Image triggering the decode now, the bitmap is
+            // sitting in the browser's image cache by the time the
+            // source becomes visible — the data URL is the cache key,
+            // so the poster's later request hits the cache. Doing this
+            // off-screen avoids painting the source under the dialog
+            // during the morph, which would double the drop-shadow.
+            var preloader = new Image();
+            preloader.src = frame;
+            if (preloader.decode) preloader.decode().catch(function () {});
+          }
         }
       }
-      // Reveal the source card NOW (instead of waiting until finalize)
-      // so its poster paints during the morph window. The lightbox
-      // dialog is still in top layer and the morphing tgt overlays this
-      // source rect, so the user only sees the shrinking media — not the
-      // source underneath. By the time dlg.close() runs, the source has
-      // already been painted on the page underneath the dialog, so the
-      // dismiss is seamless. Without this, Safari deferred decoding the
-      // newly-set poster until the source actually became visible at
-      // dismiss, producing a brief flash of empty/old poster.
-      if (sourceEl) sourceEl.classList.remove('is-source');
       var sRect = src.getBoundingClientRect();
       var tRect = tgt.getBoundingClientRect();
       var fromT = flipTransform(sRect, tRect);
