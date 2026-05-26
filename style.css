@@ -330,14 +330,14 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%, var(--highlight) 92%, transparent 92%);
 }
 
-/* Inline body-text highlight: same highlighter gradient as the display
-   headings, tuned for body line-heights. <mark> is the semantic element
-   for "important text"; default browser styling (solid yellow) is
+/* Inline body-text highlight: same highlighter gradient and accent color as
+   the display headings, tuned for body line-heights. <mark> is the semantic
+   element for "important text"; default browser styling (solid yellow) is
    overridden. Color is left inherited so emphasis doesn't shift hue.
    Heaviness comes from a font-weight bump rather than a tall band, so
    the mark stays a refined highlighter stripe instead of a solid blob. */
 mark {
-  background: linear-gradient(180deg, transparent 52%, var(--highlight-deep) 52%, var(--highlight-deep) 94%, transparent 94%);
+  background: linear-gradient(180deg, transparent 52%, var(--highlight) 52%, var(--highlight) 94%, transparent 94%);
   color: inherit;
   font-weight: 600;
   padding: 0 0.05em;
@@ -422,6 +422,9 @@ mark {
   color: var(--text-default);
   max-width: 32rem;
 }
+/* Pull consecutive taglines closer than the body's flex gap, so the two
+   intro sentences read as one block without crowding the heading or photo. */
+.tagline + .tagline { margin-top: -0.75rem; }
 
 .meta-links {
   margin: 0.25rem 0 0;
@@ -654,6 +657,13 @@ mark {
   overflow: clip;
   outline: none;
   color: #fff;
+  /* Lock every gesture inside the modal. iOS Safari uses the touch target's
+     own touch-action: the track has `none`, but a finger that lands on the
+     caption (pointer-events: none) or any other descendant defaults to
+     `auto`, and iOS pans the snap-scrolled <html> underneath. Setting it on
+     the dialog itself means descendants inherit the block. */
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 .lightbox::backdrop {
   background: rgba(8, 7, 6, 0);

@@ -116,3 +116,4 @@ Profile photos are provided at multiple resolutions for responsive loading. When
 - **Test responsive layout.** Check mobile (< 600px), tablet (~ 760px), and desktop.
 - **Test the print stylesheet.** This site IS the resume — `Cmd-P` should produce a clean printable page.
 - **Test with reduced motion.** Toggle the OS setting and confirm snap + reveals disable.
+- **Test iOS touch on overlays.** The site uses `scroll-snap-type: y mandatory` on `<html>`, so any modal/overlay must fully block touch panning or iOS Safari will scroll the page underneath. Set `touch-action: none` on the overlay's root (not just inner gesture surfaces); descendants with `pointer-events: none` still own their own `touch-action` and will leak gestures otherwise. Verify by swiping vertically on every region of the overlay — caption pills, padding, peeks, the area above/below the active media.
