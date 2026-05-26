@@ -330,14 +330,14 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%, var(--highlight) 92%, transparent 92%);
 }
 
-/* Inline body-text highlight: same highlighter gradient as the display
-   headings, tuned for body line-heights. <mark> is the semantic element
-   for "important text"; default browser styling (solid yellow) is
+/* Inline body-text highlight: same highlighter gradient and accent color as
+   the display headings, tuned for body line-heights. <mark> is the semantic
+   element for "important text"; default browser styling (solid yellow) is
    overridden. Color is left inherited so emphasis doesn't shift hue.
    Heaviness comes from a font-weight bump rather than a tall band, so
    the mark stays a refined highlighter stripe instead of a solid blob. */
 mark {
-  background: linear-gradient(180deg, transparent 52%, var(--highlight-deep) 52%, var(--highlight-deep) 94%, transparent 94%);
+  background: linear-gradient(180deg, transparent 52%, var(--highlight) 52%, var(--highlight) 94%, transparent 94%);
   color: inherit;
   font-weight: 600;
   padding: 0 0.05em;
