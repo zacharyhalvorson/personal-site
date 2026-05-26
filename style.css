@@ -809,6 +809,168 @@ mark {
 }
 
 
+/* ---------- lightbox: per-video inline controls ---------- */
+
+/* Inset overlay over the active video. Wrapper is pointer-events:none so the
+   video itself stays tap-to-toggle (handled in script.js handleTap); the
+   play button and scrub bar opt back in. */
+.lightbox_controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+}
+/* Match the video's dynamic squircle radius. */
+.lightbox_item .lightbox_controls { border-radius: var(--smooth-r, 12px); }
+/* Only the active item shows its controls, and only after the open-morph
+   has settled (.is-open lands after the FLIP completes). */
+.lightbox.is-open .lightbox_item.is-active .lightbox_controls {
+  opacity: 1;
+}
+/* Peeks: keep controls invisible AND inert — tapping a peek must navigate,
+   not engage the scrubber underneath. */
+.lightbox_item:not(.is-active) .lightbox_controls,
+.lightbox_item:not(.is-active) .lightbox_controls * {
+  pointer-events: none;
+}
+
+/* Play / pause overlay — icon only, no background or outline. Hidden by
+   default; visible while the lightbox is fully open AND (hovered or paused
+   or focused). Gating on .is-open prevents an icon flash during close: the
+   pause event fires as the lightbox dismisses, but the rule no longer
+   matches so the button doesn't try to fade in. */
+.lightbox_controls_play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  pointer-events: auto;
+  /* Drop shadow on the icon mass itself — legibility cushion over bright
+     video frames without painting a background pill. */
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  opacity: 0;
+  transition: opacity 0.18s var(--ease);
+}
+.lightbox.is-open .lightbox_item.is-active:hover .lightbox_controls_play,
+.lightbox.is-open .lightbox_controls[data-state="paused"] .lightbox_controls_play,
+.lightbox.is-open .lightbox_controls_play:focus-visible {
+  opacity: 1;
+}
+.lightbox_controls_play:focus-visible { outline: none; }
+.lightbox_controls_play svg {
+  width: 44px;
+  height: 44px;
+  display: none;
+  /* Nudge the play triangle a hair right so its visual center matches the
+     button's center (the triangle's bounding box is wider than its mass). */
+  margin-left: 3px;
+}
+.lightbox_controls_play .icon-pause { margin-left: 0; }
+.lightbox_controls[data-state="paused"]  .icon-play  { display: block; }
+.lightbox_controls[data-state="playing"] .icon-pause { display: block; }
+
+/* Scrub bar — thin, inset from the video edges with equal padding on
+   left / right / bottom. Expands on hover or focus to reveal the knob.
+   The 18px tall input is the hit target; the visual track is only 2px
+   tall and pill-shaped. The browser centers the track vertically inside
+   the input, so to align the bar's bottom edge with the side insets we
+   set the input's bottom to side_inset - (input_height - track_height)/2
+   = 14 - 8 = 6px (= 0.375rem). */
+.lightbox_controls_scrub {
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: 0.375rem;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  /* Updated from JS on every timeupdate; drives the filled portion of the
+     track via the gradient below. */
+  --scrub-progress: 0;
+  --scrub-track-h: 2px;
+  --scrub-track-r: 999px;
+}
+.lightbox_controls_scrub:hover,
+.lightbox_controls_scrub:focus-visible {
+  --scrub-track-h: 6px;
+}
+.lightbox_controls_scrub::-webkit-slider-runnable-track {
+  height: var(--scrub-track-h);
+  border-radius: var(--scrub-track-r);
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.85) calc(var(--scrub-progress) * 100%),
+    rgba(255, 255, 255, 0.25) calc(var(--scrub-progress) * 100%),
+    rgba(255, 255, 255, 0.25) 100%
+  );
+  transition: height 0.22s var(--ease);
+}
+.lightbox_controls_scrub::-moz-range-track {
+  height: var(--scrub-track-h);
+  border-radius: var(--scrub-track-r);
+  background: rgba(255, 255, 255, 0.25);
+  border: 0;
+  transition: height 0.22s var(--ease);
+}
+.lightbox_controls_scrub::-moz-range-progress {
+  height: var(--scrub-track-h);
+  border-radius: var(--scrub-track-r);
+  background: rgba(255, 255, 255, 0.85);
+  border: 0;
+  transition: height 0.22s var(--ease);
+}
+.lightbox_controls_scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  /* Center on 2px track (12/2 - 2/2 = 5); re-centered on hover for 6px. */
+  margin-top: -5px;
+  opacity: 0;
+  transition: opacity 0.22s var(--ease), margin-top 0.22s var(--ease);
+}
+.lightbox_controls_scrub::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  opacity: 0;
+  transition: opacity 0.22s var(--ease);
+}
+.lightbox_controls_scrub:hover::-webkit-slider-thumb,
+.lightbox_controls_scrub:focus-visible::-webkit-slider-thumb {
+  opacity: 1;
+  margin-top: -3px;
+}
+.lightbox_controls_scrub:hover::-moz-range-thumb,
+.lightbox_controls_scrub:focus-visible::-moz-range-thumb {
+  opacity: 1;
+}
+.lightbox_controls_scrub:focus-visible { outline: none; }
+
+
 /* ---------- chapter: intro variant ---------- */
 
 .chapter-intro .chapter_body {

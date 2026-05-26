@@ -437,6 +437,86 @@
     var offsets = [];
     var morphing = false;
 
+    function inControls(el) {
+      return !!(el && el.closest && el.closest('.lightbox_controls'));
+    }
+
+    // Per-video controls: a play/pause overlay button (only visible on hover or
+    // when paused) and a thin scrub bar pinned to the bottom of the video. The
+    // controls live INSIDE each video's .lightbox_item so they morph with the
+    // video and have nothing to bind/unbind globally. Click anywhere on the
+    // video itself toggles play/pause (handled in handleTap).
+    function attachVideoControls(wrap, video) {
+      var controls = document.createElement('div');
+      controls.className = 'lightbox_controls';
+      controls.dataset.state = 'paused';
+      controls.innerHTML =
+        '<button type="button" class="lightbox_controls_play" aria-label="Play" tabindex="-1">' +
+          '<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13a1 1 0 0 0 1.54.84l10-6.5a1 1 0 0 0 0-1.68l-10-6.5A1 1 0 0 0 7 5.5Z" fill="currentColor"/></svg>' +
+          '<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>' +
+        '</button>' +
+        '<input type="range" class="lightbox_controls_scrub" min="0" max="1000" value="0" step="1" aria-label="Seek">';
+      wrap.appendChild(controls);
+
+      var playBtn = controls.querySelector('.lightbox_controls_play');
+      var scrub = controls.querySelector('.lightbox_controls_scrub');
+      var scrubbing = false;
+
+      function setProgress(t, d) {
+        if (!isFinite(d) || d <= 0) return;
+        var p = Math.max(0, Math.min(1, t / d));
+        scrub.style.setProperty('--scrub-progress', p);
+        if (!scrubbing) scrub.value = String(Math.round(p * 1000));
+      }
+
+      video.addEventListener('play', function () {
+        controls.dataset.state = 'playing';
+        playBtn.setAttribute('aria-label', 'Pause');
+      });
+      video.addEventListener('pause', function () {
+        controls.dataset.state = 'paused';
+        playBtn.setAttribute('aria-label', 'Play');
+      });
+      video.addEventListener('ended', function () {
+        controls.dataset.state = 'paused';
+        playBtn.setAttribute('aria-label', 'Play');
+      });
+      video.addEventListener('timeupdate', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+      video.addEventListener('durationchange', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+      video.addEventListener('loadedmetadata', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+
+      playBtn.addEventListener('click', function () {
+        if (video.paused) {
+          var p = video.play();
+          if (p && p.catch) p.catch(function () {});
+        } else {
+          video.pause();
+        }
+      });
+
+      scrub.addEventListener('input', function () {
+        scrubbing = true;
+        var d = video.duration;
+        if (isFinite(d) && d > 0) {
+          var p = parseFloat(scrub.value) / 1000;
+          scrub.style.setProperty('--scrub-progress', p);
+        }
+      });
+      scrub.addEventListener('change', function () {
+        var d = video.duration;
+        if (isFinite(d) && d > 0) {
+          try { video.currentTime = (parseFloat(scrub.value) / 1000) * d; } catch (_) {}
+        }
+        scrubbing = false;
+      });
+    }
+
     function build(items) {
       track.textContent = '';
       itemEls = items.map(function (it, i) {
@@ -476,6 +556,7 @@
         node.setAttribute('width', it.w);
         node.setAttribute('height', it.h);
         wrap.appendChild(node);
+        if (it.type === 'video') attachVideoControls(wrap, node);
         track.appendChild(wrap);
         watchSquircle(node);
         return wrap;
@@ -545,8 +626,8 @@
         var media = el.firstChild;
         if (!media) return;
         if (media.tagName === 'VIDEO') {
-          // No native controls, the entire fullscreen frame is dismiss-on-tap,
-          // and a control strip would steal touches from the active media.
+          // Custom inline controls handle play/pause + scrub per-item; native
+          // controls would collide with our carousel and tap-to-toggle.
           media.controls = false;
           if (on) {
             // Try with audio first; if the browser blocks autoplay-with-sound
@@ -781,6 +862,9 @@
       // start a drag/tap (which would dismiss the lightbox under the link
       // navigation).
       if (e.target.closest && e.target.closest('a')) return;
+      // The video control bar owns its own pointer interactions (button click,
+      // slider drag); don't let the carousel hijack them into a swipe gesture.
+      if (inControls(e.target)) return;
       if (morphing) return;
       dragging = true; mvd = false; hor = false;
       sx0 = e.clientX; sy0 = e.clientY;
@@ -838,6 +922,9 @@
       // pointer-capture redirects e.target to the track after pointerdown, so
       // resolve the actual element under the release point instead.
       var hit = document.elementFromPoint(e.clientX, e.clientY);
+      // Taps on the inline controls (play overlay, scrub) are interactions,
+      // not dismisses or toggles — those elements own their own click handling.
+      if (hit && hit.closest && hit.closest('.lightbox_controls')) return;
       var itemEl = hit && hit.closest('.lightbox_item');
       // backdrop tap (outside any item) → close
       if (!itemEl) { closeMorph(); return; }
@@ -845,8 +932,19 @@
       if (isNaN(i)) return;
       if (i !== idx) {
         setActive(i);              // tap on a peek → navigate
+        return;
+      }
+      // Tap on the active item: videos toggle play/pause, images dismiss.
+      var media = itemEl.firstChild;
+      if (media && media.tagName === 'VIDEO') {
+        if (media.paused) {
+          var pp = media.play();
+          if (pp && pp.catch) pp.catch(function () {});
+        } else {
+          media.pause();
+        }
       } else {
-        closeMorph();              // tap on the active media → dismiss
+        closeMorph();
       }
     }
 
@@ -857,6 +955,21 @@
     });
 
     dlg.addEventListener('keydown', function (e) {
+      // When the active video's scrub slider has focus, native range
+      // keystrokes (arrows, Home/End, PgUp/PgDn) step the value — don't
+      // poach them for carousel navigation.
+      if (e.target && e.target.classList && e.target.classList.contains('lightbox_controls_scrub')) return;
+      var av = activeMedia();
+      if (e.key === ' ' && av && av.tagName === 'VIDEO') {
+        e.preventDefault();
+        if (av.paused) {
+          var pp = av.play();
+          if (pp && pp.catch) pp.catch(function () {});
+        } else {
+          av.pause();
+        }
+        return;
+      }
       if (e.key === 'ArrowRight') { e.preventDefault(); setActive(idx + 1); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); setActive(idx - 1); }
     });
@@ -871,6 +984,8 @@
     var wheelAcc = 0, wheelCommitted = false, wheelIdle = null;
     dlg.addEventListener('wheel', function (e) {
       if (morphing) return;
+      // Don't page the carousel when the user spins over the controls bar.
+      if (inControls(e.target)) return;
       var h = Math.abs(e.deltaX) > Math.abs(e.deltaY);
       // Vertical wheel inside the modal can't scroll anything, swallow it.
       if (!h) { e.preventDefault(); return; }
