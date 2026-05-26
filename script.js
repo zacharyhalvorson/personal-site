@@ -1125,7 +1125,26 @@
         // Mirror the paused frame onto the in-page <video>'s poster so the
         // hand-off at the end of the shrink is invisible.
         if (src.tagName === 'VIDEO') {
+          // Hide the HTML overlays (scrub bar, knob) from layout before
+          // drawing the video to canvas. Safari's canvas.drawImage(video)
+          // on a hardware-composited <video> pulls in adjacent overlay
+          // layers — without this, the paused-state scrub bar gets baked
+          // into the captured frame and shows as a stray white line at
+          // the bottom of the in-page card after dismiss. Chromium gives
+          // a clean capture either way; the toggle is harmless there.
+          var tgtItem = tgt.parentNode;
+          var ovCtrl = tgtItem && tgtItem.querySelector('.lightbox_controls');
+          var ovKnob = tgtItem && tgtItem.querySelector('.lightbox_controls_knob');
+          var savedCtrlDisplay = ovCtrl && ovCtrl.style.display;
+          var savedKnobDisplay = ovKnob && ovKnob.style.display;
+          if (ovCtrl) ovCtrl.style.display = 'none';
+          if (ovKnob) ovKnob.style.display = 'none';
+          // Force a synchronous layout/composite flush so the hidden
+          // state is in effect before the canvas reads pixels.
+          if (ovCtrl) void ovCtrl.offsetWidth;
           var frame = captureFrame(tgt);
+          if (ovCtrl) ovCtrl.style.display = savedCtrlDisplay || '';
+          if (ovKnob) ovKnob.style.display = savedKnobDisplay || '';
           if (frame) src.setAttribute('poster', frame);
         }
       }
