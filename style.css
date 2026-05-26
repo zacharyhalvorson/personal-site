@@ -654,6 +654,13 @@ mark {
   overflow: clip;
   outline: none;
   color: #fff;
+  /* Lock every gesture inside the modal. iOS Safari uses the touch target's
+     own touch-action: the track has `none`, but a finger that lands on the
+     caption (pointer-events: none) or any other descendant defaults to
+     `auto`, and iOS pans the snap-scrolled <html> underneath. Setting it on
+     the dialog itself means descendants inherit the block. */
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 .lightbox::backdrop {
   background: rgba(8, 7, 6, 0);
