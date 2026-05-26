@@ -422,6 +422,9 @@ mark {
   color: var(--text-default);
   max-width: 32rem;
 }
+/* Pull consecutive taglines closer than the body's flex gap, so the two
+   intro sentences read as one block without crowding the heading or photo. */
+.tagline + .tagline { margin-top: -0.75rem; }
 
 .meta-links {
   margin: 0.25rem 0 0;
