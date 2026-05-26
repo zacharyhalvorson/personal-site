@@ -1126,12 +1126,12 @@
         // hand-off at the end of the shrink is invisible.
         if (src.tagName === 'VIDEO') {
           // Hide the HTML overlays (scrub bar, knob) from layout before
-          // drawing the video to canvas. Safari's canvas.drawImage(video)
-          // on a hardware-composited <video> pulls in adjacent overlay
-          // layers — without this, the paused-state scrub bar gets baked
-          // into the captured frame and shows as a stray white line at
-          // the bottom of the in-page card after dismiss. Chromium gives
-          // a clean capture either way; the toggle is harmless there.
+          // drawing the video to canvas. Chrome's canvas.drawImage(video)
+          // on a hardware-composited <video> can pull in adjacent overlay
+          // layers from the same compositing group — without this, the
+          // paused-state scrub bar gets baked into the captured frame
+          // and shows as a stray white horizontal line at the bottom of
+          // the in-page card after dismiss.
           var tgtItem = tgt.parentNode;
           var ovCtrl = tgtItem && tgtItem.querySelector('.lightbox_controls');
           var ovKnob = tgtItem && tgtItem.querySelector('.lightbox_controls_knob');
@@ -1139,15 +1139,29 @@
           var savedKnobDisplay = ovKnob && ovKnob.style.display;
           if (ovCtrl) ovCtrl.style.display = 'none';
           if (ovKnob) ovKnob.style.display = 'none';
-          // Force a synchronous layout/composite flush so the hidden
-          // state is in effect before the canvas reads pixels.
-          if (ovCtrl) void ovCtrl.offsetWidth;
+          // Force a synchronous layout + composite flush so the hidden
+          // state is in effect before the canvas reads pixels. void
+          // offsetWidth alone wasn't enough on some Chrome versions;
+          // calling getBoundingClientRect on both the now-hidden overlay
+          // and the target video flushes the composite layer too.
+          if (ovCtrl) ovCtrl.getBoundingClientRect();
+          tgt.getBoundingClientRect();
           var frame = captureFrame(tgt);
           if (ovCtrl) ovCtrl.style.display = savedCtrlDisplay || '';
           if (ovKnob) ovKnob.style.display = savedKnobDisplay || '';
           if (frame) src.setAttribute('poster', frame);
         }
       }
+      // Reveal the source card NOW (instead of waiting until finalize)
+      // so its poster paints during the morph window. The lightbox
+      // dialog is still in top layer and the morphing tgt overlays this
+      // source rect, so the user only sees the shrinking media — not the
+      // source underneath. By the time dlg.close() runs, the source has
+      // already been painted on the page underneath the dialog, so the
+      // dismiss is seamless. Without this, Safari deferred decoding the
+      // newly-set poster until the source actually became visible at
+      // dismiss, producing a brief flash of empty/old poster.
+      if (sourceEl) sourceEl.classList.remove('is-source');
       var sRect = src.getBoundingClientRect();
       var tRect = tgt.getBoundingClientRect();
       var fromT = flipTransform(sRect, tRect);
