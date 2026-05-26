@@ -1054,13 +1054,14 @@ html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
   cursor: pointer;
   pointer-events: auto;
   --scrub-progress: 0;
+  /* The input is a pure hit target — the visible bar is the
+     .lightbox_controls_track + .lightbox_controls_fill divs above. Keep
+     it at opacity 0 always; even with `appearance: none` Chrome paints a
+     thin residual track decoration on the host element when it becomes
+     visible, and that decoration occupies the input's full 18px bbox
+     which extends below the visible scrub track — reading as a stray
+     horizontal line peeking out below the squircle's bottom curve. */
   opacity: 0;
-  transition: opacity 0.42s var(--ease);
-}
-.lightbox.is-open .lightbox_item.is-active.is-cursor-over .lightbox_controls_scrub,
-.lightbox.is-open .lightbox_controls[data-state="paused"] .lightbox_controls_scrub,
-.lightbox.is-open .lightbox_controls_scrub:focus-visible {
-  opacity: 1;
 }
 .lightbox_controls_scrub::-webkit-slider-runnable-track {
   height: 18px;
