@@ -997,12 +997,16 @@
     }
 
     // Compute the FLIP transform string that maps `toRect` onto `fromRect`.
+    // 3D (translate3d/scale3d) so Safari runs the morph on the compositor
+    // thread instead of repainting the <video> in lockstep with the geometry
+    // — the latter desyncs the decoded-frame layer from the transform and
+    // reads as jitter (macOS) or a flash (iOS hardware-overlay) video.
     function flipTransform(fromRect, toRect) {
       var fx = fromRect.left - toRect.left;
       var fy = fromRect.top - toRect.top;
       var sx = fromRect.width / toRect.width;
       var sy = fromRect.height / toRect.height;
-      return 'translate(' + fx + 'px, ' + fy + 'px) scale(' + sx + ', ' + sy + ')';
+      return 'translate3d(' + fx + 'px, ' + fy + 'px, 0) scale3d(' + sx + ', ' + sy + ', 1)';
     }
 
     // Pre-place the active media at the source rect SYNCHRONOUSLY, called
@@ -1026,7 +1030,7 @@
       var fromT = pre && pre.fromT;
       if (!tgt) return Promise.resolve();
       var anim = tgt.animate(
-        [{ transform: fromT }, { transform: 'translate(0, 0) scale(1, 1)' }],
+        [{ transform: fromT }, { transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)' }],
         { duration: OPEN_MS, easing: EASE, fill: 'forwards' }
       );
       morphing = true;
@@ -1172,7 +1176,7 @@
       var fromT = flipTransform(sRect, tRect);
       tgt.style.transformOrigin = 'top left';
       var anim = tgt.animate(
-        [{ transform: 'translate(0, 0) scale(1, 1)' }, { transform: fromT }],
+        [{ transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)' }, { transform: fromT }],
         { duration: CLOSE_MS, easing: EASE, fill: 'forwards' }
       );
       morphing = true;
