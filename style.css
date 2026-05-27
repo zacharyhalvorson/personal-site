@@ -774,6 +774,17 @@ html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
   --smooth-r: 12px;
   user-select: none;
   -webkit-user-drag: none;
+  /* Keep the media on its own GPU layer for the whole time it's mounted, so
+     the open/close FLIP morph (a 3D transform animated via WAAPI) composites
+     smoothly. translateZ(0) promotes the layer up front — if the layer were
+     created only when the animation starts, that promotion is itself a
+     one-frame flash. backface-visibility pulls a playing <video> off iOS
+     Safari's hardware-overlay plane (which ignores the in-flight transform
+     and flashes) onto a normal transformable texture. Together they kill the
+     jitter on macOS Safari and the flash-in/flash-out on iOS. */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 /* peeked items are tappable, active image content is not (tap-to-close happens on backdrop) */
 .lightbox_item:not(.is-active) { cursor: pointer; }

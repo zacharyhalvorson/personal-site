@@ -997,12 +997,16 @@
     }
 
     // Compute the FLIP transform string that maps `toRect` onto `fromRect`.
+    // 3D (translate3d/scale3d) so Safari runs the morph on the compositor
+    // thread instead of repainting the <video> in lockstep with the geometry
+    // — the latter desyncs the decoded-frame layer from the transform and
+    // reads as jitter (macOS) or a flash (iOS hardware-overlay) video.
     function flipTransform(fromRect, toRect) {
       var fx = fromRect.left - toRect.left;
       var fy = fromRect.top - toRect.top;
       var sx = fromRect.width / toRect.width;
       var sy = fromRect.height / toRect.height;
-      return 'translate(' + fx + 'px, ' + fy + 'px) scale(' + sx + ', ' + sy + ')';
+      return 'translate3d(' + fx + 'px, ' + fy + 'px, 0) scale3d(' + sx + ', ' + sy + ', 1)';
     }
 
     // Pre-place the active media at the source rect SYNCHRONOUSLY, called
@@ -1026,7 +1030,7 @@
       var fromT = pre && pre.fromT;
       if (!tgt) return Promise.resolve();
       var anim = tgt.animate(
-        [{ transform: fromT }, { transform: 'translate(0, 0) scale(1, 1)' }],
+        [{ transform: fromT }, { transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)' }],
         { duration: OPEN_MS, easing: EASE, fill: 'forwards' }
       );
       morphing = true;
@@ -1151,16 +1155,31 @@
           if (ovKnob) ovKnob.style.display = savedKnobDisplay || '';
           if (frame) {
             src.setAttribute('poster', frame);
-            // Decode the new poster off-screen in parallel with the
-            // morph. Without this, Safari defers decoding on a still-
-            // hidden <video> until it becomes visible at dismiss,
-            // flashing the old poster (or nothing) for a frame. With an
-            // off-screen Image triggering the decode now, the bitmap is
-            // sitting in the browser's image cache by the time the
-            // source becomes visible — the data URL is the cache key,
-            // so the poster's later request hits the cache. Doing this
-            // off-screen avoids painting the source under the dialog
-            // during the morph, which would double the drop-shadow.
+            // Paint-instant fallback: mirror the frame onto the in-page
+            // <video>'s CSS background. Safari can lag decoding a freshly-
+            // set poster URL on a still-hidden element, flashing the old
+            // poster (or nothing) the moment the source becomes visible
+            // post-dismiss. A CSS background-image paints from the layer
+            // tree as soon as the element is visible, even before the
+            // poster attribute's image has finished decoding.
+            var bg = 'url("' + frame.replace(/"/g, '\\"') + '")';
+            src.style.backgroundImage = bg;
+            src.style.backgroundSize = 'cover';
+            src.style.backgroundPosition = 'center';
+            // Also mirror onto the LIGHTBOX <video>'s CSS background.
+            // The lightbox video keeps its build-time background (the
+            // original poster, == frame 0); if iOS Safari evicts the
+            // decoded-frame buffer mid-shrink, the element falls back to
+            // that background and flashes from "paused at frame X" back
+            // to "frame 0" before disappearing. Updating to the captured
+            // frame keeps the fallback in sync with what the user was
+            // actually watching.
+            tgt.style.backgroundImage = bg;
+            // Decode the new poster off-screen in parallel with the morph
+            // so the data URL is sitting in the image cache by the time
+            // anything tries to paint it — the URL is the cache key, so
+            // both the poster attribute and the CSS background later hit
+            // the cache instead of re-decoding.
             var preloader = new Image();
             preloader.src = frame;
             if (preloader.decode) preloader.decode().catch(function () {});
@@ -1172,7 +1191,7 @@
       var fromT = flipTransform(sRect, tRect);
       tgt.style.transformOrigin = 'top left';
       var anim = tgt.animate(
-        [{ transform: 'translate(0, 0) scale(1, 1)' }, { transform: fromT }],
+        [{ transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)' }, { transform: fromT }],
         { duration: CLOSE_MS, easing: EASE, fill: 'forwards' }
       );
       morphing = true;
