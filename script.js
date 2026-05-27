@@ -686,13 +686,25 @@
         if (it.type === 'video') {
           node = document.createElement('video');
           node.src = it.src;
-          if (it.poster) {
-            node.poster = it.poster;
+          // Re-read the poster from the in-page <video> rather than using
+          // the value cached at IIFE init. After a play+dismiss cycle the
+          // close-morph swaps the in-page poster to the frame the user
+          // paused on, so the in-page card now shows frame X. If we built
+          // the lightbox video with the stale frame-0 poster, the open
+          // morph would flash from frame X (the source rect's apparent
+          // content) to frame 0 (the lightbox video's poster) before the
+          // video seeks to its restored currentTime and decodes frame X
+          // back in. Mirroring the live in-page poster keeps both ends of
+          // the morph showing the same frame.
+          var srcVideo = it.el && it.el.querySelector('video');
+          var posterToUse = (srcVideo && srcVideo.getAttribute('poster')) || it.poster;
+          if (posterToUse) {
+            node.poster = posterToUse;
             // CSS background fallback: with preload="metadata", the very first
             // paint of the <video> can flash black before either the poster
             // image or the first video frame is decoded. Painting the poster
             // onto the element's background covers that gap.
-            node.style.backgroundImage = 'url("' + it.poster.replace(/"/g, '\\"') + '")';
+            node.style.backgroundImage = 'url("' + posterToUse.replace(/"/g, '\\"') + '")';
             node.style.backgroundSize = 'cover';
             node.style.backgroundPosition = 'center';
           }
