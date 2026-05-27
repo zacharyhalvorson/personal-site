@@ -572,25 +572,61 @@
         if (!scrubbing) scrub.value = String(Math.round(p * 1000));
       }
 
+      // requestAnimationFrame drives the scrub bar at the display's refresh
+      // rate (~60 fps) while the video is playing. Native `timeupdate` only
+      // fires roughly every 250 ms in Safari (and irregularly in Chrome), so
+      // binding the fill width / knob position to timeupdate made the bar
+      // jump in coarse steps instead of growing smoothly between updates.
+      // Sampling video.currentTime per animation frame is the right cadence
+      // for a progress bar that's supposed to look animated; both the fill
+      // and the knob read the same --scrub-progress custom property, so the
+      // knob stays in lockstep with the fill without any extra wiring. The
+      // rAF loop only runs while the video is actively playing — pause and
+      // ended cancel it — so an idle video adds nothing to the frame budget.
+      var rafId = 0;
+      function tick() {
+        setProgress(video.currentTime, video.duration);
+        rafId = requestAnimationFrame(tick);
+      }
+      function startTicking() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(tick);
+      }
+      function stopTicking() {
+        if (!rafId) return;
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+        // Final flush so the bar lands on the exact paused frame's progress.
+        // Without this it would freeze one frame behind, since the rAF that
+        // would have set the latest sample was the one we just cancelled.
+        setProgress(video.currentTime, video.duration);
+      }
+
       video.addEventListener('play', function () {
         controls.dataset.state = 'playing';
         playBtn.setAttribute('aria-label', 'Pause');
+        startTicking();
       });
       video.addEventListener('pause', function () {
         controls.dataset.state = 'paused';
         playBtn.setAttribute('aria-label', 'Play');
+        stopTicking();
       });
       video.addEventListener('ended', function () {
         controls.dataset.state = 'paused';
         playBtn.setAttribute('aria-label', 'Play');
+        stopTicking();
       });
-      video.addEventListener('timeupdate', function () {
-        setProgress(video.currentTime, video.duration);
-      });
+      // Paused-state updates: the rAF loop covers progress while playing,
+      // but the bar still needs to reflect duration becoming known and the
+      // user dropping the playhead via a seek-while-paused.
       video.addEventListener('durationchange', function () {
         setProgress(video.currentTime, video.duration);
       });
       video.addEventListener('loadedmetadata', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+      video.addEventListener('seeked', function () {
         setProgress(video.currentTime, video.duration);
       });
 
