@@ -22,6 +22,13 @@
   --gutter-end: var(--gutter);
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Lightbox caption swap timings — read by both the CSS transitions on
+     .lightbox_caption / .lightbox_caption_text AND by script.js
+     (createLightbox sources its FADE_MS / MORPH_MS constants from these
+     via getComputedStyle). Keep updates in one place. */
+  --cap-fade: 180ms;
+  --cap-morph: 240ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -200,17 +207,29 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   opacity: 0.7;
   background: var(--text-default);
 }
-.rail a:hover .rail_dot,
+/* `.is-hovered` is JS-driven via pointerenter/pointerleave (see script.js)
+   so the expanded state can't get stuck after a click. `:focus-visible`
+   is included alongside it so keyboard and screen-reader users see the
+   same label reveal — the script blurs rail links on click activation,
+   which prevents Safari's click-induced :focus-visible from persisting. */
+.rail a.is-hovered .rail_dot,
 .rail a:focus-visible .rail_dot {
   width: 24px;
   opacity: 1;
   background: var(--text-default);
 }
-.rail a:hover .rail_label,
+.rail a.is-hovered .rail_label,
 .rail a:focus-visible .rail_label {
   opacity: 1;
   transform: translateX(0);
   color: var(--text-default);
+}
+/* Outline ring for keyboard focus. Sits alongside the label reveal so
+   keyboard users get both visual signals. */
+.rail a:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 4px;
+  border-radius: 3px;
 }
 
 @media (max-width: 599px) {
@@ -235,9 +254,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   padding-inline-start: var(--gutter);
   padding-inline-end: var(--gutter-end);
   position: relative;
-  border-bottom: 1px solid var(--rule);
 }
-.chapter:last-of-type { border-bottom: none; }
 
 .chapter_inner {
   width: 100%;
@@ -526,7 +543,8 @@ mark {
   object-fit: contain;
 }
 
-.media_item:has(video)::before,
+/* Icon-only play indicator on inline video cards — matches the lightbox
+   overlay (no background, drop-shadow for legibility over bright frames). */
 .media_item:has(video)::after {
   content: "";
   position: absolute;
@@ -534,19 +552,11 @@ mark {
   top: 50%;
   pointer-events: none;
   z-index: 1;
-}
-.media_item:has(video)::before {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  background: rgba(15, 15, 15, 0.5);
-  transform: translate(-50%, -50%);
-}
-.media_item:has(video)::after {
   border-style: solid;
   border-width: 0.62rem 0 0.62rem 1.05rem;
   border-color: transparent transparent transparent #fff;
   transform: translate(-30%, -50%);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
 }
 
 /* ---------- media: enhanced (JS on) ---------- */
@@ -634,6 +644,19 @@ mark {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s var(--ease);
+}
+/* While the lightbox is in its close-morph (`lb-closing` is set on <html>
+   by script.js for the duration of closeMorph), undo the hide on behind
+   cards — let them fade back to opacity 1 alongside the shrinking media so
+   the stack is already settled by the time the dialog dismisses. Without
+   this, removing .is-source after the dismiss either flashes the cards in
+   (transitions restored) or pops them in (transitions pinned).
+   The explicit `transition` here means we're not relying solely on the
+   inline transition script.js sets on each stack kid — a future refactor
+   that drops the inline transition still gets a smooth fade. */
+html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
+  opacity: 1;
+  transition: opacity 0.36s var(--ease);
 }
 
 /* ---------- lightbox (fullscreen carousel) ---------- */
@@ -725,6 +748,15 @@ mark {
   filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.45)) brightness(var(--lb-dim));
   transition: filter 0.36s var(--ease);
 }
+/* iOS Safari renders the drop-shadow from the .lightbox_item's bounding
+   rectangle instead of following the descendant video's squircle clip-path,
+   leaving a visible rectangular halo around the curved video. Drop the
+   shadow on touch devices; keep the brightness so peeks still dim. */
+@media (hover: none) and (pointer: coarse) {
+  .lightbox_item {
+    filter: brightness(var(--lb-dim));
+  }
+}
 .lightbox.is-open .lightbox_item:not(.is-active) {
   --lb-dim: 0.62;
 }
@@ -769,17 +801,32 @@ mark {
   letter-spacing: 0.02em;
   line-height: 1.35;
   /* Wrap when the line would exceed the max-width; center the wrapped lines
-     so the bubble reads as a balanced caption rather than a left-aligned tag. */
+     so the bubble reads as a balanced caption rather than a left-aligned tag.
+     `text-wrap: balance` is intentionally OMITTED — Safari/Chromium can
+     interpret it as a max-content constraint that compresses single-line
+     captions into multiple balanced short lines (e.g. a caption that fits
+     naturally in 425px would balance into three 150px lines). Greedy wrap
+     is fine here; the pill hugs its longest line either way. */
   white-space: normal;
   text-align: center;
-  text-wrap: balance;
   pointer-events: none;
   opacity: 0;
   transform: translate3d(-50%, 6px, 0) scale(0.9);
+  /* Width + height morph between caption swaps — but only AFTER the inner
+     text has faded out (script.js sequences this: text fade-out → pill
+     morph → text fade-in). The pill is at opacity 0 throughout the morph,
+     so no text is ever visible inside a mid-morph box. For rapid swipes,
+     the JS version counter coalesces multiple in-flight swaps to the
+     latest target so the pill morphs straight to the final size with no
+     zigzag through intermediate widths. Durations sourced from
+     --cap-morph (also used by the JS scheduler) so the two stay aligned.
+     Open/close reveal animates opacity + transform on the same duration
+     so a swipe-during-reveal doesn't desync the box vs its content. */
   transition:
-    width 0.34s var(--ease),
-    opacity 0.30s var(--ease),
-    transform 0.34s var(--ease);
+    width var(--cap-morph) var(--ease),
+    height var(--cap-morph) var(--ease),
+    opacity var(--cap-morph) var(--ease),
+    transform var(--cap-morph) var(--ease);
 }
 .lightbox.is-open .lightbox_caption:not(.is-empty) {
   opacity: 1;
@@ -787,7 +834,10 @@ mark {
 }
 .lightbox_caption_text {
   display: inline-block;
-  transition: opacity 0.18s var(--ease);
+  /* Sourced from --cap-fade; the JS sequencer (script.js) reads the same
+     variable so its phase-1 setTimeout always waits at least this long
+     for the fade-out to complete before kicking off the pill morph. */
+  transition: opacity var(--cap-fade) var(--ease);
 }
 /* Inline links inside captions: pill stays click-through so backdrop taps
    still dismiss; the anchor opts back into events. */
@@ -816,6 +866,272 @@ mark {
   width: max-content;
   transition: none;
   transform: translate3d(-50%, 0, 0) scale(1);
+}
+
+
+/* ---------- lightbox: per-video inline controls ---------- */
+
+/* Inset overlay over the active video. Wrapper is pointer-events:none so the
+   video itself stays tap-to-toggle (handled in script.js handleTap); the
+   play button and scrub bar opt back in. The clip-path mirroring the video's
+   squircle is applied via JS (watchSquircle) so the bar follows the exact
+   same curve at the corners. The 0.42s opacity transition matches the
+   morph duration so the controls fade in alongside the video opening. */
+.lightbox_controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Corner shape comes from the squircle clip-path applied via JS
+     (watchSquircle) — matches the video's curve exactly. `overflow: clip`
+     is a rectangular safety net: if the squircle path hasn't computed for
+     a frame (initial paint, mid-resize), the bar still can't bleed past
+     the bounding box. The clip-path is what makes the corners curve. */
+  --smooth-r: 12px;
+  overflow: clip;
+  opacity: 0;
+  transition: opacity 0.42s var(--ease);
+}
+/* Only the active item shows its controls, and only AFTER the open-morph
+   has finished (.is-settled is added by JS once the FLIP animation
+   resolves). Keying off .is-settled instead of .is-open means the
+   controls aren't visible during the morph — when the video is
+   transforming from source rect to target rect, the controls (which
+   don't transform with it) would otherwise float in the destination
+   layout above the still-morphing video. */
+.lightbox.is-settled .lightbox_item.is-active .lightbox_controls {
+  opacity: 1;
+}
+/* Close-morph: instantly hide all controls (no opacity/scale/bottom
+   transition) so only the video morphing back toward the in-page card is
+   visible. Without this, the controls' fade-and-shift transitions overlap
+   the morph and read as flashing. */
+.lightbox.is-closing .lightbox_controls,
+.lightbox.is-closing .lightbox_controls_knob,
+.lightbox.is-closing .lightbox_controls_play,
+.lightbox.is-closing .lightbox_controls_track {
+  transition: none !important;
+  opacity: 0 !important;
+}
+/* Peeks: keep controls invisible AND inert — tapping a peek must navigate,
+   not engage the scrubber underneath. */
+.lightbox_item:not(.is-active) .lightbox_controls,
+.lightbox_item:not(.is-active) .lightbox_controls * {
+  pointer-events: none;
+}
+
+/* Play / pause overlay — icon only, no background or outline. Hidden by
+   default; visible while the lightbox is fully open AND (hovered or paused
+   or focused). Gating on .is-open prevents an icon flash during close: the
+   pause event fires as the lightbox dismisses, but the rule no longer
+   matches so the button doesn't try to fade in. */
+.lightbox_controls_play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  pointer-events: auto;
+  /* Drop shadow on the icon mass itself — legibility cushion over bright
+     video frames without painting a background pill. */
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  opacity: 0;
+  /* Same duration as the lightbox open-morph so the button fades in
+     alongside the video transitioning into the lightbox. */
+  transition: opacity 0.42s var(--ease);
+}
+.lightbox.is-open .lightbox_item.is-active.is-cursor-over .lightbox_controls_play,
+.lightbox.is-open .lightbox_controls[data-state="paused"] .lightbox_controls_play,
+.lightbox.is-open .lightbox_controls_play:focus-visible {
+  opacity: 1;
+}
+.lightbox_controls_play:focus-visible { outline: none; }
+.lightbox_controls_play svg {
+  width: 44px;
+  height: 44px;
+  display: none;
+  /* Nudge the play triangle a hair right so its visual center matches the
+     button's center (the triangle's bounding box is wider than its mass). */
+  margin-left: 3px;
+}
+.lightbox_controls_play .icon-pause { margin-left: 0; }
+.lightbox_controls[data-state="paused"]  .icon-play  { display: block; }
+.lightbox_controls[data-state="playing"] .icon-pause { display: block; }
+
+/* Scrub bar — end-to-end, flush with the video's bottom edge. The 18px
+   tall input is the hit target; the visual track sits at the input's
+   vertical center, so we shift the input down by 8px (= (18 - 2) / 2) so
+   the 2px track lands at the wrapper's bottom edge. The wrapper's
+   overflow:hidden + corner radius does the bottom-corner clipping, so
+   the bar appears to hug the video's rounded bottom.
+
+   Hidden by default; reveals via the same selectors as the play button
+   (hover the active item, video paused, or scrub itself focused). */
+/* Drives the visible track height (default 2px, expands to 6px on scrub
+   hover/focus). Lives on .lightbox_item so both the track (inside .lightbox_controls)
+   and the knob (sibling of .lightbox_controls) inherit the same value — keeping
+   the knob's `bottom: calc(--scrub-track-h / 2 - 6px)` in sync with the bar. */
+.lightbox_item {
+  --scrub-track-h: 2px;
+}
+.lightbox_item.is-active:has(.lightbox_controls_scrub:hover),
+.lightbox_item.is-active:has(.lightbox_controls_scrub:focus-visible) {
+  --scrub-track-h: 6px;
+}
+
+/* Visible muted track — the always-on bar that frames the progress fill.
+   Full-width inside the controls so its rounded ends are clipped by the
+   squircle. Visibility gated the same way as the play button: hover the
+   active item, video paused, or scrub focused. */
+.lightbox_controls_track {
+  position: absolute;
+  /* Track spans the full width. Sharp rectangular ends (no border-radius)
+     so the parent's squircle clip-path cleanly slices the corners along
+     the video's curve — a pill-shaped end inside a curved clip leaves a
+     stray sliver where the pill semicircle sticks out of the squircle. */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--scrub-track-h, 2px);
+  background: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  /* No box-shadow — clip-path doesn't always contain the shadow's spread,
+     so it would visibly bleed past the squircle into the dark area below
+     the video. The track stays legible against bright frames thanks to
+     the translucent-white base + the bright-white fill on top. */
+  opacity: 0;
+  transition: height 0.22s var(--ease), opacity 0.22s var(--ease);
+  overflow: hidden;
+}
+.lightbox.is-open .lightbox_item.is-active.is-cursor-over .lightbox_controls_track,
+.lightbox.is-open .lightbox_controls[data-state="paused"] .lightbox_controls_track,
+.lightbox.is-open .lightbox_item.is-active:has(.lightbox_controls_scrub:focus-visible) .lightbox_controls_track {
+  opacity: 1;
+}
+/* Bright progress fill — spans the full bar width, scaled by progress so
+   fill-end == knob-center at every progress value (the knob's `left` calc
+   below uses the same `var(--scrub-progress) * 100%` form). At progress=1
+   the fill reaches the bar's right edge; the squircle clip-path on the
+   parent .lightbox_controls (applied by watchSquircle) cuts both ends to
+   follow the video's rounded corners, so the fill never bleeds past the
+   video frame. */
+.lightbox_controls_fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--scrub-progress, 0) * 100%);
+  background: #fff;
+  pointer-events: none;
+}
+
+/* Input is invisible — it still receives drag and tap events (drives
+   video seeking via `input` events in JS) but doesn't paint anything.
+   `bottom: 0` (not the previous `-8px`) keeps the entire 18px tall hit
+   target INSIDE the parent's `overflow: clip` + clip-path region, so
+   Safari doesn't drop pointer hits on the portion clipped outside. */
+.lightbox_controls_scrub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  --scrub-progress: 0;
+  /* The input is a pure hit target — the visible bar is the
+     .lightbox_controls_track + .lightbox_controls_fill divs above. Keep
+     it at opacity 0 always; even with `appearance: none` Chrome paints a
+     thin residual track decoration on the host element when it becomes
+     visible, and that decoration occupies the input's full 18px bbox
+     which extends below the visible scrub track — reading as a stray
+     horizontal line peeking out below the squircle's bottom curve. */
+  opacity: 0;
+}
+.lightbox_controls_scrub::-webkit-slider-runnable-track {
+  height: 18px;
+  background: transparent;
+  border: 0;
+}
+.lightbox_controls_scrub::-moz-range-track {
+  height: 18px;
+  background: transparent;
+  border: 0;
+}
+.lightbox_controls_scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+}
+.lightbox_controls_scrub::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+}
+.lightbox_controls_scrub:focus-visible { outline: none; }
+
+/* Custom knob — sibling of .lightbox_controls so the controls' squircle
+   clip-path doesn't slice it. Horizontal position follows --scrub-progress
+   (set on the item wrap by JS). Vertically centered on the bar, which sits
+   at the very bottom of the video; the knob's lower half therefore breaks
+   out below the video frame (intentional — gives the knob room to be fully
+   visible without being squeezed by the squircle corner curve). */
+.lightbox_controls_knob {
+  position: absolute;
+  /* End-to-end with the fill: knob center at fill's right edge at every
+     progress value. The knob is a sibling of .lightbox_controls (not a
+     descendant) so the controls' squircle clip-path can't slice into it,
+     which means at extreme values (0 and 1) the knob can extend past the
+     video's rounded corners — intentional, gives the knob a fully visible
+     puck independent of the corner curve. */
+  left: calc(var(--scrub-progress, 0) * 100%);
+  /* Center the knob on the bar's visual center at any track height.
+     Knob is 12px so the knob center sits 6px above its bottom edge. The
+     bar sits at `bottom: 0` of the wrapper with height = --scrub-track-h,
+     so the bar's center is at wrapper_y = h/2. Setting the knob's
+     `bottom` to `h/2 - 6px` lands the knob center exactly at the bar
+     center — works equally for the thin default (2px → bottom: -5px) and
+     the expanded hover (6px → bottom: -3px). */
+  bottom: calc(var(--scrub-track-h, 2px) / 2 - 6px);
+  transform: translateX(-50%) scale(0.4);
+  transform-origin: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease),
+              transform 0.22s var(--ease),
+              bottom 0.22s var(--ease);
+}
+.lightbox.is-open .lightbox_item.is-active:has(.lightbox_controls_scrub:hover) .lightbox_controls_knob,
+.lightbox.is-open .lightbox_item.is-active:has(.lightbox_controls_scrub:focus-visible) .lightbox_controls_knob {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+.lightbox_item:not(.is-active) .lightbox_controls_knob {
+  opacity: 0;
+  pointer-events: none;
 }
 
 
@@ -977,17 +1293,27 @@ mark {
 /* ---------- entrance reveals (scroll-driven, zero JS) ---------- */
 
 @supports (animation-timeline: view()) {
-  .chapter_meta,
-  .chapter_body > * {
+  /* The chapter meta column and the body's secondary content (lede, bullets,
+     figure) reveal as the chapter scrolls into view. The heading (.display,
+     the chapter_body's first child) is intentionally LEFT OUT — even with a
+     tight `entry 0% entry 30%` range, snap-driven landings sometimes left it
+     stuck mid-reveal at partial opacity, which on a project chapter reads as
+     "the heading is missing". It's the most important element on the page;
+     not worth the intermittent flicker for a decorative fade-in. */
+  .chapter_meta {
     animation: reveal linear both;
     animation-timeline: view();
-    animation-range: entry 0% entry 60%;
+    animation-range: entry 0% entry 30%;
+  }
+  .chapter_body > *:nth-child(n+2) {
+    animation: reveal linear both;
+    animation-timeline: view();
   }
 
-  .chapter_body > *:nth-child(2) { animation-range: entry 8%  entry 65%; }
-  .chapter_body > *:nth-child(3) { animation-range: entry 14% entry 72%; }
-  .chapter_body > *:nth-child(4) { animation-range: entry 20% entry 78%; }
-  .chapter_body > *:nth-child(5) { animation-range: entry 26% entry 84%; }
+  .chapter_body > *:nth-child(2) { animation-range: entry 6%  entry 36%; }
+  .chapter_body > *:nth-child(3) { animation-range: entry 10% entry 42%; }
+  .chapter_body > *:nth-child(4) { animation-range: entry 14% entry 48%; }
+  .chapter_body > *:nth-child(5) { animation-range: entry 18% entry 54%; }
 
   @keyframes reveal {
     from {

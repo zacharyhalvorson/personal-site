@@ -63,6 +63,16 @@
     // Update URL without firing popstate (which would jump instantly via
     // anchorScroll). pushState records the entry so back/forward still work.
     if (location.hash !== hash) history.pushState(null, '', hash);
+    // Drop focus from the anchor — but ONLY for rail links. Safari
+    // activates :focus-visible on anchor mouse-clicks (Chromium does not),
+    // and the rail's expanded dot+label style is shared with :focus-visible;
+    // blurring keeps the rail from sticking in the expanded state. Scoping
+    // to .rail preserves focus on the skip-link and on the intro's
+    // chapter_next so keyboard users can keep Tabbing forward instead of
+    // having focus snap back to body after every in-page jump.
+    if (a.closest && a.closest('.rail') && typeof a.blur === 'function') {
+      a.blur();
+    }
   });
   // bfcache restore (iOS Safari / Firefox back from external link). The
   // browser preserves scrollY across bfcache, so we don't re-pin; just
@@ -122,6 +132,12 @@
     applySquircle(el);
     if (squircleObserver) squircleObserver.observe(el);
   }
+  // Unobserve before detaching DOM nodes so the singleton ResizeObserver
+  // releases its strong reference. Without this, every lightbox close
+  // leaks the just-built itemEls' img/video/controls indefinitely.
+  function unwatchSquircle(el) {
+    if (squircleObserver && el) squircleObserver.unobserve(el);
+  }
   // Apply to everything that exists at load time.
   document.querySelectorAll('.media_item img, .media_item video, .intro_photo img').forEach(watchSquircle);
 
@@ -150,6 +166,72 @@
       });
     }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
     sections.forEach(function (s) { io.observe(s); });
+
+    // ---------- rail nav: JS-driven hover ----------
+    // Track real cursor presence via pointerenter/pointerleave instead of
+    // relying on CSS :hover. CSS :hover can stay stuck after a click in
+    // some browsers, and Safari additionally activates :focus-visible on
+    // anchor mouse-clicks — the previous CSS shared the expanded style
+    // between :hover and :focus-visible, so a clicked link stayed stuck
+    // in that state. With JS-driven .is-hovered, the dot+label expansion
+    // is exclusively tied to actual cursor presence.
+    function clearAllHover() {
+      Object.keys(links).forEach(function (id) { links[id].classList.remove('is-hovered'); });
+    }
+    Object.keys(links).forEach(function (id) {
+      var a = links[id];
+      a.addEventListener('pointerenter', function (e) {
+        // Touch/pen taps are not "hover"; iOS Safari would otherwise leave
+        // the class on after a tap. Filter strictly to mouse.
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        // Defensive: clear hover from siblings first. Some browsers under
+        // rapid pointer movement skip a pointerleave on the previous link
+        // when it fires pointerenter on the new one.
+        clearAllHover();
+        a.classList.add('is-hovered');
+      });
+      a.addEventListener('pointerleave', function (e) {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        a.classList.remove('is-hovered');
+      });
+    });
+    // Rail-level safety net — when the cursor truly leaves the rail
+    // container, drop is-hovered from every link. Catches the case where
+    // a per-link pointerleave was missed (e.g. cursor moves fast enough
+    // that the browser collapses events, or the link's bounding box
+    // shifted underneath the cursor during a hover-driven width change).
+    var rail = document.querySelector('.rail');
+    if (rail) {
+      rail.addEventListener('pointerleave', function (e) {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        clearAllHover();
+      });
+    }
+    // Brute-force safety net — on every mousemove, verify that any link
+    // currently marked `.is-hovered` still has the cursor in its bounding
+    // box. If not, clear the class. Catches Safari's intermittent failure
+    // to fire pointerleave when a child element (the dot) is mid-transition
+    // and changing dimensions under the cursor. Cheap: only runs the rect
+    // check for links that are currently flagged hovered (usually 0 or 1).
+    document.addEventListener('mousemove', function (e) {
+      Object.keys(links).forEach(function (id) {
+        var a = links[id];
+        if (!a.classList.contains('is-hovered')) return;
+        var r = a.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right ||
+            e.clientY < r.top  || e.clientY > r.bottom) {
+          a.classList.remove('is-hovered');
+        }
+      });
+    }, { passive: true });
+
+    // Keyboard focus indicator: relies on the browser's :focus-visible
+    // heuristic via CSS. We previously gated it on a Tab-keydown modality
+    // flag to avoid Safari's click-induced :focus-visible from sticking,
+    // but that excluded screen-reader and arrow-key focus moves (no Tab
+    // key fires for those paths). The rail-scoped a.blur() in the global
+    // click handler above clears focus on mouse activation, so Safari's
+    // click-induced :focus-visible can't persist either way.
   })();
 
   var stacks = [].slice.call(document.querySelectorAll('[data-media]'));
@@ -210,7 +292,10 @@
     var sync = function () { /* nothing to do, single item */ };
     ul.addEventListener('click', function () { lightbox.open(items, 0, li, sync); });
     ul.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightbox.open(items, 0, li, sync); }
+      // Enter opens, but NOT Space — after closing the lightbox the browser
+      // returns focus to the stack, and Space at that point would re-open
+      // the previously-viewed video instead of scrolling the page.
+      if (e.key === 'Enter') { e.preventDefault(); lightbox.open(items, 0, li, sync); }
     });
   }
 
@@ -372,7 +457,10 @@
     ul.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowRight') { e.preventDefault(); settle(1); }
       else if (e.key === 'ArrowLeft')  { e.preventDefault(); settle(-1); }
-      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightbox.open(items, active, lis[active], setActiveTo); }
+      // Enter opens; Space is intentionally NOT handled so it scrolls the
+      // page normally even when the stack still has focus after closing
+      // the lightbox.
+      else if (e.key === 'Enter') { e.preventDefault(); lightbox.open(items, active, lis[active], setActiveTo); }
     });
 
     // Re-fit whenever the stack's box actually changes. On a cold cache,
@@ -413,9 +501,38 @@
     var OPEN_MS = 420;
     var CLOSE_MS = 360;
     var NAV_MS = 320;
+    // Caption swap timing — three sequential phases per swap so the user
+    // never sees text inside a mid-morph pill (which previously read as a
+    // flash). Total: FADE_MS + MORPH_MS + FADE_MS = ~600 ms.
+    //
+    // Timings are sourced from CSS custom properties on :root so the JS
+    // and CSS stay in lockstep — see --cap-fade and --cap-morph in
+    // style.css. Falls back to the documented defaults if the variables
+    // aren't set (older builds, broken CSS load).
+    var rootStyle = getComputedStyle(document.documentElement);
+    function readMsVar(name, fallback) {
+      var raw = (rootStyle.getPropertyValue(name) || '').trim();
+      if (!raw) return fallback;
+      var m = /^([0-9.]+)(ms|s)?$/.exec(raw);
+      if (!m) return fallback;
+      var n = parseFloat(m[1]);
+      return m[2] === 's' ? n * 1000 : n;
+    }
+    var CAP_FADE_MS  = readMsVar('--cap-fade', 180);
+    var CAP_MORPH_MS = readMsVar('--cap-morph', 240);
+    // Add ~1 frame of slack so Phase 2 doesn't kick in while the CSS
+    // opacity transition is still finishing — the JS timer measures from
+    // BEFORE the class addition triggers the next style flush, so the
+    // actual transition completes ~16 ms later than our setTimeout would
+    // otherwise fire.
+    var FADE_MS = CAP_FADE_MS + 20;
+    var MORPH_MS = CAP_MORPH_MS;
 
     var dlg = document.createElement('dialog');
     dlg.className = 'lightbox';
+    // Make the dialog itself focusable so we can pull focus off the first
+    // focusable descendant (the active item's play button) on open.
+    dlg.tabIndex = -1;
     dlg.innerHTML =
       '<div class="lightbox_track" role="group" aria-roledescription="carousel"></div>' +
       '<div class="lightbox_caption" aria-live="polite"><span class="lightbox_caption_text"></span></div>' +
@@ -431,11 +548,141 @@
     var capGhostTxt = dlg.querySelector('.lightbox_caption.is-ghost .lightbox_caption_text');
     var capGhostEl = dlg.querySelector('.lightbox_caption.is-ghost');
     var capSwapTimer = null;
+    // Incremented on every syncCaption call. Pending timeouts compare their
+    // captured value against the latest — if a newer swap has arrived, the
+    // older callback bails. This is how rapid swipes coalesce to the LAST
+    // target without intermediate captions ever rendering.
+    var swapVersion = 0;
+    // Wall-clock time at which the current fade-out phase began. Reset only
+    // when no swap is currently in progress, so back-to-back swaps share one
+    // fade-out window instead of restarting it on each call.
+    var swapStartTime = 0;
 
     var current = [], idx = 0, sourceEl = null, syncSource = null;
     var itemEls = [];
     var offsets = [];
     var morphing = false;
+    // Persist video playback position across navigations and reopens.
+    // Keyed by source URL, value is the last currentTime. Saved when a
+    // video deactivates and restored when it reactivates so the viewer
+    // resumes from where they left off (instead of restarting at 0).
+    // Note: we deliberately do NOT persist the paused state. Reopening a
+    // video is itself a user action, so the expected UX is "resume
+    // playing from where I left off," not "freeze on the same frame the
+    // user has to manually un-pause." Also avoids a soft-lock when a
+    // browser autoplay block left video.paused === true at save time.
+    var videoStates = Object.create(null);
+    function saveVideoState(video) {
+      if (!video || video.tagName !== 'VIDEO') return;
+      var key = video.currentSrc || video.src;
+      if (!key) return;
+      videoStates[key] = { time: video.currentTime || 0 };
+    }
+
+    function inControls(el) {
+      return !!(el && el.closest && el.closest('.lightbox_controls'));
+    }
+
+    // Per-video controls: a play/pause overlay button (only visible on hover or
+    // when paused) and a thin scrub bar pinned to the bottom of the video. The
+    // controls live INSIDE each video's .lightbox_item so they morph with the
+    // video and have nothing to bind/unbind globally. Click anywhere on the
+    // video itself toggles play/pause (handled in handleTap).
+    function attachVideoControls(wrap, video) {
+      var controls = document.createElement('div');
+      controls.className = 'lightbox_controls';
+      controls.dataset.state = 'paused';
+      controls.innerHTML =
+        '<button type="button" class="lightbox_controls_play" aria-label="Play" tabindex="-1">' +
+          '<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13a1 1 0 0 0 1.54.84l10-6.5a1 1 0 0 0 0-1.68l-10-6.5A1 1 0 0 0 7 5.5Z" fill="currentColor"/></svg>' +
+          '<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>' +
+        '</button>' +
+        // Explicit DOM for the visible bar so its rendering doesn't depend on
+        // the slider pseudo-element gradient. The track is the muted base;
+        // the fill grows from the left via width: calc(progress * 100%).
+        '<div class="lightbox_controls_track" aria-hidden="true">' +
+          '<div class="lightbox_controls_fill"></div>' +
+        '</div>' +
+        // Input is invisible (opacity 0) but handles all interaction —
+        // drag-to-scrub and tap-anywhere-on-bar both fire `input` events
+        // that drive `video.currentTime`.
+        '<input type="range" class="lightbox_controls_scrub" min="0" max="1000" value="0" step="1" aria-label="Seek">';
+      wrap.appendChild(controls);
+      // Apply the same squircle clip-path used on the video so the scrub bar
+      // is clipped along the video's rounded corners, not the simpler
+      // circular border-radius curve.
+      watchSquircle(controls);
+
+      // Custom knob lives OUTSIDE the squircle-clipped controls so the corner
+      // curve can't slice into it. The native input's thumb stays invisible
+      // (the input still handles drag/click hit detection). The knob's
+      // horizontal position follows --scrub-progress set on the item wrap.
+      var knob = document.createElement('div');
+      knob.className = 'lightbox_controls_knob';
+      wrap.appendChild(knob);
+
+      var playBtn = controls.querySelector('.lightbox_controls_play');
+      var scrub = controls.querySelector('.lightbox_controls_scrub');
+      var scrubbing = false;
+
+      function setProgress(t, d) {
+        if (!isFinite(d) || d <= 0) return;
+        var p = Math.max(0, Math.min(1, t / d));
+        // Set on the item wrap so both the input's track gradient (inherited)
+        // and the knob's `left` calc (also inherited) update together.
+        wrap.style.setProperty('--scrub-progress', p);
+        if (!scrubbing) scrub.value = String(Math.round(p * 1000));
+      }
+
+      video.addEventListener('play', function () {
+        controls.dataset.state = 'playing';
+        playBtn.setAttribute('aria-label', 'Pause');
+      });
+      video.addEventListener('pause', function () {
+        controls.dataset.state = 'paused';
+        playBtn.setAttribute('aria-label', 'Play');
+      });
+      video.addEventListener('ended', function () {
+        controls.dataset.state = 'paused';
+        playBtn.setAttribute('aria-label', 'Play');
+      });
+      video.addEventListener('timeupdate', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+      video.addEventListener('durationchange', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+      video.addEventListener('loadedmetadata', function () {
+        setProgress(video.currentTime, video.duration);
+      });
+
+      playBtn.addEventListener('click', function () {
+        if (video.paused) {
+          var p = video.play();
+          if (p && p.catch) p.catch(function () {});
+        } else {
+          video.pause();
+        }
+      });
+
+      // Seek on every input — keeps the video frame in sync with the scrub
+      // position while the user drags. Native range inputs also fire `input`
+      // on a single tap of the track (the value jumps to the tapped point),
+      // so this same handler covers "tap to seek" too. The `change` event
+      // just marks the end of the gesture.
+      scrub.addEventListener('input', function () {
+        scrubbing = true;
+        var d = video.duration;
+        if (isFinite(d) && d > 0) {
+          var p = parseFloat(scrub.value) / 1000;
+          wrap.style.setProperty('--scrub-progress', p);
+          try { video.currentTime = p * d; } catch (_) {}
+        }
+      });
+      scrub.addEventListener('change', function () {
+        scrubbing = false;
+      });
+    }
 
     function build(items) {
       track.textContent = '';
@@ -448,11 +695,33 @@
         wrap.dataset.w = it.w;
         wrap.dataset.h = it.h;
         sizeItem(wrap, it.w, it.h);
+        // Mouse-only hover tracking via pointerenter/leave instead of CSS
+        // :hover. Browsers don't re-evaluate :hover after a click until the
+        // cursor moves, which would make the play button disappear right
+        // after the user clicks it to resume playback. pointerenter/leave
+        // fire on bounds entry and the class stays sticky between events.
+        wrap.addEventListener('pointerenter', function (e) {
+          if (e.pointerType && e.pointerType !== 'mouse') return;
+          wrap.classList.add('is-cursor-over');
+        });
+        wrap.addEventListener('pointerleave', function (e) {
+          if (e.pointerType && e.pointerType !== 'mouse') return;
+          wrap.classList.remove('is-cursor-over');
+        });
         var node;
         if (it.type === 'video') {
           node = document.createElement('video');
           node.src = it.src;
-          if (it.poster) node.poster = it.poster;
+          if (it.poster) {
+            node.poster = it.poster;
+            // CSS background fallback: with preload="metadata", the very first
+            // paint of the <video> can flash black before either the poster
+            // image or the first video frame is decoded. Painting the poster
+            // onto the element's background covers that gap.
+            node.style.backgroundImage = 'url("' + it.poster.replace(/"/g, '\\"') + '")';
+            node.style.backgroundSize = 'cover';
+            node.style.backgroundPosition = 'center';
+          }
           node.playsInline = true;
           // Start unmuted, setActive will fall back to muted only if the
           // browser blocks audio autoplay. Opening the lightbox is a user
@@ -476,6 +745,7 @@
         node.setAttribute('width', it.w);
         node.setAttribute('height', it.h);
         wrap.appendChild(node);
+        if (it.type === 'video') attachVideoControls(wrap, node);
         track.appendChild(wrap);
         watchSquircle(node);
         return wrap;
@@ -545,28 +815,66 @@
         var media = el.firstChild;
         if (!media) return;
         if (media.tagName === 'VIDEO') {
-          // No native controls, the entire fullscreen frame is dismiss-on-tap,
-          // and a control strip would steal touches from the active media.
+          // Custom inline controls handle play/pause + scrub per-item; native
+          // controls would collide with our carousel and tap-to-toggle.
           media.controls = false;
           if (on) {
-            // Try with audio first; if the browser blocks autoplay-with-sound
-            // (rare since opening the lightbox is a user gesture), fall back
-            // to muted so the video still plays.
-            media.muted = false;
-            var p = media.play();
-            if (p && p.catch) {
-              p.catch(function () {
-                media.muted = true;
-                var p2 = media.play();
-                if (p2 && p2.catch) p2.catch(function () {});
+            // Restore prior playback position for this src so the viewer
+            // resumes from where they left off (instead of from 0 every
+            // time the lightbox rebuilds fresh <video> elements on open).
+            var key = media.currentSrc || media.src;
+            var state = key && videoStates[key];
+            // Type-check, not truthiness: a legitimate stored time of 0
+            // is falsy, and `state.time` truthy-checking it would skip
+            // the restore. Today this is masked by fresh <video> elements
+            // already defaulting to 0, but the check should be semantic.
+            if (state && typeof state.time === 'number' && isFinite(state.time)) {
+              try { media.currentTime = state.time; } catch (_) {}
+            }
+            // Muted-first autoplay. Browsers (especially Safari) accept
+            // muted autoplay much more reliably than autoplay-with-sound,
+            // even from within a user gesture — so we start muted to
+            // maximize the chance the video actually starts, then try to
+            // unmute once it's playing.
+            media.muted = true;
+            var attemptUnmute = function () {
+              media.muted = false;
+              // Re-check on the NEXT frame to catch async pauses that
+              // browsers (Safari in particular) can emit after the unmute
+              // is allowed initially and then revoked by the autoplay-
+              // with-sound policy a tick later. A sync check immediately
+              // after `media.muted = false` would miss this.
+              requestAnimationFrame(function () {
+                if (media.paused && !media.ended) {
+                  media.muted = true;
+                  var rp = media.play();
+                  if (rp && rp.catch) rp.catch(function () {});
+                }
               });
+            };
+            var p = media.play();
+            if (p && p.then) {
+              p.then(attemptUnmute).catch(function () {
+                // Even muted autoplay refused — video stays paused, user
+                // can tap the play button.
+              });
+            } else {
+              // Legacy browsers where HTMLMediaElement.play() returns void
+              // (older Safari, some WebViews). Schedule the unmute attempt
+              // on the next task so the muted play has a tick to engage.
+              setTimeout(attemptUnmute, 0);
             }
           } else {
+            // Snapshot the position before pausing so the next activation
+            // can resume from where the user left off. We deliberately do
+            // not persist the paused flag — see the videoStates comment
+            // near its declaration for the rationale (resume-on-reopen UX
+            // + avoiding a soft-lock when autoplay was previously blocked).
+            saveVideoState(media);
             media.pause();
             // Mute when not active so the next play() doesn't double-up audio
             // with whatever video the user navigates to next.
             media.muted = true;
-            try { media.currentTime = 0; } catch (_) {}
           }
         }
       });
@@ -589,40 +897,78 @@
 
       capGhostTxt.innerHTML = html;
       void capGhostEl.offsetWidth;
-      // Measure the actual rendered line widths inside the ghost (one rect
-      // per line). The longest one + horizontal padding is the bubble's
-      // hugging width: short captions stay narrow, long ones wrap inside
-      // their max-width and the bubble shrinks to the longest wrapped line
-      // instead of sitting at the max-width cap.
-      var range = document.createRange();
-      range.selectNodeContents(capGhostTxt);
-      var rects = range.getClientRects();
-      var maxLineW = 0;
-      for (var ri = 0; ri < rects.length; ri++) {
-        if (rects[ri].width > maxLineW) maxLineW = rects[ri].width;
-      }
-      var cs = getComputedStyle(capEl);
-      var paddingX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
-      // +1 px guards against sub-pixel rounding that would otherwise force
-      // a re-wrap into the visible bubble.
-      var newW = Math.ceil(maxLineW + paddingX) + 1;
+      // Read the ghost's rendered dimensions directly. The ghost has
+      // `width: max-content` capped at the visible pill's `max-width`, so:
+      //   - Short captions: ghost = natural single-line width (pill hugs).
+      //   - Long captions: ghost = max-width with text wrapping inside
+      //     (pill shows wrapped layout at the cap).
+      //
+      // An earlier implementation tried to shrink the pill to the longest
+      // wrapped line via Range.getClientRects(), but that returns one rect
+      // PER TEXT RUN, not per line. Captions containing an inline <a>
+      // (e.g. "...on <a>Kenji's Reels</a> after I DMd him") produced 3
+      // separate rects on a single line; the longest rect (~the first
+      // text segment) was mistakenly used as the line width, making the
+      // pill narrower than the natural text and forcing a 3-line wrap
+      // visible in the screenshot above. Mirroring the ghost's box is
+      // both correct and simpler.
+      var ghostRect = capGhostEl.getBoundingClientRect();
+      var newW = Math.ceil(ghostRect.width);
+      var newH = Math.ceil(ghostRect.height);
 
       if (instant) {
         capEl.style.transition = 'none';
         capEl.style.width = newW + 'px';
+        capEl.style.height = newH + 'px';
         capTxt.innerHTML = html;
         void capEl.offsetWidth;
         capEl.style.transition = '';
         return;
       }
-      // Start width morph + fade text out simultaneously.
-      capEl.style.width = newW + 'px';
-      capEl.classList.add('is-swapping');
+
+      // Three-phase sequenced swap:
+      //   1. text fades out (FADE_MS)              — pill stays at old size
+      //   2. pill morphs to new size (MORPH_MS)    — text is at opacity 0
+      //   3. swap innerHTML + fade text in (FADE_MS) — at the new size
+      //
+      // The morph is gated behind the fade-out so no text is ever visible
+      // inside a mid-morph pill — that flash was the artifact the user was
+      // seeing when width/height transitioned alongside the text opacity.
+      //
+      // For rapid swipes (e.g. flicking past several items) the version
+      // counter coalesces: every interim call increments swapVersion, every
+      // pending timeout checks its captured version and bails if a newer
+      // swap has taken over. Only the *latest* target's morph + text-swap
+      // actually run, so the pill morphs straight from where it is to the
+      // final caption with no intermediate flash of B, C, D content.
+      swapVersion++;
+      var ver = swapVersion;
+
+      if (!capEl.classList.contains('is-swapping')) {
+        // Fresh swap — start the text fade-out clock now.
+        swapStartTime = Date.now();
+        capEl.classList.add('is-swapping');
+      }
+      // If we're already mid-fade, don't restart it — the CSS transition is
+      // already running. The remaining time is what's left of FADE_MS.
+      var elapsed = Date.now() - swapStartTime;
+      var remainingFade = Math.max(0, FADE_MS - elapsed);
+
       clearTimeout(capSwapTimer);
       capSwapTimer = setTimeout(function () {
-        capTxt.innerHTML = html;
-        capEl.classList.remove('is-swapping');
-      }, 180);
+        if (ver !== swapVersion) return; // superseded
+        // Phase 2: text is at opacity 0 — kick off the pill morph.
+        capEl.style.width = newW + 'px';
+        capEl.style.height = newH + 'px';
+
+        capSwapTimer = setTimeout(function () {
+          if (ver !== swapVersion) return; // superseded
+          // Phase 3: pill is at new size — swap text (still invisible) and
+          // fade it back in by removing .is-swapping.
+          capTxt.innerHTML = html;
+          capEl.classList.remove('is-swapping');
+        }, MORPH_MS);
+      }, remainingFade);
     }
     function syncActiveSquircle() {
       var item = itemEls[idx];
@@ -633,9 +979,21 @@
       var tRect = item.getBoundingClientRect();
       if (sRect.width <= 0 || tRect.width <= 0) return;
       var baseR = parseFloat(getComputedStyle(src).getPropertyValue('--smooth-r')) || 12;
-      var r = baseR * (tRect.width / sRect.width);
+      // Layout-radius scales with the size ratio so the visual radius matches
+      // the in-page source at the morph swap moment. Cap it so very-wide
+      // videos don't end up with cartoonishly-rounded corners at rest. The
+      // morph's visual continuity stays close even when capped because
+      // typical ratios stay near 1x–2x.
+      var r = Math.min(baseR * (tRect.width / sRect.width), 18);
       tgt.style.setProperty('--smooth-r', r + 'px');
       applySquircle(tgt);
+      // Mirror the radius onto the inline controls so the scrub bar follows
+      // the same curve at the corners as the video.
+      var ctrl = item.querySelector('.lightbox_controls');
+      if (ctrl) {
+        ctrl.style.setProperty('--smooth-r', r + 'px');
+        applySquircle(ctrl);
+      }
     }
 
     // Compute the FLIP transform string that maps `toRect` onto `fromRect`.
@@ -700,19 +1058,42 @@
     function closeMorph() {
       if (morphing) return Promise.resolve();
 
-      // The in-page stack has `transition: aspect-ratio 0.38s` plus per-card
-      // transitions. If we sync and immediately measure, getBoundingClientRect
-      // returns a mid-transition rect, the morph would land where the stack
-      // *is right now*, not where it'll end up. The lightbox covers the stack
-      // so transitions during close are invisible anyway; snap them off,
-      // measure on the final layout, then restore once the morph is done.
+      // Hide the controls before the close-morph runs — the controls live at
+      // the lightbox's final layout position while the video is morphing
+      // back toward the in-page card, so without this the scrubber would
+      // float untethered above the shrinking video. The `is-closing` class
+      // disables their transitions (one-frame hide) so they don't fade +
+      // scale + drift alongside the morph — that combo reads as flashing.
+      dlg.classList.remove('is-settled');
+      dlg.classList.add('is-closing');
+
+      // The in-page stack has per-card transform + opacity transitions. If we
+      // sync and immediately measure, getBoundingClientRect returns a
+      // mid-transition rect, the morph would land where the stack *is right
+      // now*, not where it'll end up. Suppress transform transitions so the
+      // syncSource → render() positional update snaps to final positions in
+      // one frame. Leave OPACITY transitions enabled: the `.lb-closing` class
+      // we add below overrides the `:has(.is-source)` opacity:0 rule for
+      // behind cards, and we want that to fade them back in concurrently
+      // with the close morph — so the stack is already at its final visible
+      // state by the time the dialog dismisses.
       var stackEl = (sourceEl && sourceEl.parentElement && sourceEl.parentElement.matches && sourceEl.parentElement.matches('.media.is-stack'))
         ? sourceEl.parentElement : null;
       var stackKids = stackEl ? [].slice.call(stackEl.children) : [];
       var savedStackT = stackEl ? stackEl.style.transition : '';
       var savedKidT = stackKids.map(function (k) { return k.style.transition; });
       if (stackEl) stackEl.style.transition = 'none';
-      stackKids.forEach(function (k) { k.style.transition = 'none'; });
+      // Opacity-only inline transition: matches the close morph duration so
+      // behind cards finish fading in just as the morph lands. Transform is
+      // omitted from this list, so render()'s --stack-tx changes don't
+      // animate — positional shifts snap.
+      stackKids.forEach(function (k) {
+        k.style.transition = 'opacity ' + (CLOSE_MS / 1000) + 's cubic-bezier(0.2, 0.7, 0.2, 1)';
+      });
+      // Trigger the override: while .lb-closing is on <html>, behind cards
+      // ignore their normal opacity:0 (from :has(.is-source)) and animate
+      // back to 1 — concurrent with the close morph, not after it.
+      document.documentElement.classList.add('lb-closing');
 
       if (typeof syncSource === 'function') {
         try { syncSource(idx); } catch (_) {}
@@ -735,13 +1116,55 @@
       if (!src || !tgt) { restoreStack(); finalize(); return Promise.resolve(); }
 
       if (tgt.tagName === 'VIDEO') {
+        // Snapshot the position before pausing for the close morph so the
+        // next reopen resumes from this exact spot. Only currentTime is
+        // persisted; see the videoStates comment for why paused isn't.
+        saveVideoState(tgt);
         try { tgt.pause(); } catch (_) {}
         tgt.controls = false;
         // Mirror the paused frame onto the in-page <video>'s poster so the
         // hand-off at the end of the shrink is invisible.
         if (src.tagName === 'VIDEO') {
+          // Hide the HTML overlays (scrub bar, knob) from layout before
+          // drawing the video to canvas. Chrome's canvas.drawImage(video)
+          // on a hardware-composited <video> can pull in adjacent overlay
+          // layers from the same compositing group — without this, the
+          // paused-state scrub bar gets baked into the captured frame
+          // and shows as a stray white horizontal line at the bottom of
+          // the in-page card after dismiss.
+          var tgtItem = tgt.parentNode;
+          var ovCtrl = tgtItem && tgtItem.querySelector('.lightbox_controls');
+          var ovKnob = tgtItem && tgtItem.querySelector('.lightbox_controls_knob');
+          var savedCtrlDisplay = ovCtrl && ovCtrl.style.display;
+          var savedKnobDisplay = ovKnob && ovKnob.style.display;
+          if (ovCtrl) ovCtrl.style.display = 'none';
+          if (ovKnob) ovKnob.style.display = 'none';
+          // Force a synchronous layout + composite flush so the hidden
+          // state is in effect before the canvas reads pixels. void
+          // offsetWidth alone wasn't enough on some Chrome versions;
+          // calling getBoundingClientRect on both the now-hidden overlay
+          // and the target video flushes the composite layer too.
+          if (ovCtrl) ovCtrl.getBoundingClientRect();
+          tgt.getBoundingClientRect();
           var frame = captureFrame(tgt);
-          if (frame) src.setAttribute('poster', frame);
+          if (ovCtrl) ovCtrl.style.display = savedCtrlDisplay || '';
+          if (ovKnob) ovKnob.style.display = savedKnobDisplay || '';
+          if (frame) {
+            src.setAttribute('poster', frame);
+            // Decode the new poster off-screen in parallel with the
+            // morph. Without this, Safari defers decoding on a still-
+            // hidden <video> until it becomes visible at dismiss,
+            // flashing the old poster (or nothing) for a frame. With an
+            // off-screen Image triggering the decode now, the bitmap is
+            // sitting in the browser's image cache by the time the
+            // source becomes visible — the data URL is the cache key,
+            // so the poster's later request hits the cache. Doing this
+            // off-screen avoids painting the source under the dialog
+            // during the morph, which would double the drop-shadow.
+            var preloader = new Image();
+            preloader.src = frame;
+            if (preloader.decode) preloader.decode().catch(function () {});
+          }
         }
       }
       var sRect = src.getBoundingClientRect();
@@ -756,6 +1179,11 @@
       dlg.classList.remove('is-open');
       return anim.finished.catch(function () {}).then(function () {
         morphing = false;
+        // Behind cards have already animated back to opacity:1 during the
+        // morph (driven by the .lb-closing override + opacity-only inline
+        // transition above), so removing .is-source here is a no-op for
+        // their opacity — no post-dismiss fade or pop. The source card's
+        // visibility:hidden → visible swap is instant either way.
         restoreStack();
         finalize();
       });
@@ -781,6 +1209,9 @@
       // start a drag/tap (which would dismiss the lightbox under the link
       // navigation).
       if (e.target.closest && e.target.closest('a')) return;
+      // The video control bar owns its own pointer interactions (button click,
+      // slider drag); don't let the carousel hijack them into a swipe gesture.
+      if (inControls(e.target)) return;
       if (morphing) return;
       dragging = true; mvd = false; hor = false;
       sx0 = e.clientX; sy0 = e.clientY;
@@ -838,6 +1269,9 @@
       // pointer-capture redirects e.target to the track after pointerdown, so
       // resolve the actual element under the release point instead.
       var hit = document.elementFromPoint(e.clientX, e.clientY);
+      // Taps on the inline controls (play overlay, scrub) are interactions,
+      // not dismisses or toggles — those elements own their own click handling.
+      if (hit && hit.closest && hit.closest('.lightbox_controls')) return;
       var itemEl = hit && hit.closest('.lightbox_item');
       // backdrop tap (outside any item) → close
       if (!itemEl) { closeMorph(); return; }
@@ -845,8 +1279,19 @@
       if (isNaN(i)) return;
       if (i !== idx) {
         setActive(i);              // tap on a peek → navigate
+        return;
+      }
+      // Tap on the active item: videos toggle play/pause, images dismiss.
+      var media = itemEl.firstChild;
+      if (media && media.tagName === 'VIDEO') {
+        if (media.paused) {
+          var pp = media.play();
+          if (pp && pp.catch) pp.catch(function () {});
+        } else {
+          media.pause();
+        }
       } else {
-        closeMorph();              // tap on the active media → dismiss
+        closeMorph();
       }
     }
 
@@ -857,6 +1302,21 @@
     });
 
     dlg.addEventListener('keydown', function (e) {
+      // When the active video's scrub slider has focus, native range
+      // keystrokes (arrows, Home/End, PgUp/PgDn) step the value — don't
+      // poach them for carousel navigation.
+      if (e.target && e.target.classList && e.target.classList.contains('lightbox_controls_scrub')) return;
+      var av = activeMedia();
+      if (e.key === ' ' && av && av.tagName === 'VIDEO') {
+        e.preventDefault();
+        if (av.paused) {
+          var pp = av.play();
+          if (pp && pp.catch) pp.catch(function () {});
+        } else {
+          av.pause();
+        }
+        return;
+      }
       if (e.key === 'ArrowRight') { e.preventDefault(); setActive(idx + 1); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); setActive(idx - 1); }
     });
@@ -871,6 +1331,8 @@
     var wheelAcc = 0, wheelCommitted = false, wheelIdle = null;
     dlg.addEventListener('wheel', function (e) {
       if (morphing) return;
+      // Don't page the carousel when the user spins over the controls bar.
+      if (inControls(e.target)) return;
       var h = Math.abs(e.deltaX) > Math.abs(e.deltaY);
       // Vertical wheel inside the modal can't scroll anything, swallow it.
       if (!h) { e.preventDefault(); return; }
@@ -893,6 +1355,25 @@
     }, { passive: false });
 
     dlg.addEventListener('close', function () {
+      // Detach the squircle observer from every per-item DOM node before
+      // we drop them from the tree — otherwise the ResizeObserver keeps
+      // strong refs and detached HTMLVideoElement / IMG instances leak
+      // across opens (each carrying a decoded buffer on iOS).
+      itemEls.forEach(function (el) {
+        var media = el.firstChild;
+        if (media) unwatchSquircle(media);
+        var ctrl = el.querySelector('.lightbox_controls');
+        if (ctrl) unwatchSquircle(ctrl);
+      });
+      // Invalidate any caption-swap timers still in flight from the
+      // just-closed session: clear the pending timeout, drop the
+      // is-swapping class (otherwise the next open's caption renders at
+      // opacity 0 until a stale phase-3 fires and removes it), and bump
+      // swapVersion so even a setTimeout we somehow missed will bail.
+      clearTimeout(capSwapTimer);
+      capSwapTimer = null;
+      capEl.classList.remove('is-swapping');
+      swapVersion++;
       track.textContent = '';
       itemEls = [];
       offsets = [];
@@ -900,6 +1381,8 @@
       sourceEl = null;
       syncSource = null;
       dlg.classList.remove('is-open');
+      dlg.classList.remove('is-closing');
+      document.documentElement.classList.remove('lb-closing');
       dlg.style.removeProperty('--lb-tx');
       dlg.style.removeProperty('--lb-drag');
     });
@@ -912,6 +1395,11 @@
       measure();
       var tx = (window.innerWidth / 2) - offsets[idx];
       dlg.style.setProperty('--lb-tx', tx + 'px');
+      // After resize, target rect changes → squircle radius (derived from
+      // target/source size ratio) is stale on the active video and its
+      // controls. Recompute so the scrub bar's clip path keeps following
+      // the video's corner curve at the new dimensions.
+      syncActiveSquircle();
       void track.offsetWidth;
       track.style.transition = '';
     });
@@ -923,6 +1411,12 @@
         syncSource = sync || null;
         build(items);
         if (!dlg.open) dlg.showModal();
+        // showModal auto-focuses the first focusable descendant — the active
+        // item's play button — which would leave the play overlay visible
+        // via :focus-visible even after the video starts playing. Pull focus
+        // back to the dialog itself so keyboard nav still works (the dialog
+        // owns the keydown handler) without revealing the overlay.
+        dlg.focus({ preventScroll: true });
         // Disable carousel transition while we measure + position; otherwise
         // the very first setActive would animate from 0 → centered.
         track.style.transition = 'none';
@@ -940,7 +1434,14 @@
 
         requestAnimationFrame(function () {
           dlg.classList.add('is-open');
-          openMorph(pre);
+          openMorph(pre).then(function () {
+            // Only reveal the inline controls AFTER the morph settles —
+            // during the morph the video is transforming from source rect
+            // to target rect, but the controls element doesn't transform
+            // with it, so showing controls during the morph leaves the
+            // scrubber floating above the still-morphing video.
+            dlg.classList.add('is-settled');
+          });
         });
       },
     };
