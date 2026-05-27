@@ -1155,16 +1155,31 @@
           if (ovKnob) ovKnob.style.display = savedKnobDisplay || '';
           if (frame) {
             src.setAttribute('poster', frame);
-            // Decode the new poster off-screen in parallel with the
-            // morph. Without this, Safari defers decoding on a still-
-            // hidden <video> until it becomes visible at dismiss,
-            // flashing the old poster (or nothing) for a frame. With an
-            // off-screen Image triggering the decode now, the bitmap is
-            // sitting in the browser's image cache by the time the
-            // source becomes visible — the data URL is the cache key,
-            // so the poster's later request hits the cache. Doing this
-            // off-screen avoids painting the source under the dialog
-            // during the morph, which would double the drop-shadow.
+            // Paint-instant fallback: mirror the frame onto the in-page
+            // <video>'s CSS background. Safari can lag decoding a freshly-
+            // set poster URL on a still-hidden element, flashing the old
+            // poster (or nothing) the moment the source becomes visible
+            // post-dismiss. A CSS background-image paints from the layer
+            // tree as soon as the element is visible, even before the
+            // poster attribute's image has finished decoding.
+            var bg = 'url("' + frame.replace(/"/g, '\\"') + '")';
+            src.style.backgroundImage = bg;
+            src.style.backgroundSize = 'cover';
+            src.style.backgroundPosition = 'center';
+            // Also mirror onto the LIGHTBOX <video>'s CSS background.
+            // The lightbox video keeps its build-time background (the
+            // original poster, == frame 0); if iOS Safari evicts the
+            // decoded-frame buffer mid-shrink, the element falls back to
+            // that background and flashes from "paused at frame X" back
+            // to "frame 0" before disappearing. Updating to the captured
+            // frame keeps the fallback in sync with what the user was
+            // actually watching.
+            tgt.style.backgroundImage = bg;
+            // Decode the new poster off-screen in parallel with the morph
+            // so the data URL is sitting in the image cache by the time
+            // anything tries to paint it — the URL is the cache key, so
+            // both the poster attribute and the CSS background later hit
+            // the cache instead of re-decoding.
             var preloader = new Image();
             preloader.src = frame;
             if (preloader.decode) preloader.decode().catch(function () {});
