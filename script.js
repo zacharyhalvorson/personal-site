@@ -143,8 +143,12 @@
 
   // ---------- rail nav: highlight the current section ----------
   // As the user scrolls between scroll-snapped chapters, mark the rail link
-  // whose href matches the section currently in view. CSS uses .is-current to
-  // make that dash a touch longer and darker than its siblings.
+  // whose href matches the section currently in view. Hover/focus expansion
+  // is pure CSS (see .rail a:hover / :focus-visible in style.css) — :hover
+  // is gated by @media (hover: hover) and (pointer: fine) so iOS Safari
+  // can't stick it after a tap, and the global anchor-click handler above
+  // blurs the activated rail link so Safari's click-induced :focus-visible
+  // can't persist either. No JS hover bookkeeping is needed.
   (function () {
     if (typeof IntersectionObserver === 'undefined') return;
     var links = {};
@@ -166,72 +170,6 @@
       });
     }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
     sections.forEach(function (s) { io.observe(s); });
-
-    // ---------- rail nav: JS-driven hover ----------
-    // Track real cursor presence via pointerenter/pointerleave instead of
-    // relying on CSS :hover. CSS :hover can stay stuck after a click in
-    // some browsers, and Safari additionally activates :focus-visible on
-    // anchor mouse-clicks — the previous CSS shared the expanded style
-    // between :hover and :focus-visible, so a clicked link stayed stuck
-    // in that state. With JS-driven .is-hovered, the dot+label expansion
-    // is exclusively tied to actual cursor presence.
-    function clearAllHover() {
-      Object.keys(links).forEach(function (id) { links[id].classList.remove('is-hovered'); });
-    }
-    Object.keys(links).forEach(function (id) {
-      var a = links[id];
-      a.addEventListener('pointerenter', function (e) {
-        // Touch/pen taps are not "hover"; iOS Safari would otherwise leave
-        // the class on after a tap. Filter strictly to mouse.
-        if (e.pointerType && e.pointerType !== 'mouse') return;
-        // Defensive: clear hover from siblings first. Some browsers under
-        // rapid pointer movement skip a pointerleave on the previous link
-        // when it fires pointerenter on the new one.
-        clearAllHover();
-        a.classList.add('is-hovered');
-      });
-      a.addEventListener('pointerleave', function (e) {
-        if (e.pointerType && e.pointerType !== 'mouse') return;
-        a.classList.remove('is-hovered');
-      });
-    });
-    // Rail-level safety net — when the cursor truly leaves the rail
-    // container, drop is-hovered from every link. Catches the case where
-    // a per-link pointerleave was missed (e.g. cursor moves fast enough
-    // that the browser collapses events, or the link's bounding box
-    // shifted underneath the cursor during a hover-driven width change).
-    var rail = document.querySelector('.rail');
-    if (rail) {
-      rail.addEventListener('pointerleave', function (e) {
-        if (e.pointerType && e.pointerType !== 'mouse') return;
-        clearAllHover();
-      });
-    }
-    // Brute-force safety net — on every mousemove, verify that any link
-    // currently marked `.is-hovered` still has the cursor in its bounding
-    // box. If not, clear the class. Catches Safari's intermittent failure
-    // to fire pointerleave when a child element (the dot) is mid-transition
-    // and changing dimensions under the cursor. Cheap: only runs the rect
-    // check for links that are currently flagged hovered (usually 0 or 1).
-    document.addEventListener('mousemove', function (e) {
-      Object.keys(links).forEach(function (id) {
-        var a = links[id];
-        if (!a.classList.contains('is-hovered')) return;
-        var r = a.getBoundingClientRect();
-        if (e.clientX < r.left || e.clientX > r.right ||
-            e.clientY < r.top  || e.clientY > r.bottom) {
-          a.classList.remove('is-hovered');
-        }
-      });
-    }, { passive: true });
-
-    // Keyboard focus indicator: relies on the browser's :focus-visible
-    // heuristic via CSS. We previously gated it on a Tab-keydown modality
-    // flag to avoid Safari's click-induced :focus-visible from sticking,
-    // but that excluded screen-reader and arrow-key focus moves (no Tab
-    // key fires for those paths). The rail-scoped a.blur() in the global
-    // click handler above clears focus on mouse activation, so Safari's
-    // click-induced :focus-visible can't persist either way.
   })();
 
   var stacks = [].slice.call(document.querySelectorAll('[data-media]'));

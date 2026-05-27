@@ -207,18 +207,33 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   opacity: 0.7;
   background: var(--text-default);
 }
-/* `.is-hovered` is JS-driven via pointerenter/pointerleave (see script.js)
-   so the expanded state can't get stuck after a click. `:focus-visible`
-   is included alongside it so keyboard and screen-reader users see the
-   same label reveal — the script blurs rail links on click activation,
-   which prevents Safari's click-induced :focus-visible from persisting. */
-.rail a.is-hovered .rail_dot,
+
+/* Hover expansion is gated to devices with a real hover capability. iOS
+   Safari and other touch browsers report `(hover: none)` and will stick a
+   :hover after a tap, leaving multiple dots looking "expanded" until the
+   user happens to tap somewhere else. Scoping the rule out of that path
+   means the only way to enter the expanded state on touch is the brief
+   tap (no sticking possible). The companion click handler in script.js
+   blurs the activated rail link so Safari's click-induced :focus-visible
+   can't keep the dot expanded on desktop either. */
+@media (hover: hover) and (pointer: fine) {
+  .rail a:hover .rail_dot {
+    width: 24px;
+    opacity: 1;
+    background: var(--text-default);
+  }
+  .rail a:hover .rail_label {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--text-default);
+  }
+}
+
 .rail a:focus-visible .rail_dot {
   width: 24px;
   opacity: 1;
   background: var(--text-default);
 }
-.rail a.is-hovered .rail_label,
 .rail a:focus-visible .rail_label {
   opacity: 1;
   transform: translateX(0);
