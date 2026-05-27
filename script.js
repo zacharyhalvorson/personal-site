@@ -1140,23 +1140,63 @@
             src.style.backgroundImage = bg;
             src.style.backgroundSize = 'cover';
             src.style.backgroundPosition = 'center';
-            // Also mirror onto the LIGHTBOX <video>'s CSS background.
-            // The lightbox video keeps its build-time background (the
-            // original poster, == frame 0); if iOS Safari evicts the
-            // decoded-frame buffer mid-shrink, the element falls back to
-            // that background and flashes from "paused at frame X" back
-            // to "frame 0" before disappearing. Updating to the captured
-            // frame keeps the fallback in sync with what the user was
-            // actually watching.
-            tgt.style.backgroundImage = bg;
-            // Decode the new poster off-screen in parallel with the morph
-            // so the data URL is sitting in the image cache by the time
-            // anything tries to paint it — the URL is the cache key, so
-            // both the poster attribute and the CSS background later hit
-            // the cache instead of re-decoding.
+            // Decode the new poster off-screen so the data URL is sitting
+            // in the image cache by the time anything tries to paint it —
+            // the URL is the cache key, so both the poster attribute and
+            // the CSS background later hit the cache instead of re-decoding.
             var preloader = new Image();
             preloader.src = frame;
             if (preloader.decode) preloader.decode().catch(function () {});
+            // Substitute a still <img> for the morph target. iOS Safari
+            // renders a PAUSED <video> through a different path than a
+            // playing one (a software-held decoded frame instead of the
+            // hardware-overlay/texture used during playback), and the
+            // in-flight WAAPI transform can evict that buffer mid-morph —
+            // for a frame or two the element falls back to its poster /
+            // background or paints blank. Neither the 3D-compositor
+            // promotion nor the background-image fallback we set above
+            // fully cover this on iOS, so the user sees a flash on
+            // dismiss-after-pause specifically.
+            //
+            // Sidestep the problem entirely by morphing a plain <img> of
+            // the captured frame instead of the <video>. The img has no
+            // decoder / overlay / paused-frame buffer to lose; iOS paints
+            // the same rasterized bitmap on every frame of the animation
+            // regardless of what the underlying video element does. The
+            // video stays at its resting position behind the img (opacity
+            // 0 so the still occludes it cleanly) and gets torn down with
+            // the rest of the lightbox when the dialog dismisses.
+            var still = document.createElement('img');
+            still.src = frame;
+            still.alt = '';
+            still.draggable = false;
+            still.decoding = 'sync';
+            var tCS = getComputedStyle(tgt);
+            var radiusPx = parseFloat(tCS.getPropertyValue('--smooth-r')) || 12;
+            still.style.cssText =
+              'position:absolute;' +
+              'inset:0;' +
+              'width:100%;' +
+              'height:100%;' +
+              'object-fit:cover;' +
+              'pointer-events:none;' +
+              'user-select:none;' +
+              'border-radius:' + tCS.borderRadius + ';' +
+              'transform:translateZ(0);' +
+              '-webkit-backface-visibility:hidden;' +
+              'backface-visibility:hidden;' +
+              'z-index:1;';
+            still.style.setProperty('--smooth-r', radiusPx + 'px');
+            tgt.parentNode.appendChild(still);
+            // Apply the same squircle clip-path the video has, so the
+            // corners align pixel-perfect at the morph swap moment.
+            applySquircle(still);
+            // Hide the video under the still — opacity (not visibility)
+            // so the box still participates in any incidental layout
+            // queries between here and dialog dismissal.
+            tgt.style.opacity = '0';
+            // From here on the morph target is the still img.
+            tgt = still;
           }
         }
       }
