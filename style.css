@@ -801,6 +801,14 @@ html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+/* Floor color behind a freshly-built lightbox <video>. Before its poster
+   bitmap (set as both the poster attribute and a CSS background-image in JS)
+   or its first decoded frame has rasterized, the element would otherwise paint
+   UA-default black for a frame against the dim backdrop — a visible flash on
+   open/play. Surface is the same floor the in-page .media_item video uses, so
+   the worst-case gap shows the card color instead of black. Scoped to video:
+   transparent product stills (-bare) must keep showing the backdrop. */
+.lightbox_item video { background-color: var(--surface); }
 /* peeked items are tappable, active image content is not (tap-to-close happens on backdrop) */
 .lightbox_item:not(.is-active) { cursor: pointer; }
 .lightbox_item:not(.is-active) img,
