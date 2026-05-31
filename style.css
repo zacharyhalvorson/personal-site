@@ -676,6 +676,16 @@ html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
 
 /* ---------- lightbox (fullscreen carousel) ---------- */
 
+/* iOS Safari mis-sizes position:fixed elements — including a modal <dialog>
+   and its ::backdrop — when the root scroller carries `scroll-snap-type: y
+   mandatory`. The fixed viewport is measured against the snap container rather
+   than the visual viewport, so the dialog + backdrop cover only part of the
+   screen and the snapped page shows through below (the white gap). Android
+   (Blink) is unaffected. script.js sets `lb-open` on <html> for the lifetime
+   of the lightbox; dropping snap here lets the dialog fill the real viewport.
+   Restored on close. (Reduced-motion + print already disable snap globally.) */
+html.lb-open { scroll-snap-type: none; }
+
 /* Items are content-sized so vertical media stays narrow and the gap between
    neighbours always reveals real media content as a peek. */
 .lightbox {
@@ -695,14 +705,20 @@ html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
   overflow: clip;
   outline: none;
   color: #fff;
-  /* Lock every gesture inside the modal. iOS Safari uses the touch target's
-     own touch-action: the track has `none`, but a finger that lands on the
-     caption (pointer-events: none) or any other descendant defaults to
-     `auto`, and iOS pans the snap-scrolled <html> underneath. Setting it on
-     the dialog itself means descendants inherit the block. */
+  /* Lock every gesture inside the modal. iOS Safari evaluates touch-action on
+     the touch target itself, and touch-action does NOT inherit — so setting it
+     here only covers fingers that land directly on the dialog. A drag that
+     starts on the <video>/<img>/scrub (touch-action: auto by default) would
+     pan the snap-scrolled <html> underneath, since the JS pointer handler only
+     preventDefaults *horizontal* moves and lets vertical ones fall through to
+     the browser. The `.lightbox *` rule below stamps the block onto every
+     descendant so no surface leaks. */
   touch-action: none;
   overscroll-behavior: contain;
 }
+/* touch-action is not inherited: lock it on every descendant explicitly so a
+   vertical drag starting on the media or controls can't scroll the page. */
+.lightbox * { touch-action: none; }
 .lightbox::backdrop {
   background: rgba(8, 7, 6, 0);
   backdrop-filter: blur(0px);
