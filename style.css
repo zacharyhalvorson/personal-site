@@ -676,6 +676,16 @@ html.lb-closing .media.is-stack:has(.is-source) .media_item:not(.is-front) {
 
 /* ---------- lightbox (fullscreen carousel) ---------- */
 
+/* iOS Safari mis-sizes position:fixed elements — including a modal <dialog>
+   and its ::backdrop — when the root scroller carries `scroll-snap-type: y
+   mandatory`. The fixed viewport is measured against the snap container rather
+   than the visual viewport, so the dialog + backdrop cover only part of the
+   screen and the snapped page shows through below (the white gap). Android
+   (Blink) is unaffected. script.js sets `lb-open` on <html> for the lifetime
+   of the lightbox; dropping snap here lets the dialog fill the real viewport.
+   Restored on close. (Reduced-motion + print already disable snap globally.) */
+html.lb-open { scroll-snap-type: none; }
+
 /* Items are content-sized so vertical media stays narrow and the gap between
    neighbours always reveals real media content as a peek. */
 .lightbox {

@@ -1428,6 +1428,8 @@
       dlg.classList.remove('is-open');
       dlg.classList.remove('is-closing');
       document.documentElement.classList.remove('lb-closing');
+      // Re-enable the root scroll-snap suppressed on open (see open()).
+      document.documentElement.classList.remove('lb-open');
       dlg.style.removeProperty('--lb-tx');
       dlg.style.removeProperty('--lb-drag');
     });
@@ -1454,6 +1456,14 @@
         current = items;
         sourceEl = trigger;
         syncSource = sync || null;
+        // Drop the root scroll-snap BEFORE showModal + measure: iOS Safari
+        // sizes a modal <dialog> (and its ::backdrop) against the snap
+        // container instead of the visual viewport when <html> has
+        // `scroll-snap-type: y mandatory`, so the dialog covers only part of
+        // the screen and the page shows through below. With snap off the
+        // dialog fills the viewport, and the geometry we measure here matches
+        // what the user sees. Restored in the `close` handler.
+        document.documentElement.classList.add('lb-open');
         build(items);
         if (!dlg.open) dlg.showModal();
         // showModal auto-focuses the first focusable descendant — the active
