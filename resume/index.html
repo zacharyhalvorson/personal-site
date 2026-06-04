@@ -1,23 +1,357 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
-  <title>Zachary Halvorson — Resume</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zachary Halvorson — Resume</title>
+  <meta name="description" content="Resume of Zachary Halvorson, product designer at Meta Reality Labs.">
+  <meta name="author" content="Zachary Halvorson">
   <meta name="robots" content="noindex">
-  <link rel="canonical" href="https://www.zacharyhalvorson.com/resume.pdf">
-  <meta http-equiv="refresh" content="0; url=/resume.pdf">
-  <script>window.location.replace("/resume.pdf");</script>
+  <link rel="canonical" href="https://www.zacharyhalvorson.com/resume/">
+
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1c1b19" media="(prefers-color-scheme: dark)">
+
+  <link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+
   <style>
-    body { font: 16px/1.5 system-ui, sans-serif; max-width: 32rem; margin: 4rem auto; padding: 0 1rem; color: #2a2a2a; background: #fafaf7; }
-    a { color: #0066cc; }
+    /* ----------------------------------------------------------------
+       Standalone resume page. Self-contained (no shared stylesheet) so
+       it stays a simple, portable document. Palette and font stack are
+       lifted from the main site (style.css) so the two read as one
+       brand. Print styles produce a clean, PDF-quality resume on Cmd-P.
+       ---------------------------------------------------------------- */
+
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      /* Apple's "New York" system serif (exposed via ui-serif on Apple
+         platforms); graceful fall-back to Georgia elsewhere. */
+      --font-serif: ui-serif, "New York", Georgia, "Times New Roman", Times, serif;
+
+      --text-default: #2a2a2a;
+      --text-soft: #565656;
+      --text-light: #817e7e;
+      --base: #fafaf7;
+      --surface: #ffffff;
+      --rule: rgba(0, 0, 0, 0.14);
+      --link: #0066cc;
+      --link-hover: #003f80;
+    }
+
     @media (prefers-color-scheme: dark) {
-      body { color: #f2efe9; background: #1c1b19; }
-      a { color: #7cc4ff; }
+      :root {
+        --text-default: #f2efe9;
+        --text-soft: #d3cfc6;
+        --text-light: #8f8a82;
+        --base: #1c1b19;
+        --surface: #262522;
+        --rule: rgba(255, 255, 255, 0.16);
+        --link: #7cc4ff;
+        --link-hover: #b3dcff;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--surface);
+      color: var(--text-default);
+      font-family: var(--font-serif);
+      font-size: 17px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .resume {
+      max-width: 44rem;
+      margin: 0 auto;
+      padding: clamp(2rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 3.5rem) 4rem;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    a:hover { color: var(--link-hover); text-decoration: underline; }
+    a:focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.9rem, 6vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    /* Contact: a quiet, stacked block grouped tight under the name, so
+       the two read as a single masthead. */
+    .contact {
+      margin: 0 0 3rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      font-style: normal; /* <address> renders italic by default */
+    }
+    .contact > * { display: block; }
+
+    h2 {
+      margin: 3rem 0 1rem;
+      font-size: clamp(1.5rem, 4vw, 1.9rem);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+    }
+
+    .job { margin-top: 1.75rem; }
+    .job:first-of-type { margin-top: 0; }
+
+    .job_title {
+      margin: 0 0 0.15rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .job_meta {
+      margin: 0 0 0.6rem;
+      font-style: italic;
+      color: var(--text-light);
+    }
+
+    .job p { margin: 0.6rem 0; }
+
+    .lede { margin: 0 0 1.5rem; }
+
+    ul {
+      margin: 0.6rem 0;
+      padding-left: 1.25rem;
+    }
+    li { margin: 0.25rem 0; }
+
+    .closing {
+      margin-top: 2.5rem;
+      font-style: italic;
+      color: var(--text-light);
+    }
+
+    /* ---------- print: high-craft, file-ready resume ----------
+       This is the deliverable when a PDF is required, so it is tuned
+       deliberately: a print-native type scale in points, a masthead
+       rhythm that mirrors the screen, ink-friendly tones, and pagination
+       rules that keep entries and lists whole. */
+    @media print {
+      :root {
+        --text-default: #161616;
+        --text-soft: #3a3a3a;
+        --text-light: #5a5a5a;
+        --rule: #b9b9b9;
+        --link: #0b5cab; /* deep, ink-friendly blue, close to the screen link */
+      }
+
+      @page { margin: 0.8in 0.8in; }
+
+      html, body { background: #fff; }
+
+      body {
+        font-size: 10.5pt;
+        line-height: 1.4;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .resume {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      a { color: var(--link); text-decoration: none; }
+
+      /* Type scale + masthead rhythm, mirroring the screen proportions. */
+      h1 {
+        font-size: 25pt;
+        margin: 0 0 7pt;
+        letter-spacing: -0.02em;
+      }
+      .contact {
+        margin: 0 0 22pt;
+        font-size: 9pt;
+        line-height: 1.55;
+        color: var(--text-soft);
+      }
+      h2 {
+        font-size: 15pt;
+        margin: 20pt 0 7pt;
+      }
+      .lede { margin: 0 0 6pt; }
+
+      .job { margin-top: 14pt; }
+      .job_title { font-size: 11.5pt; margin: 0 0 2pt; }
+      .job_meta { margin: 0 0 5pt; font-size: 9.5pt; }
+      .job p { margin: 5pt 0; }
+
+      ul { margin: 5pt 0; padding-left: 15pt; }
+      li { margin: 2pt 0; }
+
+      .closing { margin-top: 18pt; font-size: 10pt; }
+
+      /* Pagination: let roles flow to fill each page, but never strand a
+         heading at a page foot, split a single bullet, or orphan a line. */
+      p { orphans: 3; widows: 3; }
+      li { break-inside: avoid; }
+      h2, .job_title, .job_meta { break-after: avoid; }
     }
   </style>
 </head>
+
 <body>
-  <p>Redirecting to <a href="/resume.pdf">Zachary Halvorson's resume (PDF)</a>…</p>
+  <main class="resume">
+    <h1>Zachary Halvorson&rsquo;s Resume</h1>
+
+    <address class="contact">
+      <span>+1 206 739 8804</span>
+      <span>5300 9 Ave NW, Seattle WA</span>
+      <a href="mailto:zacharyhalvorson@me.com">zacharyhalvorson@me.com</a>
+      <a href="https://zacharyhalvorson.com/">zacharyhalvorson.com</a>
+    </address>
+
+    <h2>About me</h2>
+    <p class="lede">
+      I&rsquo;m a product designer with 10+ years of experience leading
+      with vision and shipping products people love. I carry work from early
+      strategy and research through interaction and visual design into front-end
+      implementation, and I love to grow the designers around me. I lean on that
+      technical range to design and build AI-native experiences firsthand.
+    </p>
+
+    <h2>Experience</h2>
+
+    <section class="job">
+      <h3 class="job_title">
+        Product Designer,
+        <a href="https://about.meta.com/realitylabs/" target="_blank" rel="noopener noreferrer">Meta Reality Labs</a>
+      </h3>
+      <p class="job_meta">Seattle, WA &ndash; <time datetime="2020-08">August 2020</time>-<time datetime="2026-05">May 2026</time></p>
+      <p>
+        I focussed on AI experiences on Wearables within Meta&rsquo;s Reality
+        Labs. In my time at Meta I have worked on AI Smart Glasses in a holistic
+        way. Championing multiple devices and individual features from concept
+        phase to launching into the market.
+      </p>
+      <p>As a Product Designer on wearables, my work has included:</p>
+      <ul>
+        <li>AI-native feature ideation, design, and execution.</li>
+        <li>Leveraging a deep understanding of networked devices in managing the connectivity of the wearables.</li>
+        <li>Creating novel interactions and products stemming from this new product category.</li>
+        <li>Streaming video from glasses to mobile apps.</li>
+        <li>High-fidelity, code-based, technical prototyping of designs to influence product strategy.</li>
+        <li>Mentorship of other designers</li>
+        <li>Assisting in user research of future product explorations</li>
+      </ul>
+    </section>
+
+    <section class="job">
+      <h3 class="job_title">
+        Senior Product Designer (Design lead),
+        <a href="https://www.clio.com/" target="_blank" rel="noopener noreferrer">Clio</a>
+      </h3>
+      <p class="job_meta">Vancouver, BC &ndash; <time datetime="2019-03">March 2019</time>-<time datetime="2020-08">August 2020</time></p>
+      <p>
+        I led the design team for Clio Grow and Client Experience, one of
+        Clio&rsquo;s three portfolios of products. In my time at Clio I designed
+        and conceived of the Clio Scheduler, a product that headlined our large
+        customer conference, grew into a leader on the broader design team by
+        helping to develop the critique process, and participated in Clio&rsquo;s
+        management training program, Basecamp.
+      </p>
+      <p>As a lead in the portfolio, my responsibilities included:</p>
+      <ul>
+        <li>Daily design work for multiple feature teams at once</li>
+        <li>Facilitate weekly design critiques within my portfolio</li>
+        <li>Interviewing and continuously developing our design hiring process</li>
+        <li>Driving overall design strategy, larger initiatives, and vision for the portfolio as a whole</li>
+        <li>Weekly 1:1&rsquo;s with my reports, helping them to develop and realize their career goals</li>
+        <li>Compensation reviews and leave approval</li>
+        <li>Determining design resource needs on the portfolio</li>
+      </ul>
+    </section>
+
+    <section class="job">
+      <h3 class="job_title">
+        Lead Designer,
+        <a href="https://www.crunchbase.com/organization/dooly-research" target="_blank" rel="noopener noreferrer">Dooly</a>
+      </h3>
+      <p class="job_meta">Vancouver, BC &ndash; <time datetime="2016-10">Oct 2016</time>-<time datetime="2019-04">April 2019</time></p>
+      <p>
+        I was the first hire at this startup focussed on bringing a
+        consumer-grade experience to enterprise sales software. I was brought on
+        pre-users or revenue and helped grow the business to include dozens of
+        enterprise accounts, including
+        <a href="https://asana.com/" target="_blank" rel="noopener noreferrer">Asana</a>,
+        <a href="https://intercom.com/" target="_blank" rel="noopener noreferrer">Intercom</a>, and
+        <a href="https://www.contentful.com/" target="_blank" rel="noopener noreferrer">Contentful</a>,
+        with hundreds of daily active users.
+      </p>
+      <p>
+        I was the sole designer, responsible for the product design, brand,
+        marketing communications design, and I also contribute to the front-end
+        development.
+      </p>
+    </section>
+
+    <section class="job">
+      <h3 class="job_title">
+        Lead Instructor,
+        <a href="https://brainstation.io/" target="_blank" rel="noopener noreferrer">BrainStation</a>
+      </h3>
+      <p class="job_meta">Vancouver, BC &ndash; <time datetime="2017-03">Mar 2017</time>-<time datetime="2019-03">Mar 2019</time></p>
+      <p>
+        I lead an Intro to Web Development class once a week in the evenings. In
+        this ten-week course I help all kinds of people get started making things
+        on the Internet.
+      </p>
+    </section>
+
+    <section class="job">
+      <h3 class="job_title">
+        Product Designer,
+        <a href="https://www.crunchbase.com/organization/mobify" target="_blank" rel="noopener noreferrer">Mobify</a>
+      </h3>
+      <p class="job_meta">Vancouver, BC &ndash; <time datetime="2014-03">Mar 2014</time>-<time datetime="2016-10">Oct 2016</time></p>
+      <p>
+        I worked as a designer on the Product Team. I designed and developed
+        products to enable the development of mobile-focussed commerce websites.
+        Some of my work there has included:
+      </p>
+      <ul>
+        <li>Product design and front-end development for a customer engagement platform that included location-based marketing, and behaviour-driven web and app push notification delivery.</li>
+        <li>Design and front-end development for a mobile project testing and release console.</li>
+        <li>
+          iOS and Android app design for our hybrid app development framework, as
+          well as several client builds including
+          <a href="https://apps.apple.com/us/app/ritchie-bros/id1068567213" target="_blank" rel="noopener noreferrer">Ritchie Bros.</a>, and
+          <a href="https://itunes.apple.com/ca/app/london-drugs-ldextras/id1118470835?mt=8" target="_blank" rel="noopener noreferrer">London Drugs</a>.
+        </li>
+        <li>Building relationships with the partner developer network, customers, and in-house development teams. Facilitating user testing, interviews, and gathering feedback on our platform.</li>
+      </ul>
+    </section>
+
+    <h2>Education</h2>
+    <ul>
+      <li>Capilano University, North Vancouver, BC &ndash; Interactive Design Diploma, <time datetime="2012">2012</time>-<time datetime="2014">2014</time></li>
+      <li>University of Alberta, Edmonton, AB &ndash; Bachelor&rsquo;s of Education (Math major, Art minor), <time datetime="2004">2004</time>-<time datetime="2009">2009</time></li>
+    </ul>
+
+    <p class="closing">References available upon request</p>
+  </main>
 </body>
 </html>
