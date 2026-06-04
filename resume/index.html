@@ -102,6 +102,10 @@
       font-style: normal; /* <address> renders italic by default */
     }
     .contact > * { display: block; }
+    /* Keep the contact links quiet — inherit the block's muted colour instead
+       of the link blue, so the masthead reads as plain meta info. */
+    .contact a,
+    .contact a:hover { color: inherit; }
 
     h2 {
       margin: 3rem 0 1rem;
