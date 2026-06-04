@@ -157,6 +157,10 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
+  /* flex-start (not the default stretch) so each link is only as wide as its
+     own dash. Stretch would size every link to the widest label, turning the
+     whole strip into one oversized hover target that reaches across the page. */
+  align-items: flex-start;
   /* No gap between links; each link's vertical padding does double duty as
      visual spacing and as a touch target, so the cursor never falls into a
      dead zone between dashes. */
@@ -165,14 +169,18 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 
 .rail a {
+  position: relative;
   display: flex;
-  /* dash on the left edge, label slides in to the right of the dash */
-  flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
-  /* Half of the previous inter-link gap on each side, so the visual rhythm
-     between dashes is preserved while adjacent links share an edge. */
+  /* The hit area is deliberately just the dash plus a little breathing room to
+     its right. The label is absolutely positioned (see .rail_label) so it never
+     widens this target across the page content and triggers on a stray hover. */
   padding-block: 0.3125rem;
+  padding-inline: 0 0.6rem;
+  /* The absolute label no longer contributes its line-box height, so set the
+     link height explicitly to preserve the original vertical rhythm between
+     dashes (was label line-height + padding ≈ 27px). */
+  min-height: 1.6875rem;
   color: var(--text-light);
   text-decoration: none;
   font-family: var(--font-mono);
@@ -193,11 +201,32 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 
 .rail_label {
+  /* Absolutely positioned beside the dash so it stays out of the link's flow,
+     and pointer-events:none so the (sometimes invisible) label can never become
+     a hover/click target itself. */
+  position: absolute;
+  left: 1.6rem;
+  top: 50%;
+  padding: 0.3rem 0.7rem 0.3rem 0.5rem;
   opacity: 0;
   /* sits left of its resting spot, slides toward the page content on reveal */
-  transform: translateX(-4px);
+  transform: translate(-4px, -50%);
   transition: opacity 220ms var(--ease), transform 220ms var(--ease), color 220ms var(--ease);
   white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Feathered backing: a blurred base-coloured fill sits behind the label so it
+   stays legible over body text, with soft edges that melt into the page rather
+   than reading as a hard rectangle. */
+.rail_label::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--base);
+  border-radius: 10px;
+  filter: blur(5px);
 }
 
 /* Current section's dash: slightly longer + darker than the rest, but still
@@ -224,7 +253,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   }
   .rail a:hover .rail_label {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(0, -50%);
     color: var(--text-default);
   }
 }
@@ -236,7 +265,7 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
 }
 .rail a:focus-visible .rail_label {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate(0, -50%);
   color: var(--text-default);
 }
 /* Outline ring for keyboard focus. Sits alongside the label reveal so
