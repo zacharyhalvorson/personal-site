@@ -103,9 +103,11 @@
     }
     .contact > * { display: block; }
     /* Keep the contact links quiet — inherit the block's muted colour instead
-       of the link blue, so the masthead reads as plain meta info. */
+       of the link blue, so the masthead reads as plain meta info. width:fit-content
+       keeps each link's hover/click target on the text rather than the whole line. */
     .contact a,
     .contact a:hover { color: inherit; }
+    .contact a { width: fit-content; }
 
     h2 {
       margin: 3rem 0 1rem;
@@ -222,7 +224,6 @@
     <h1>Zachary Halvorson&rsquo;s Resume</h1>
 
     <address class="contact">
-      <span>+1 206 739 8804</span>
       <span>5300 9 Ave NW, Seattle WA</span>
       <a href="mailto:zacharyhalvorson@me.com">zacharyhalvorson@me.com</a>
       <a href="https://zacharyhalvorson.com/">zacharyhalvorson.com</a>
