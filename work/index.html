@@ -474,8 +474,7 @@
        widened to clear the floated rail / zeroed when it's hidden. */
     var DECK_CSS =
       "html,body{background:#fafaf7 !important}" +
-      "deck-stage{background:#fafaf7 !important;--deck-rail-w:206px !important}" +
-      "deck-stage.rail-off{--deck-rail-w:0px !important}" +
+      "deck-stage{background:#fafaf7 !important}" +
       ".slide{box-shadow:0 10px 34px rgba(0,0,0,0.12) !important}" +
       "@media (prefers-color-scheme:dark){" +
       "html,body{background:#1c1b19 !important}" +
@@ -484,11 +483,14 @@
 
     // Shadow-root level: float the deck's slide navigator (`.rail`) like
     // Keynote — inset, rounded, a translucent tint slightly darker than the
-    // canvas behind it. Toggling `.rail-off` on the host slides the rail off
-    // to the left and (via the widened/zeroed --deck-rail-w) the stage
-    // expands to fill; both are transitioned. Injected into deck-stage's
-    // (open) shadow root since document CSS can't reach it.
+    // canvas behind it. The deck positions its stage with an inline `left`,
+    // so we override the stage's left/width directly (the `--deck-rail-w`
+    // variable doesn't drive it). Toggling `.rail-off` on the host slides the
+    // rail off-screen and expands the stage to full width — the deck
+    // re-centers the slide into the freed space — both transitioned.
+    // Injected into deck-stage's (open) shadow root; document CSS can't reach it.
     var EASE = "cubic-bezier(0.2,0.7,0.2,1)";
+    var STAGE_LEFT = "205px"; // clears the floated rail (left 9 + width 178 + gap)
     var RAIL_CSS =
       ".rail{top:14px !important;bottom:14px !important;left:9px !important;" +
       "height:auto !important;width:178px !important;border:none !important;" +
@@ -496,13 +498,16 @@
       "background:rgba(0,0,0,0.06) !important;" +
       "box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;" +
       "transition:transform 360ms " + EASE + ",opacity 280ms " + EASE + " !important}" +
-      // Round the thumbnails so they nest inside the panel's corners
-      // (inner radius ≈ panel radius − padding) instead of clashing as squares.
-      ".thumb{border-radius:6px !important;overflow:hidden !important}" +
+      // Keep thumbnails at their natural height (the deck already rounds the
+      // inner .frame); without this they shrink to fit the fixed-height rail
+      // and the slide preview gets cropped instead of the rail scrolling.
+      ".thumb{flex-shrink:0 !important}" +
       ".rail-resize{display:none !important}" +
-      ".stage{transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
+      ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + ") !important;" +
+      "transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
       ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
       "opacity:0 !important;pointer-events:none !important}" +
+      ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
       "@media (prefers-color-scheme:dark){" +
       ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}";
 
