@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Selected Work — Zachary Halvorson</title>
+  <meta name="description" content="Password-protected case studies by Zachary Halvorson, product designer at Meta Reality Labs.">
+  <meta name="author" content="Zachary Halvorson">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://www.zacharyhalvorson.com/work/">
+
+  <!-- Match the tab-strip chrome so Safari's own toolbar tints to blend. -->
+  <meta name="theme-color" content="#e8e5df" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#100f0e" media="(prefers-color-scheme: dark)">
+
+  <link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+
+  <style>
+    /* ----------------------------------------------------------------
+       Selected Work — a tabbed reader for the case-study exports.
+       Self-contained (no shared stylesheet) so it stays portable, but
+       the palette and font stack are lifted from the main site
+       (style.css) so it reads as one brand.
+
+       Two layers:
+         1. A soft password gate (#gate) shown until the visitor enters
+            the passphrase. Client-side only — a deterrent, not real
+            security — so the underlying case-study files are never
+            fetched until the gate is cleared.
+         2. A Safari-style tab strip (#chrome) over a stack of <iframe>s,
+            one per case study. Each case study is added by dropping its
+            export into work/<slug>/ and adding one line to the
+            CASES manifest in the script below.
+       ---------------------------------------------------------------- */
+
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+      --text-default: #2a2a2a;
+      --text-soft: #565656;
+      --text-light: #817e7e;
+      --base: #fafaf7;
+      --surface: #ffffff;
+      --rule: rgba(0, 0, 0, 0.08);
+      --highlight: #fff3d6;
+      --highlight-deep: #f3e5b8;
+      --link: #0066cc;
+      --link-hover: #003f80;
+
+      /* Browser-chrome tones for the tab strip — warm, derived from the
+         site palette so the bar reads as part of the brand. The active tab
+         takes the canvas colour (--base) so it blends into the content,
+         the way Safari's active tab matches the page. */
+      --chrome: #e8e5df;
+      --chrome-rule: rgba(0, 0, 0, 0.1);
+      --tab-track: rgba(0, 0, 0, 0.05);
+      --tab-text: #585858;
+
+      --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-default: #f2efe9;
+        --text-soft: #d3cfc6;
+        --text-light: #8f8a82;
+        --base: #1c1b19;
+        --surface: #262522;
+        --rule: rgba(255, 255, 255, 0.1);
+        --highlight: #4a3a16;
+        --highlight-deep: #6b5520;
+        --link: #7cc4ff;
+        --link-hover: #b3dcff;
+
+        --chrome: #100f0e;
+        --chrome-rule: rgba(255, 255, 255, 0.1);
+        --tab-track: rgba(255, 255, 255, 0.06);
+        --tab-text: #9a958d;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--base);
+      color: var(--text-default);
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow: hidden; /* the iframe scrolls, not the shell */
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    a:hover { color: var(--link-hover); text-decoration: underline; }
+
+    :focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+
+    /* ---------- app shell ---------- */
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100svh;
+    }
+
+    /* ---------- chrome: tab strip ---------- */
+
+    #chrome {
+      position: relative;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* tabs centered in the bar */
+      /* Symmetric gutters reserve room for the absolutely-positioned back
+         button on the left and keep the centered tabs from running under it
+         on narrow screens. */
+      padding: 0.55rem 2.85rem;
+      padding-top: max(0.55rem, env(safe-area-inset-top));
+      background: var(--chrome);
+      border-bottom: 1px solid var(--chrome-rule);
+    }
+
+    /* Back to site — a leading toolbar button, pinned left so it doesn't
+       offset the centered tabs. */
+    .back {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      color: var(--tab-text);
+      border-radius: 999px;
+    }
+    .back:hover {
+      color: var(--text-default);
+      background: var(--surface);
+      text-decoration: none;
+    }
+    .back svg { width: 17px; height: 17px; }
+
+    /* The tabs sit grouped inside a recessed pill (Safari's compact tab
+       style); the active tab is a raised, shadowed pill that pops out of
+       the track. The pill keeps generous vertical padding so the active
+       tab's drop shadow isn't clipped by the horizontal-scroll overflow.
+       `authpill` is the shared element the passphrase input morphs into. */
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      padding: 0.13rem;
+      background: var(--tab-track);
+      border-radius: 999px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      view-transition-name: authpill;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      max-width: 22rem;
+      min-width: 0;
+      padding: 0.4rem 0.95rem;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--tab-text);
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      line-height: 1.2;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 140ms var(--ease), color 140ms var(--ease), box-shadow 140ms var(--ease);
+    }
+    .tab:hover { color: var(--text-default); }
+
+    /* Active tab takes the canvas colour so it blends into the content
+       below, Safari-style. */
+    .tab[aria-selected="true"] {
+      background: var(--base);
+      color: var(--text-default);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.12);
+    }
+
+    .tab_label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ---------- stage: iframe stack ---------- */
+
+    #stage {
+      position: relative;
+      flex: 1 1 auto;
+      background: var(--base);
+    }
+
+    .frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 200ms var(--ease);
+    }
+    .frame.-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* A quiet spinner shown while a (large) export streams in. */
+    #stage::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 26px;
+      height: 26px;
+      margin: -13px 0 0 -13px;
+      border: 2px solid var(--rule);
+      border-top-color: var(--text-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      opacity: 0;
+      transition: opacity 200ms var(--ease);
+      pointer-events: none;
+    }
+    #stage.-loading::before { opacity: 1; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .frame { transition: none; }
+      #stage::before { animation: none; }
+    }
+
+    /* ---------- password gate ---------- */
+
+    #gate {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: var(--gutter, 1.5rem);
+      background: var(--base);
+    }
+    #gate[hidden] { display: none; }
+
+    .gate_card {
+      width: min(26rem, 100%);
+      text-align: center;
+    }
+
+    /* `authpill` is the shared element: on a correct passphrase this pill
+       morphs into the tab bar via a View Transition. */
+    .gate_field {
+      position: relative;
+      view-transition-name: authpill;
+    }
+    .gate_field input {
+      width: 100%;
+      /* right padding leaves room for the nested submit button */
+      padding: 0.85rem 3.4rem 0.85rem 1.25rem;
+      font: inherit;
+      font-size: 1rem;
+      color: var(--text-default);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 999px; /* pill */
+      transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
+    }
+    .gate_field input::placeholder { color: var(--text-light); }
+    .gate_field input:focus {
+      outline: none;
+      border-color: var(--highlight-deep);
+      box-shadow: 0 0 0 3px var(--highlight);
+    }
+
+    .gate_submit {
+      position: absolute;
+      top: 50%;
+      right: 0.4rem;
+      transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      width: 2.2rem;
+      height: 2.2rem;
+      padding: 0;
+      color: var(--text-default);
+      background: var(--highlight-deep);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: filter 140ms var(--ease);
+    }
+    .gate_submit:hover { filter: brightness(0.94); }
+    .gate_submit svg { width: 1.05rem; height: 1.05rem; }
+
+    p.gate_error {
+      margin: 0.9rem 0 0;
+      min-height: 1.2em;
+      font-size: 0.85rem;
+      color: #c0392b;
+    }
+    @media (prefers-color-scheme: dark) {
+      p.gate_error { color: #ff8a7a; }
+    }
+    .gate_error[hidden] { display: block; visibility: hidden; }
+
+    /* The input pill shakes on a wrong passphrase. */
+    .gate_field.-wrong { animation: shake 0.4s var(--ease); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gate_field.-wrong { animation: none; }
+    }
+
+    /* Slow the pill morph a touch for a smoother settle. */
+    ::view-transition-group(authpill) { animation-duration: 360ms; }
+
+    .gate_help {
+      margin: 1.4rem auto 0;
+      max-width: 22rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+    .gate_help a { text-decoration: underline; text-underline-offset: 0.15em; }
+
+    .gate_back {
+      margin-top: 1.1rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* No-JS: the gate can't run, so explain rather than show a dead form. */
+    .noscript {
+      max-width: 26rem;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      text-align: center;
+      color: var(--text-soft);
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    <p class="noscript">
+      These case studies need JavaScript to view.
+      <a href="../">Return to zacharyhalvorson.com</a>.
+    </p>
+  </noscript>
+
+  <!-- Password gate ------------------------------------------------- -->
+  <div id="gate" hidden>
+    <div class="gate_card">
+      <form class="gate_form" id="gate-form" autocomplete="off">
+        <div class="gate_field">
+          <input
+            type="password"
+            id="gate-input"
+            name="passphrase"
+            placeholder="Enter a passphrase"
+            aria-label="Passphrase"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false">
+          <button type="submit" class="gate_submit" aria-label="Enter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="M13 6l6 6-6 6"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+      <p class="gate_error" id="gate-error" role="alert" hidden>That isn&rsquo;t it. Try again.</p>
+      <p class="gate_help">
+        Need access, or having trouble with your passphrase? Email
+        <a href="mailto:zacharyhalvorson@me.com?subject=Case%20study%20access">zacharyhalvorson@me.com</a>
+        and I&rsquo;ll get you in.
+      </p>
+      <p class="gate_back"><a href="../">&larr; Back to zacharyhalvorson.com</a></p>
+    </div>
+  </div>
+
+  <!-- App shell ----------------------------------------------------- -->
+  <div class="app" id="app" hidden>
+    <header id="chrome">
+      <a class="back" href="../" aria-label="Back to zacharyhalvorson.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5"></path>
+          <path d="M11 6l-6 6 6 6"></path>
+        </svg>
+      </a>
+      <div class="tabs" id="tabs" role="tablist" aria-label="Case studies"></div>
+    </header>
+    <main id="stage" aria-label="Case study"></main>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* -------------------------------------------------------------
+       Case-study manifest. To publish a new case study:
+         1. Drop its export at  work/<slug>/index.html
+         2. Add one line here.  Order = tab order; the first entry is
+            the default tab a visitor lands on.
+       ------------------------------------------------------------- */
+    var CASES = [
+      { slug: "rayban-meta",    label: "Livestreaming & POV calling", src: "rayban-meta/" },
+      { slug: "rayban-display", label: "Meta Ray-Ban Display",         src: "rayban-display/" }
+    ];
+
+    /* SHA-256 of the passphrase. Client-side gate only — a deterrent,
+       not real security. */
+    var PASS_HASH = "798147886b5d89368a69437e162aa859d0e3569579576c099d3f1ac8a75e8b55";
+    var UNLOCK_KEY = "work-unlocked-v1";
+
+    var gate = document.getElementById("gate");
+    var gateForm = document.getElementById("gate-form");
+    var gateField = document.querySelector(".gate_field");
+    var gateInput = document.getElementById("gate-input");
+    var gateError = document.getElementById("gate-error");
+    var app = document.getElementById("app");
+    var tabsEl = document.getElementById("tabs");
+    var stage = document.getElementById("stage");
+
+    var frames = {};   // slug -> iframe element
+    var active = null; // slug
+
+    /* ----- hashing ----- */
+    function sha256Hex(str) {
+      var bytes = new TextEncoder().encode(str);
+      return crypto.subtle.digest("SHA-256", bytes).then(function (buf) {
+        return Array.prototype.map
+          .call(new Uint8Array(buf), function (b) {
+            return b.toString(16).padStart(2, "0");
+          })
+          .join("");
+      });
+    }
+
+    /* ----- tabs + frames ----- */
+    function buildTabs() {
+      CASES.forEach(function (c) {
+        var tab = document.createElement("button");
+        tab.className = "tab";
+        tab.type = "button";
+        tab.id = "tab-" + c.slug;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-selected", "false");
+        tab.setAttribute("aria-controls", "frame-" + c.slug);
+        tab.setAttribute("tabindex", "-1");
+
+        var label = document.createElement("span");
+        label.className = "tab_label";
+        label.textContent = c.label;
+
+        tab.appendChild(label);
+        tab.addEventListener("click", function () { activate(c.slug); });
+        tabsEl.appendChild(tab);
+
+        var frame = document.createElement("iframe");
+        frame.className = "frame";
+        frame.id = "frame-" + c.slug;
+        frame.title = c.label + " case study";
+        frame.setAttribute("role", "tabpanel");
+        frame.setAttribute("aria-labelledby", "tab-" + c.slug);
+        frame.setAttribute("loading", "lazy");
+        frame.dataset.src = c.src; // lazy: real src set on first activation
+        stage.appendChild(frame);
+        frames[c.slug] = frame;
+      });
+
+      tabsEl.addEventListener("keydown", onTabKeydown);
+    }
+
+    function activate(slug) {
+      if (!frames[slug] || slug === active) {
+        if (slug === active) focusTab(slug);
+        return;
+      }
+      active = slug;
+
+      // Lazy-load: only fetch a (large) export the first time its tab opens.
+      // The spinner is keyed to the active tab — a background tab finishing
+      // its load must not clear the spinner for a different, still-loading
+      // tab, and re-opening a tab that's still loading should keep it up.
+      var frame = frames[slug];
+      if (frame.dataset.loaded === "1") {
+        showLoading(false);
+      } else {
+        showLoading(true);
+        if (!frame.src && frame.dataset.src) {
+          var done = function () {
+            frame.dataset.loaded = "1";
+            if (active === slug) showLoading(false);
+          };
+          frame.addEventListener("load", done, { once: true });
+          frame.addEventListener("error", done, { once: true });
+          frame.src = frame.dataset.src;
+        }
+      }
+
+      CASES.forEach(function (c) {
+        var on = c.slug === slug;
+        var tab = document.getElementById("tab-" + c.slug);
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        tab.setAttribute("tabindex", on ? "0" : "-1");
+        frames[c.slug].classList.toggle("-active", on);
+      });
+
+      if (history.replaceState) {
+        history.replaceState(null, "", "#" + slug);
+      }
+      document.title = labelFor(slug) + " — Zachary Halvorson";
+    }
+
+    function focusTab(slug) {
+      var tab = document.getElementById("tab-" + slug);
+      if (tab) tab.focus();
+    }
+
+    function labelFor(slug) {
+      for (var i = 0; i < CASES.length; i++) {
+        if (CASES[i].slug === slug) return CASES[i].label;
+      }
+      return "Selected Work";
+    }
+
+    function showLoading(on) {
+      stage.classList.toggle("-loading", on);
+    }
+
+    // Left/right arrows move between tabs (roving tabindex).
+    function onTabKeydown(e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      var idx = CASES.findIndex(function (c) { return c.slug === active; });
+      if (idx < 0) return;
+      var next = e.key === "ArrowRight"
+        ? (idx + 1) % CASES.length
+        : (idx - 1 + CASES.length) % CASES.length;
+      activate(CASES[next].slug);
+      focusTab(CASES[next].slug);
+    }
+
+    function defaultSlug() {
+      var hash = location.hash.replace(/^#/, "");
+      if (hash && frames[hash]) return hash;
+      return CASES[0] && CASES[0].slug;
+    }
+
+    /* ----- unlock flow -----
+       `moveFocus` is true only when the gate was just cleared by a submit:
+       the focused Enter button is about to be hidden, so we move focus into
+       the app. On a silent session-restore (no interaction) we leave focus
+       alone so we don't steal it on page load. */
+    function reveal(moveFocus) {
+      gate.hidden = true;
+      app.hidden = false;
+      if (!Object.keys(frames).length) buildTabs();
+      var slug = defaultSlug();
+      if (slug) activate(slug);
+      if (moveFocus && slug) focusTab(slug);
+    }
+
+    function showGate() {
+      app.hidden = true;
+      gate.hidden = false;
+      gateInput.focus();
+    }
+
+    function wrong() {
+      gateError.hidden = false;
+      gateField.classList.remove("-wrong");
+      // reflow to restart the shake animation
+      void gateField.offsetWidth;
+      gateField.classList.add("-wrong");
+      gateInput.select();
+    }
+
+    // On a correct passphrase, morph the input pill into the tab bar with a
+    // View Transition (the shared `authpill` element). Falls back to an
+    // instant reveal where View Transitions or motion aren't available.
+    function unlock() {
+      var reduce = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (document.startViewTransition && !reduce) {
+        document.startViewTransition(function () { reveal(true); });
+      } else {
+        reveal(true);
+      }
+    }
+
+    gateForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var value = gateInput.value.trim().toLowerCase();
+      if (!value) { wrong(); return; }
+      sha256Hex(value).then(function (hex) {
+        if (hex === PASS_HASH) {
+          try { localStorage.setItem(UNLOCK_KEY, "1"); } catch (_) {}
+          unlock();
+        } else {
+          wrong();
+        }
+      });
+    });
+
+    gateInput.addEventListener("input", function () {
+      if (!gateError.hidden) gateError.hidden = true;
+    });
+
+    // Already unlocked on this device? Skip the gate (persists across
+    // navigations, tabs, and return visits).
+    var unlocked = false;
+    try { unlocked = localStorage.getItem(UNLOCK_KEY) === "1"; } catch (_) {}
+    if (unlocked) {
+      reveal();
+    } else {
+      showGate();
+    }
+  })();
+  </script>
+</body>
+</html>
