@@ -177,10 +177,17 @@
 
   var lightbox = createLightbox();
 
+  // The first multi-item stack gets a one-time "you can leaf through these"
+  // bounce the first time it scrolls into view; later stacks don't repeat it.
+  var hintGiven = false;
   stacks.forEach(function (ul) {
     var items = readItems(ul);
     if (items.length === 1) setupSingle(ul, items);
-    else if (items.length > 1) setupStack(ul, items);
+    else if (items.length > 1) {
+      var wantHint = !hintGiven;
+      hintGiven = true;
+      setupStack(ul, items, wantHint);
+    }
   });
 
   // ---- read media descriptors straight from the DOM ----
@@ -240,7 +247,7 @@
   // ---- multiple items: fanned stack, no visible chrome ----
   // The top card follows your finger as you drag (iMessage-style); release
   // past a threshold to leaf. A plain tap opens the fullscreen carousel.
-  function setupStack(ul, items) {
+  function setupStack(ul, items, wantHint) {
     var lis = items.map(function (it) { return it.el; });
     var active = 0;
 
@@ -427,6 +434,49 @@
       window.addEventListener('resize', fit);
     }
     fit();
+
+    // First-view affordance. The very first stack does a small bounce the
+    // first time it scrolls well into view, signalling that the cards can be
+    // leafed through. It fires once, skips reduced-motion readers, and is
+    // cancelled the moment the reader actually grabs (or keys into) the stack
+    // — no point nudging a card someone's already interacting with.
+    if (wantHint) setupHint();
+    function setupHint() {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || typeof IntersectionObserver === 'undefined') return;
+      var spent = false, timer = null, obs = null;
+      function cancel() {
+        spent = true;
+        clearTimeout(timer);
+        if (obs) { obs.disconnect(); obs = null; }
+        // Kill any in-flight animation so a grab takes over the transform
+        // immediately (the running keyframe would otherwise override the
+        // drag's inline transform).
+        ul.classList.remove('is-hint');
+      }
+      // These run after the drag/keyboard handlers registered earlier, so the
+      // gesture still proceeds; we only tear down the hint.
+      ul.addEventListener('pointerdown', cancel);
+      ul.addEventListener('keydown', cancel);
+      function play() {
+        var front = lis[active];
+        if (!front) return;
+        function done() { ul.classList.remove('is-hint'); front.removeEventListener('animationend', done); }
+        front.addEventListener('animationend', done);
+        ul.classList.add('is-hint');
+      }
+      obs = new IntersectionObserver(function (entries) {
+        if (spent) return;
+        var e = entries[0];
+        if (e.isIntersecting && e.intersectionRatio >= 0.6) {
+          spent = true;
+          obs.disconnect(); obs = null;
+          // Let the card settle in view before it bounces.
+          timer = setTimeout(play, 550);
+        }
+      }, { threshold: [0, 0.6, 1] });
+      obs.observe(ul);
+    }
   }
 
   // ---- shared fullscreen carousel lightbox ----
