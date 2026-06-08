@@ -568,6 +568,7 @@
     // on the right/bottom. Tracking the var keeps them fitted across exports.
     var RAIL_W = "var(--deck-rail-w, 188px)";
     var STAGE_LEFT = "calc(9px + " + RAIL_W + " + 18px)"; // clears the floated rail (left + width + gap)
+    var STAGE_RIGHT = 18; // mirror the 18px rail->stage gap on the left, so the slide sits with equal margins instead of hugging the window's right edge
     var RAIL_CSS =
       ".rail{top:14px !important;bottom:14px !important;left:9px !important;" +
       "height:auto !important;width:" + RAIL_W + " !important;border:none !important;" +
@@ -580,7 +581,7 @@
       // and the slide preview gets cropped instead of the rail scrolling.
       ".thumb{flex-shrink:0 !important}" +
       ".rail-resize{display:none !important}" +
-      ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + ") !important;" +
+      ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important;" +
       "transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
       ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
       "opacity:0 !important;pointer-events:none !important}" +
@@ -789,7 +790,7 @@
       var w = ds.getBoundingClientRect().width;
       var railW = parseFloat(getComputedStyle(ds).getPropertyValue("--deck-rail-w")) || 188;
       var stageLeft = 9 + railW + 18; // mirror STAGE_LEFT (rail inset + width + gap)
-      return w > 280 ? (w - 40) / (w - stageLeft) : 1;
+      return w > 280 ? (w - 40) / (w - stageLeft - STAGE_RIGHT) : 1;
     }
 
     // Toggle the slide navigator across all loaded decks, keeping each deck's
