@@ -46,6 +46,12 @@
       --rule: rgba(0, 0, 0, 0.08);
       --highlight: #fff3d6;
       --highlight-deep: #f3e5b8;
+      /* Green siblings of the warm highlights — same soft, muted weight,
+         used for the "correct passphrase" success state. -green mirrors
+         --highlight (soft, for the glow); -green-deep mirrors
+         --highlight-deep (the border + the button fill). */
+      --highlight-green: #e9f6da;
+      --highlight-green-deep: #bfe3a6;
       --link: #0066cc;
       --link-hover: #003f80;
 
@@ -69,6 +75,8 @@
         --rule: rgba(255, 255, 255, 0.1);
         --highlight: #4a3a16;
         --highlight-deep: #6b5520;
+        --highlight-green: #313f1c;
+        --highlight-green-deep: #4a7d2c;
         --link: #7cc4ff;
         --link-hover: #b3dcff;
 
@@ -231,6 +239,9 @@
       height: 100%;
       border: 0;
       visibility: hidden;
+      /* Canvas colour until the export paints, so a freshly-revealed frame
+         never flashes white (most visible in dark mode) during the unlock. */
+      background: var(--base);
     }
     .frame.-active {
       visibility: visible;
@@ -302,6 +313,12 @@
       border-color: var(--highlight-deep);
       box-shadow: 0 0 0 3px var(--highlight);
     }
+    /* Once the passphrase is correct, the input's focus glow goes green to
+       match the success button. */
+    .gate_field:has(.gate_submit.-ready) input:focus {
+      border-color: var(--highlight-green-deep);
+      box-shadow: 0 0 0 3px var(--highlight-green);
+    }
 
     .gate_submit {
       position: absolute;
@@ -318,10 +335,46 @@
       border: none;
       border-radius: 50%;
       cursor: pointer;
-      transition: filter 140ms var(--ease);
+      /* Ease the gold->green fill so the success state arrives, not flashes. */
+      transition: background 220ms var(--ease), filter 140ms var(--ease);
     }
     .gate_submit:hover { filter: brightness(0.94); }
-    .gate_submit svg { width: 1.05rem; height: 1.05rem; }
+
+    /* The arrow and the hotdog share one grid cell so they cross-fade in
+       place: the arrow eases out as the dog pops in, with no empty-circle
+       flash in between. */
+    .gate_submit_arrow,
+    .gate_submit_dog {
+      grid-area: 1 / 1;
+      transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+    }
+    .gate_submit_arrow { width: 1.05rem; height: 1.05rem; }
+    .gate_submit_dog {
+      font-size: 1.15rem;
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    /* Once the typed passphrase is correct, the arrow gives way to a hotdog
+       that pops in — a playful "you got it" before they even hit enter. */
+    .gate_submit.-ready { background: var(--highlight-green-deep); }
+    .gate_submit.-ready .gate_submit_arrow { opacity: 0; transform: scale(0.4); }
+    .gate_submit.-ready .gate_submit_dog {
+      opacity: 1;
+      transform: none;
+      animation: dogpop 0.42s var(--ease);
+    }
+    @keyframes dogpop {
+      0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+      55%  { transform: scale(1.35) rotate(8deg); opacity: 1; }
+      75%  { transform: scale(0.9) rotate(-5deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gate_submit_arrow,
+      .gate_submit_dog { transition: none; }
+      .gate_submit.-ready .gate_submit_dog { animation: none; }
+    }
 
     .gate_form { position: relative; }
     /* The error sits just above the input, positioned absolutely so showing
@@ -351,8 +404,16 @@
       .gate_field.-wrong { animation: none; }
     }
 
-    /* Slow the pill morph a touch for a smoother settle. */
-    ::view-transition-group(authpill) { animation-duration: 360ms; }
+    /* Keep the unlock buttery: the pill->tab-bar morph and the whole-page
+       crossfade share one duration and the site easing, so neither races
+       ahead of the other into a flash. */
+    ::view-transition-group(authpill),
+    ::view-transition-group(root),
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 360ms;
+      animation-timing-function: var(--ease);
+    }
 
     .gate_help {
       margin: 1.4rem auto 0;
@@ -404,10 +465,11 @@
             autocorrect="off"
             spellcheck="false">
           <button type="submit" class="gate_submit" aria-label="Enter">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg class="gate_submit_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14"></path>
               <path d="M13 6l6 6-6 6"></path>
             </svg>
+            <span class="gate_submit_dog" aria-hidden="true">&#x1F32D;</span>
           </button>
         </div>
       </form>
@@ -531,6 +593,7 @@
     var gateField = document.querySelector(".gate_field");
     var gateInput = document.getElementById("gate-input");
     var gateError = document.getElementById("gate-error");
+    var gateSubmit = gateForm.querySelector(".gate_submit");
     var app = document.getElementById("app");
     var selectEl = document.getElementById("case-select");
     var railToggle = document.getElementById("rail-toggle");
@@ -819,8 +882,21 @@
       });
     });
 
+    // Swap the arrow for a popping hotdog the instant the typed passphrase
+    // is correct — a little "you got it" tell before they submit. Hashing is
+    // async, so ignore a result if the field changed while it was computing.
+    function refreshDog() {
+      var value = gateInput.value.trim().toLowerCase();
+      if (!value) { gateSubmit.classList.remove("-ready"); return; }
+      sha256Hex(value).then(function (hex) {
+        if (gateInput.value.trim().toLowerCase() !== value) return;
+        gateSubmit.classList.toggle("-ready", hex === PASS_HASH);
+      });
+    }
+
     gateInput.addEventListener("input", function () {
       if (!gateError.hidden) gateError.hidden = true;
+      refreshDog();
     });
 
     // Already unlocked on this device, or arriving via the shareable bypass

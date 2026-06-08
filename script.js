@@ -179,7 +179,17 @@
 
   // The first multi-item stack gets a one-time "you can leaf through these"
   // bounce the first time it scrolls into view; later stacks don't repeat it.
-  var hintGiven = false;
+  // Once it has played, the fact is stored for the rest of the browsing
+  // session, so navigating away and back doesn't replay it. sessionStorage
+  // clears when the tab/window closes, so a brand-new session sees it again.
+  var HINT_KEY = 'media-hint-seen-v1';
+  function hintSeen() {
+    try { return sessionStorage.getItem(HINT_KEY) === '1'; } catch (e) { return false; }
+  }
+  function markHintSeen() {
+    try { sessionStorage.setItem(HINT_KEY, '1'); } catch (e) {}
+  }
+  var hintGiven = hintSeen();
   stacks.forEach(function (ul) {
     var items = readItems(ul);
     if (items.length === 1) setupSingle(ul, items);
@@ -464,6 +474,7 @@
         function done() { ul.classList.remove('is-hint'); front.removeEventListener('animationend', done); }
         front.addEventListener('animationend', done);
         ul.classList.add('is-hint');
+        markHintSeen();
       }
       obs = new IntersectionObserver(function (entries) {
         if (spent) return;
