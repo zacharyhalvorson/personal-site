@@ -489,17 +489,20 @@
 
     // Shadow-root level: float the deck's slide navigator (`.rail`) like
     // Keynote — inset, rounded, a translucent tint slightly darker than the
-    // canvas behind it. The deck positions its stage with an inline `left`,
-    // so we override the stage's left/width directly (the `--deck-rail-w`
-    // variable doesn't drive it). Toggling `.rail-off` on the host slides the
+    // canvas behind it. The deck positions its stage with an inline `left`, so
+    // we override the stage's left/width directly. Toggling `.rail-off` on the host slides the
     // rail off-screen and expands the stage to full width — the deck
     // re-centers the slide into the freed space — both transitioned.
     // Injected into deck-stage's (open) shadow root; document CSS can't reach it.
     var EASE = "cubic-bezier(0.2,0.7,0.2,1)";
-    var STAGE_LEFT = "205px"; // clears the floated rail (left 9 + width 178 + gap)
+    // The deck bakes each thumbnail's scale for a rail of --deck-rail-w wide.
+    // Match that width or the previews render larger than the frame and crop
+    // on the right/bottom. Tracking the var keeps them fitted across exports.
+    var RAIL_W = "var(--deck-rail-w, 188px)";
+    var STAGE_LEFT = "calc(9px + " + RAIL_W + " + 18px)"; // clears the floated rail (left + width + gap)
     var RAIL_CSS =
       ".rail{top:14px !important;bottom:14px !important;left:9px !important;" +
-      "height:auto !important;width:178px !important;border:none !important;" +
+      "height:auto !important;width:" + RAIL_W + " !important;border:none !important;" +
       "border-radius:16px !important;padding:10px !important;" +
       "background:rgba(0,0,0,0.06) !important;" +
       "box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;" +
@@ -715,7 +718,9 @@
     // rail (it reclaims ~the stage offset, less a small margin).
     function fillScaleFor(ds) {
       var w = ds.getBoundingClientRect().width;
-      return w > 280 ? (w - 40) / (w - 205) : 1;
+      var railW = parseFloat(getComputedStyle(ds).getPropertyValue("--deck-rail-w")) || 188;
+      var stageLeft = 9 + railW + 18; // mirror STAGE_LEFT (rail inset + width + gap)
+      return w > 280 ? (w - 40) / (w - stageLeft) : 1;
     }
 
     // Toggle the slide navigator across all loaded decks, keeping each deck's
