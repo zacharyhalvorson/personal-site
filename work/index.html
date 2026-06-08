@@ -581,8 +581,13 @@
       // and the slide preview gets cropped instead of the rail scrolling.
       ".thumb{flex-shrink:0 !important}" +
       ".rail-resize{display:none !important}" +
-      ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important;" +
-      "transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
+      ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important}" +
+      // The slide-over transition is gated behind `.rail-anim`, added one
+      // layout after the themed position lands. Without that gate, the very
+      // first application of these left/width values animates from the deck's
+      // default layout — a left->right jump as the page loads. We want the
+      // initial position to snap, and only rail toggles to animate.
+      ":host(.rail-anim) .stage{transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
       ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
       "opacity:0 !important;pointer-events:none !important}" +
       ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
@@ -773,6 +778,11 @@
               rs.id = "work-rail-style";
               rs.textContent = RAIL_CSS;
               ds.shadowRoot.appendChild(rs);
+              // Commit the themed left/width to layout, THEN enable the stage
+              // transition — so the initial position snaps into place and only
+              // later rail toggles glide (no left->right jump on load).
+              void ds.getBoundingClientRect();
+              ds.classList.add("rail-anim");
             }
             if (ds) {
               ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
