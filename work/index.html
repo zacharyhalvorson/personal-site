@@ -465,6 +465,12 @@
     var PASS_HASH = "798147886b5d89368a69437e162aa859d0e3569579576c099d3f1ac8a75e8b55";
     var UNLOCK_KEY = "work-unlocked-v1";
 
+    /* A shareable link that skips the passphrase entirely:
+       /work#hotdocs-from-heaven. Arriving with this fragment unlocks just
+       like a correct entry and persists the unlock (below), so the link is
+       only ever needed once. Same deterrent-not-security caveat applies. */
+    var BYPASS_HASH = "hotdocs-from-heaven";
+
     /* Styles injected into each export to theme the slide-PLAYER chrome,
        not the slides. Injected from the parent (same-origin) because the
        bundler rebuilds the document and wipes anything shipped inside it.
@@ -817,10 +823,16 @@
       if (!gateError.hidden) gateError.hidden = true;
     });
 
-    // Already unlocked on this device? Skip the gate (persists across
-    // navigations, tabs, and return visits).
+    // Already unlocked on this device, or arriving via the shareable bypass
+    // link (/work#hotdocs-from-heaven)? Skip the gate. localStorage persists
+    // the unlock across navigations, tabs, and return visits, so the
+    // passphrase (or the link) is only ever needed once.
     var unlocked = false;
     try { unlocked = localStorage.getItem(UNLOCK_KEY) === "1"; } catch (_) {}
+    if (location.hash.replace(/^#/, "").toLowerCase() === BYPASS_HASH) {
+      try { localStorage.setItem(UNLOCK_KEY, "1"); } catch (_) {}
+      unlocked = true;
+    }
     if (unlocked) {
       reveal();
     } else {
