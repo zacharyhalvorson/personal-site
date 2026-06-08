@@ -528,10 +528,10 @@
     var UNLOCK_KEY = "work-unlocked-v1";
 
     /* A shareable link that skips the passphrase entirely:
-       /work#hotdocs-from-heaven. Arriving with this fragment unlocks just
+       /work#hotdogs-from-heaven. Arriving with this fragment unlocks just
        like a correct entry and persists the unlock (below), so the link is
        only ever needed once. Same deterrent-not-security caveat applies. */
-    var BYPASS_HASH = "hotdocs-from-heaven";
+    var BYPASS_HASH = "hotdogs-from-heaven";
 
     /* Styles injected into each export to theme the slide-PLAYER chrome,
        not the slides. Injected from the parent (same-origin) because the
@@ -900,7 +900,7 @@
     });
 
     // Already unlocked on this device, or arriving via the shareable bypass
-    // link (/work#hotdocs-from-heaven)? Skip the gate. localStorage persists
+    // link (/work#hotdogs-from-heaven)? Skip the gate. localStorage persists
     // the unlock across navigations, tabs, and return visits, so the
     // passphrase (or the link) is only ever needed once.
     var unlocked = false;
