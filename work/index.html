@@ -395,7 +395,7 @@
         <p class="gate_error" id="gate-error" role="alert" hidden>Try again.</p>
         <div class="gate_field">
           <input
-            type="password"
+            type="text"
             id="gate-input"
             name="passphrase"
             placeholder="Enter passphrase"
@@ -475,7 +475,13 @@
     var DECK_CSS =
       "html,body{background:#fafaf7 !important}" +
       "deck-stage{background:#fafaf7 !important}" +
-      ".slide{box-shadow:0 10px 34px rgba(0,0,0,0.12) !important}" +
+      ".slide{box-shadow:0 10px 34px rgba(0,0,0,0.12) !important;" +
+      "transition:transform 360ms cubic-bezier(0.2,0.7,0.2,1) !important}" +
+      // When the rail is hidden, scale the slide up to fill the freed space
+      // (the deck scales a parent, not .slide itself, so this composes and
+      // stays crisp). `--fill-scale` is computed in JS from the deck width.
+      "deck-stage.rail-off .slide{transform:scale(var(--fill-scale,1)) !important;" +
+      "transform-origin:center !important}" +
       "@media (prefers-color-scheme:dark){" +
       "html,body{background:#1c1b19 !important}" +
       "deck-stage{background:#1c1b19 !important}" +
@@ -695,20 +701,33 @@
               rs.textContent = RAIL_CSS;
               ds.shadowRoot.appendChild(rs);
             }
-            if (ds) ds.classList.toggle("rail-off", railHidden);
+            if (ds) {
+              ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+              ds.classList.toggle("rail-off", railHidden);
+            }
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
       }, 100);
     }
 
-    // Toggle the slide navigator across all loaded decks.
+    // The fill scale grows the slide to fill the width freed by hiding the
+    // rail (it reclaims ~the stage offset, less a small margin).
+    function fillScaleFor(ds) {
+      var w = ds.getBoundingClientRect().width;
+      return w > 280 ? (w - 40) / (w - 205) : 1;
+    }
+
+    // Toggle the slide navigator across all loaded decks, keeping each deck's
+    // fill scale current for the toggle/resize.
     function applyRailState() {
       Object.keys(frames).forEach(function (slug) {
         try {
           var doc = frames[slug].contentDocument;
           var ds = doc && doc.querySelector("deck-stage");
-          if (ds) ds.classList.toggle("rail-off", railHidden);
+          if (!ds) return;
+          ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+          ds.classList.toggle("rail-off", railHidden);
         } catch (e) { /* cross-origin / not ready */ }
       });
     }
@@ -717,6 +736,11 @@
       railHidden = !railHidden;
       railToggle.setAttribute("aria-pressed", String(!railHidden));
       applyRailState();
+    });
+
+    // Keep the fill scale accurate when the viewport changes while hidden.
+    window.addEventListener("resize", function () {
+      if (railHidden) applyRailState();
     });
 
     // Focus rings only while navigating by keyboard.
