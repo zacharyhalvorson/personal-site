@@ -247,30 +247,6 @@
       visibility: visible;
     }
 
-    /* A quiet spinner shown while a (large) export streams in. */
-    #stage::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 26px;
-      height: 26px;
-      margin: -13px 0 0 -13px;
-      border: 2px solid var(--rule);
-      border-top-color: var(--text-light);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      opacity: 0;
-      transition: opacity 200ms var(--ease);
-      pointer-events: none;
-    }
-    #stage.-loading::before { opacity: 1; }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) {
-      #stage::before { animation: none; }
-    }
-
     /* ---------- password gate ---------- */
 
     #gate {
@@ -687,6 +663,32 @@
       Object.keys(frames).forEach(function (slug) { loadFrame(slug); });
     }
 
+    // Hold a freshly-loaded export hidden until its canvas has settled on the
+    // page background, then run cb. The deck ships a near-black presentation
+    // body (#111) and the bundler rebuilds the document a few times during
+    // unpack, so revealing on first paint flashes black before DECK_CSS
+    // sticks. We wait for the deck body to read as --base for a few frames in
+    // a row (a proxy for "themed and no longer being rebuilt"), capped so a
+    // misbehaving export still reveals rather than hanging on the spinner.
+    function whenThemed(frame, cb) {
+      var base = getComputedStyle(frame).backgroundColor; // resolved var(--base)
+      var streak = 0, tries = 0;
+      (function check() {
+        tries++;
+        var themed = false;
+        try {
+          var doc = frame.contentDocument;
+          var ds = doc && doc.querySelector("deck-stage");
+          var slide = doc && doc.querySelector(".slide");
+          themed = !!(ds && slide && slide.getBoundingClientRect().width > 0 &&
+            getComputedStyle(doc.body).backgroundColor === base);
+        } catch (e) { /* mid-rebuild; treat as not-yet-themed */ }
+        streak = themed ? streak + 1 : 0;
+        if (streak >= 3 || tries > 70) cb();   // ~3 stable frames, or a ~3.5s cap
+        else setTimeout(check, 50);
+      })();
+    }
+
     // User-initiated case change from the dropdown. If the target deck isn't
     // loaded yet, keep the current one on screen (with a spinner) until the
     // new one has rendered, THEN crossfade — so the switch never flashes a
@@ -699,13 +701,14 @@
       if (frames[slug] && frames[slug].dataset.loaded === "1") {
         withTransition(function () { activate(slug); });
       } else {
-        showLoading(true);
         loadFrame(slug, function () {
           // A faster intermediate selection may have superseded this one;
           // only swap to the case the user actually landed on.
           if (pendingSlug !== slug) return;
-          showLoading(false);
-          withTransition(function () { activate(slug); });
+          whenThemed(frames[slug], function () {
+            if (pendingSlug !== slug) return;
+            withTransition(function () { activate(slug); });
+          });
         });
       }
     }
@@ -736,10 +739,6 @@
       document.body.removeChild(probe);
       var pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
       selectEl.style.width = Math.ceil(textW + pad + 1) + "px";
-    }
-
-    function showLoading(on) {
-      stage.classList.toggle("-loading", on);
     }
 
     // Run a DOM update inside a View Transition (smooth content crossfade /
@@ -850,9 +849,20 @@
       var slug = defaultSlug();
       if (slug) {
         pendingSlug = slug;
-        activate(slug);
-        showLoading(true);
-        loadFrame(slug, function () { if (pendingSlug === slug) showLoading(false); });
+        // Reflect the case in the chrome right away, but keep the frame hidden
+        // (showing just the page-coloured stage) until its canvas is themed, so
+        // the deck's dark default body never flashes through on first paint.
+        selectEl.value = slug;
+        fitSelect();
+        document.title = labelFor(slug) + " — Zachary Halvorson";
+        if (history.replaceState) history.replaceState(null, "", "#" + slug);
+        loadFrame(slug, function () {
+          if (pendingSlug !== slug) return;
+          whenThemed(frames[slug], function () {
+            if (pendingSlug !== slug) return;
+            activate(slug);
+          });
+        });
       }
       // Deliberately don't move focus to the dropdown — that would show its
       // focus ring on a plain click-unlock; the ring is for keyboard users.
