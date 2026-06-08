@@ -9,9 +9,9 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://www.zacharyhalvorson.com/work/">
 
-  <!-- Match the tab-strip chrome so Safari's own toolbar tints to blend. -->
-  <meta name="theme-color" content="#e8e5df" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#100f0e" media="(prefers-color-scheme: dark)">
+  <!-- Match the page background so Safari's own toolbar tints to blend. -->
+  <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1c1b19" media="(prefers-color-scheme: dark)">
 
   <link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png">
   <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
@@ -49,14 +49,12 @@
       --link: #0066cc;
       --link-hover: #003f80;
 
-      /* Browser-chrome tones for the tab strip — warm, derived from the
-         site palette so the bar reads as part of the brand. The active tab
-         takes the canvas colour (--base) so it blends into the content,
-         the way Safari's active tab matches the page. */
-      --chrome: #e8e5df;
-      --chrome-rule: rgba(0, 0, 0, 0.1);
-      --tab-track: rgba(0, 0, 0, 0.05);
+      /* The nav bar and the deck canvas both take the page background
+         (--base), so the whole reader is one continuous surface. */
+      --chrome: var(--base);
       --tab-text: #585858;
+      /* The dropdown darkens a touch when pressed/open. */
+      --press: rgba(0, 0, 0, 0.06);
 
       --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
     }
@@ -74,10 +72,9 @@
         --link: #7cc4ff;
         --link-hover: #b3dcff;
 
-        --chrome: #100f0e;
-        --chrome-rule: rgba(255, 255, 255, 0.1);
-        --tab-track: rgba(255, 255, 255, 0.06);
+        --chrome: var(--base);
         --tab-text: #9a958d;
+        --press: rgba(255, 255, 255, 0.08);
       }
     }
 
@@ -119,6 +116,10 @@
       flex-direction: column;
       height: 100svh;
     }
+    /* Without this, `display:flex` overrides the `hidden` attribute, so the
+       app (and its `authpill` dropdown) renders behind the gate — which
+       duplicates the view-transition-name and breaks the unlock morph. */
+    .app[hidden] { display: none; }
 
     /* ---------- chrome: tab strip ---------- */
 
@@ -134,14 +135,12 @@
       padding: 0.55rem 2.85rem;
       padding-top: max(0.55rem, env(safe-area-inset-top));
       background: var(--chrome);
-      border-bottom: 1px solid var(--chrome-rule);
     }
 
-    /* Back to site — a leading toolbar button, pinned left so it doesn't
-       offset the centered tabs. */
-    .back {
+    /* Toolbar icon buttons, pinned to the bar edges so they don't offset
+       the centered dropdown: home on the left, rail toggle on the right. */
+    .back, .rail-toggle {
       position: absolute;
-      left: 0.6rem;
       top: 50%;
       transform: translateY(-50%);
       display: inline-flex;
@@ -149,70 +148,69 @@
       justify-content: center;
       width: 2rem;
       height: 2rem;
+      padding: 0;
       color: var(--tab-text);
+      background: transparent;
+      border: none;
       border-radius: 999px;
+      cursor: pointer;
     }
-    .back:hover {
+    .back { left: 0.6rem; }
+    .rail-toggle { right: 0.6rem; }
+    .back:hover, .rail-toggle:hover {
       color: var(--text-default);
-      background: var(--surface);
+      background: var(--press);
       text-decoration: none;
     }
-    .back svg { width: 17px; height: 17px; }
+    .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
+    .back svg, .rail-toggle svg { width: 18px; height: 18px; }
 
-    /* The tabs sit grouped inside a recessed pill (Safari's compact tab
-       style); the active tab is a raised, shadowed pill that pops out of
-       the track. The pill keeps generous vertical padding so the active
-       tab's drop shadow isn't clipped by the horizontal-scroll overflow.
-       `authpill` is the shared element the passphrase input morphs into. */
-    .tabs {
-      display: flex;
-      align-items: center;
-      gap: 0.1rem;
-      flex: 0 1 auto;
-      min-width: 0;
-      max-width: 100%;
-      padding: 0.13rem;
-      background: var(--tab-track);
-      border-radius: 999px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      view-transition-name: authpill;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-
-    .tab {
+    /* A single minimal dropdown, centered in the bar — quieter than a tab
+       strip inside a browser that already has tabs. The native <select>
+       provides the system menu for the options; the closed control has no
+       chrome of its own, just the current title and a caret. `authpill` is
+       the shared element the passphrase input morphs into. */
+    .picker {
       position: relative;
       display: inline-flex;
       align-items: center;
-      max-width: 22rem;
-      min-width: 0;
-      padding: 0.4rem 0.95rem;
+      max-width: 100%;
+      view-transition-name: authpill;
+    }
+    .case_select {
+      appearance: none;
+      -webkit-appearance: none;
+      max-width: 100%;
+      margin: 0;
+      padding: 0.35rem 1.15rem 0.35rem 0.7rem; /* room for the caret */
       border: none;
-      border-radius: 999px;
+      border-radius: 8px;
       background: transparent;
-      color: var(--tab-text);
+      color: var(--text-default);
       font: inherit;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 500;
       line-height: 1.2;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 140ms var(--ease), color 140ms var(--ease), box-shadow 140ms var(--ease);
-    }
-    .tab:hover { color: var(--text-default); }
-
-    /* Active tab takes the canvas colour so it blends into the content
-       below, Safari-style. */
-    .tab[aria-selected="true"] {
-      background: var(--base);
-      color: var(--text-default);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), 0 2px 5px rgba(0, 0, 0, 0.12);
-    }
-
-    .tab_label {
-      overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
+      cursor: pointer;
+      transition: background 140ms var(--ease);
+    }
+    /* Quietly darker on hover and while pressed/open; default has no chrome. */
+    .case_select:hover,
+    .case_select:active { background: var(--press); }
+    /* No focus ring by default — selects light up :focus-visible even on a
+       mouse click in some engines. Show the ring only while the user is
+       actually navigating by keyboard (body.-kbd, set on Tab). */
+    .case_select:focus { outline: none; }
+    body.-kbd .case_select:focus { outline: 2px solid var(--link); outline-offset: 1px; }
+
+    .picker_caret {
+      position: absolute;
+      right: 0.28rem;
+      width: 13px;
+      height: 13px;
+      color: var(--tab-text);
+      pointer-events: none;
     }
 
     /* ---------- stage: iframe stack ---------- */
@@ -220,21 +218,21 @@
     #stage {
       position: relative;
       flex: 1 1 auto;
-      background: var(--base);
+      background: var(--chrome); /* matches the deck canvas before load */
     }
 
+    /* Frames toggle via visibility (no opacity crossfade, which used to
+       flash the background between them). When switching works, the swap is
+       wrapped in a View Transition so the content crossfades smoothly. */
     .frame {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       border: 0;
-      opacity: 0;
       visibility: hidden;
-      transition: opacity 200ms var(--ease);
     }
     .frame.-active {
-      opacity: 1;
       visibility: visible;
     }
 
@@ -259,7 +257,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) {
-      .frame { transition: none; }
       #stage::before { animation: none; }
     }
 
@@ -326,9 +323,15 @@
     .gate_submit:hover { filter: brightness(0.94); }
     .gate_submit svg { width: 1.05rem; height: 1.05rem; }
 
+    .gate_form { position: relative; }
+    /* The error sits just above the input, positioned absolutely so showing
+       or hiding it never reflows the layout. */
     p.gate_error {
-      margin: 0.9rem 0 0;
-      min-height: 1.2em;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 0.5rem);
+      margin: 0;
       font-size: 0.85rem;
       color: #c0392b;
     }
@@ -389,12 +392,13 @@
   <div id="gate" hidden>
     <div class="gate_card">
       <form class="gate_form" id="gate-form" autocomplete="off">
+        <p class="gate_error" id="gate-error" role="alert" hidden>Try again.</p>
         <div class="gate_field">
           <input
             type="password"
             id="gate-input"
             name="passphrase"
-            placeholder="Enter a passphrase"
+            placeholder="Enter passphrase"
             aria-label="Passphrase"
             autocapitalize="off"
             autocorrect="off"
@@ -407,7 +411,6 @@
           </button>
         </div>
       </form>
-      <p class="gate_error" id="gate-error" role="alert" hidden>That isn&rsquo;t it. Try again.</p>
       <p class="gate_help">
         Need access, or having trouble with your passphrase? Email
         <a href="mailto:zacharyhalvorson@me.com?subject=Case%20study%20access">zacharyhalvorson@me.com</a>
@@ -421,12 +424,23 @@
   <div class="app" id="app" hidden>
     <header id="chrome">
       <a class="back" href="../" aria-label="Back to zacharyhalvorson.com">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M19 12H5"></path>
-          <path d="M11 6l-6 6 6 6"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <path d="M9 22V12h6v10"></path>
         </svg>
       </a>
-      <div class="tabs" id="tabs" role="tablist" aria-label="Case studies"></div>
+      <div class="picker">
+        <select class="case_select" id="case-select" aria-label="Case study"></select>
+        <svg class="picker_caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </div>
+      <button class="rail-toggle" id="rail-toggle" type="button" aria-pressed="true" aria-label="Toggle slide navigator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+          <path d="M9 3v18"></path>
+        </svg>
+      </button>
     </header>
     <main id="stage" aria-label="Case study"></main>
   </div>
@@ -451,17 +465,61 @@
     var PASS_HASH = "798147886b5d89368a69437e162aa859d0e3569579576c099d3f1ac8a75e8b55";
     var UNLOCK_KEY = "work-unlocked-v1";
 
+    /* Styles injected into each export to theme the slide-PLAYER chrome,
+       not the slides. Injected from the parent (same-origin) because the
+       bundler rebuilds the document and wipes anything shipped inside it.
+       Document-level: the deck canvas takes the page background, the main
+       slide gets a soft drop shadow so it floats on the canvas, and
+       `--deck-rail-w` (the host var the deck uses to offset its stage) is
+       widened to clear the floated rail / zeroed when it's hidden. */
+    var DECK_CSS =
+      "html,body{background:#fafaf7 !important}" +
+      "deck-stage{background:#fafaf7 !important;--deck-rail-w:206px !important}" +
+      "deck-stage.rail-off{--deck-rail-w:0px !important}" +
+      ".slide{box-shadow:0 10px 34px rgba(0,0,0,0.12) !important}" +
+      "@media (prefers-color-scheme:dark){" +
+      "html,body{background:#1c1b19 !important}" +
+      "deck-stage{background:#1c1b19 !important}" +
+      ".slide{box-shadow:0 12px 40px rgba(0,0,0,0.55) !important}}";
+
+    // Shadow-root level: float the deck's slide navigator (`.rail`) like
+    // Keynote — inset, rounded, a translucent tint slightly darker than the
+    // canvas behind it. Toggling `.rail-off` on the host slides the rail off
+    // to the left and (via the widened/zeroed --deck-rail-w) the stage
+    // expands to fill; both are transitioned. Injected into deck-stage's
+    // (open) shadow root since document CSS can't reach it.
+    var EASE = "cubic-bezier(0.2,0.7,0.2,1)";
+    var RAIL_CSS =
+      ".rail{top:14px !important;bottom:14px !important;left:14px !important;" +
+      "height:auto !important;width:178px !important;border:none !important;" +
+      "border-radius:16px !important;padding:10px !important;" +
+      "background:rgba(0,0,0,0.06) !important;" +
+      "box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;" +
+      "transition:transform 360ms " + EASE + ",opacity 280ms " + EASE + " !important}" +
+      // Round the thumbnails so they nest inside the panel's corners
+      // (inner radius ≈ panel radius − padding) instead of clashing as squares.
+      ".thumb{border-radius:6px !important;overflow:hidden !important}" +
+      ".rail-resize{display:none !important}" +
+      ".stage{transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
+      ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
+      "opacity:0 !important;pointer-events:none !important}" +
+      "@media (prefers-color-scheme:dark){" +
+      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}";
+
     var gate = document.getElementById("gate");
     var gateForm = document.getElementById("gate-form");
     var gateField = document.querySelector(".gate_field");
     var gateInput = document.getElementById("gate-input");
     var gateError = document.getElementById("gate-error");
     var app = document.getElementById("app");
-    var tabsEl = document.getElementById("tabs");
+    var selectEl = document.getElementById("case-select");
+    var railToggle = document.getElementById("rail-toggle");
     var stage = document.getElementById("stage");
 
-    var frames = {};   // slug -> iframe element
-    var active = null; // slug
+    var frames = {};          // slug -> iframe element
+    var active = null;        // slug currently shown
+    var pendingSlug = null;   // most-recently-requested slug (guards stale loads)
+    var railHidden = false;   // slide-navigator visibility (shared across cases)
 
     /* ----- hashing ----- */
     function sha256Hex(str) {
@@ -475,85 +533,92 @@
       });
     }
 
-    /* ----- tabs + frames ----- */
-    function buildTabs() {
+    /* ----- dropdown + frames ----- */
+    function buildCases() {
       CASES.forEach(function (c) {
-        var tab = document.createElement("button");
-        tab.className = "tab";
-        tab.type = "button";
-        tab.id = "tab-" + c.slug;
-        tab.setAttribute("role", "tab");
-        tab.setAttribute("aria-selected", "false");
-        tab.setAttribute("aria-controls", "frame-" + c.slug);
-        tab.setAttribute("tabindex", "-1");
-
-        var label = document.createElement("span");
-        label.className = "tab_label";
-        label.textContent = c.label;
-
-        tab.appendChild(label);
-        tab.addEventListener("click", function () { activate(c.slug); });
-        tabsEl.appendChild(tab);
+        var opt = document.createElement("option");
+        opt.value = c.slug;
+        opt.textContent = c.label;
+        selectEl.appendChild(opt);
 
         var frame = document.createElement("iframe");
         frame.className = "frame";
         frame.id = "frame-" + c.slug;
         frame.title = c.label + " case study";
-        frame.setAttribute("role", "tabpanel");
-        frame.setAttribute("aria-labelledby", "tab-" + c.slug);
         frame.setAttribute("loading", "lazy");
-        frame.dataset.src = c.src; // lazy: real src set on first activation
+        frame.dataset.src = c.src; // lazy: real src set on first selection
         stage.appendChild(frame);
         frames[c.slug] = frame;
       });
 
-      tabsEl.addEventListener("keydown", onTabKeydown);
+      selectEl.addEventListener("change", function () {
+        selectCase(selectEl.value);
+      });
     }
 
+    // Swap which case is showing. Assumes its frame is already loaded — the
+    // load is handled separately so we never reveal a blank iframe.
     function activate(slug) {
-      if (!frames[slug] || slug === active) {
-        if (slug === active) focusTab(slug);
-        return;
-      }
+      if (!frames[slug]) return;
       active = slug;
-
-      // Lazy-load: only fetch a (large) export the first time its tab opens.
-      // The spinner is keyed to the active tab — a background tab finishing
-      // its load must not clear the spinner for a different, still-loading
-      // tab, and re-opening a tab that's still loading should keep it up.
-      var frame = frames[slug];
-      if (frame.dataset.loaded === "1") {
-        showLoading(false);
-      } else {
-        showLoading(true);
-        if (!frame.src && frame.dataset.src) {
-          var done = function () {
-            frame.dataset.loaded = "1";
-            if (active === slug) showLoading(false);
-          };
-          frame.addEventListener("load", done, { once: true });
-          frame.addEventListener("error", done, { once: true });
-          frame.src = frame.dataset.src;
-        }
-      }
-
+      selectEl.value = slug;
+      fitSelect();
       CASES.forEach(function (c) {
-        var on = c.slug === slug;
-        var tab = document.getElementById("tab-" + c.slug);
-        tab.setAttribute("aria-selected", on ? "true" : "false");
-        tab.setAttribute("tabindex", on ? "0" : "-1");
-        frames[c.slug].classList.toggle("-active", on);
+        frames[c.slug].classList.toggle("-active", c.slug === slug);
       });
-
       if (history.replaceState) {
         history.replaceState(null, "", "#" + slug);
       }
       document.title = labelFor(slug) + " — Zachary Halvorson";
     }
 
-    function focusTab(slug) {
-      var tab = document.getElementById("tab-" + slug);
-      if (tab) tab.focus();
+    // Load an export iframe once; call onReady when it has rendered (or right
+    // away if already loaded). After it lands, background-load the remaining
+    // cases so later switches are instant.
+    function loadFrame(slug, onReady) {
+      var frame = frames[slug];
+      if (!frame) return;
+      if (frame.dataset.loaded === "1") { if (onReady) onReady(); return; }
+      if (onReady) {
+        frame.addEventListener("load", onReady, { once: true });
+        frame.addEventListener("error", onReady, { once: true });
+      }
+      if (frame.src || !frame.dataset.src) return; // already loading
+      var done = function () {
+        frame.dataset.loaded = "1";
+        preloadOthers();
+      };
+      frame.addEventListener("load", done, { once: true });
+      frame.addEventListener("error", done, { once: true });
+      frame.src = frame.dataset.src;
+      themeFrame(frame);
+    }
+
+    function preloadOthers() {
+      Object.keys(frames).forEach(function (slug) { loadFrame(slug); });
+    }
+
+    // User-initiated case change from the dropdown. If the target deck isn't
+    // loaded yet, keep the current one on screen (with a spinner) until the
+    // new one has rendered, THEN crossfade — so the switch never flashes a
+    // blank iframe.
+    function selectCase(slug) {
+      pendingSlug = slug;
+      if (slug === active) return;
+      selectEl.value = slug;
+      fitSelect();
+      if (frames[slug] && frames[slug].dataset.loaded === "1") {
+        withTransition(function () { activate(slug); });
+      } else {
+        showLoading(true);
+        loadFrame(slug, function () {
+          // A faster intermediate selection may have superseded this one;
+          // only swap to the case the user actually landed on.
+          if (pendingSlug !== slug) return;
+          showLoading(false);
+          withTransition(function () { activate(slug); });
+        });
+      }
     }
 
     function labelFor(slug) {
@@ -563,22 +628,99 @@
       return "Selected Work";
     }
 
+    // A native <select> sizes to its widest option, leaving a gap before the
+    // caret. Size it to the *current* label instead so the caret hugs the
+    // text. (Caps at the bar width via max-width in CSS.)
+    function fitSelect() {
+      var opt = selectEl.options[selectEl.selectedIndex];
+      if (!opt) return;
+      var cs = getComputedStyle(selectEl);
+      var probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap";
+      probe.style.fontFamily = cs.fontFamily;
+      probe.style.fontSize = cs.fontSize;
+      probe.style.fontWeight = cs.fontWeight;
+      probe.style.letterSpacing = cs.letterSpacing;
+      probe.textContent = opt.text;
+      document.body.appendChild(probe);
+      var textW = probe.getBoundingClientRect().width;
+      document.body.removeChild(probe);
+      var pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      selectEl.style.width = Math.ceil(textW + pad + 1) + "px";
+    }
+
     function showLoading(on) {
       stage.classList.toggle("-loading", on);
     }
 
-    // Left/right arrows move between tabs (roving tabindex).
-    function onTabKeydown(e) {
-      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-      e.preventDefault();
-      var idx = CASES.findIndex(function (c) { return c.slug === active; });
-      if (idx < 0) return;
-      var next = e.key === "ArrowRight"
-        ? (idx + 1) % CASES.length
-        : (idx - 1 + CASES.length) % CASES.length;
-      activate(CASES[next].slug);
-      focusTab(CASES[next].slug);
+    // Run a DOM update inside a View Transition (smooth content crossfade /
+    // the unlock morph), falling back to an instant update where View
+    // Transitions or motion aren't available.
+    function withTransition(fn) {
+      var reduce = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (document.startViewTransition && !reduce) {
+        document.startViewTransition(fn);
+      } else {
+        fn();
+      }
     }
+
+    // Theme a same-origin export iframe: the document-level canvas/slide
+    // styles, the rail styles inside deck-stage's shadow root, and the
+    // current rail-visibility state. Polled briefly because the bundler
+    // swaps the document a few times during unpack/first paint.
+    function themeFrame(frame) {
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries++;
+        try {
+          var doc = frame.contentDocument;
+          if (doc && doc.documentElement) {
+            if (!doc.getElementById("work-deck-theme")) {
+              var st = doc.createElement("style");
+              st.id = "work-deck-theme";
+              st.textContent = DECK_CSS;
+              (doc.head || doc.documentElement).appendChild(st);
+            }
+            var ds = doc.querySelector("deck-stage");
+            if (ds && ds.shadowRoot && !ds.shadowRoot.getElementById("work-rail-style")) {
+              var rs = doc.createElement("style");
+              rs.id = "work-rail-style";
+              rs.textContent = RAIL_CSS;
+              ds.shadowRoot.appendChild(rs);
+            }
+            if (ds) ds.classList.toggle("rail-off", railHidden);
+          }
+        } catch (e) { /* not ready yet */ }
+        if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
+      }, 100);
+    }
+
+    // Toggle the slide navigator across all loaded decks.
+    function applyRailState() {
+      Object.keys(frames).forEach(function (slug) {
+        try {
+          var doc = frames[slug].contentDocument;
+          var ds = doc && doc.querySelector("deck-stage");
+          if (ds) ds.classList.toggle("rail-off", railHidden);
+        } catch (e) { /* cross-origin / not ready */ }
+      });
+    }
+
+    railToggle.addEventListener("click", function () {
+      railHidden = !railHidden;
+      railToggle.setAttribute("aria-pressed", String(!railHidden));
+      applyRailState();
+    });
+
+    // Focus rings only while navigating by keyboard.
+    window.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") document.body.classList.add("-kbd");
+    });
+    window.addEventListener("pointerdown", function () {
+      document.body.classList.remove("-kbd");
+    });
 
     function defaultSlug() {
       var hash = location.hash.replace(/^#/, "");
@@ -586,18 +728,20 @@
       return CASES[0] && CASES[0].slug;
     }
 
-    /* ----- unlock flow -----
-       `moveFocus` is true only when the gate was just cleared by a submit:
-       the focused Enter button is about to be hidden, so we move focus into
-       the app. On a silent session-restore (no interaction) we leave focus
-       alone so we don't steal it on page load. */
-    function reveal(moveFocus) {
+    /* ----- unlock flow ----- */
+    function reveal() {
       gate.hidden = true;
       app.hidden = false;
-      if (!Object.keys(frames).length) buildTabs();
+      if (!Object.keys(frames).length) buildCases();
       var slug = defaultSlug();
-      if (slug) activate(slug);
-      if (moveFocus && slug) focusTab(slug);
+      if (slug) {
+        pendingSlug = slug;
+        activate(slug);
+        showLoading(true);
+        loadFrame(slug, function () { if (pendingSlug === slug) showLoading(false); });
+      }
+      // Deliberately don't move focus to the dropdown — that would show its
+      // focus ring on a plain click-unlock; the ring is for keyboard users.
     }
 
     function showGate() {
@@ -615,17 +759,10 @@
       gateInput.select();
     }
 
-    // On a correct passphrase, morph the input pill into the tab bar with a
-    // View Transition (the shared `authpill` element). Falls back to an
-    // instant reveal where View Transitions or motion aren't available.
+    // On a correct passphrase, morph the input pill into the dropdown with a
+    // View Transition (the shared `authpill` element).
     function unlock() {
-      var reduce = window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (document.startViewTransition && !reduce) {
-        document.startViewTransition(function () { reveal(true); });
-      } else {
-        reveal(true);
-      }
+      withTransition(function () { reveal(); });
     }
 
     gateForm.addEventListener("submit", function (e) {
