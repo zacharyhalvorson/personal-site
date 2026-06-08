@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Selected Work — Zachary Halvorson</title>
+  <meta name="description" content="Password-protected case studies by Zachary Halvorson, product designer at Meta Reality Labs.">
+  <meta name="author" content="Zachary Halvorson">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://www.zacharyhalvorson.com/work/">
+
+  <!-- Match the page background so Safari's own toolbar tints to blend. -->
+  <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1c1b19" media="(prefers-color-scheme: dark)">
+
+  <link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+
+  <style>
+    /* ----------------------------------------------------------------
+       Selected Work — a tabbed reader for the case-study exports.
+       Self-contained (no shared stylesheet) so it stays portable, but
+       the palette and font stack are lifted from the main site
+       (style.css) so it reads as one brand.
+
+       Two layers:
+         1. A soft password gate (#gate) shown until the visitor enters
+            the passphrase. Client-side only — a deterrent, not real
+            security — so the underlying case-study files are never
+            fetched until the gate is cleared.
+         2. A Safari-style tab strip (#chrome) over a stack of <iframe>s,
+            one per case study. Each case study is added by dropping its
+            export into work/<slug>/ and adding one line to the
+            CASES manifest in the script below.
+       ---------------------------------------------------------------- */
+
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+      --text-default: #2a2a2a;
+      --text-soft: #565656;
+      --text-light: #817e7e;
+      --base: #fafaf7;
+      --surface: #ffffff;
+      --rule: rgba(0, 0, 0, 0.08);
+      --highlight: #fff3d6;
+      --highlight-deep: #f3e5b8;
+      --link: #0066cc;
+      --link-hover: #003f80;
+
+      /* The nav bar and the deck canvas both take the page background
+         (--base), so the whole reader is one continuous surface. */
+      --chrome: var(--base);
+      --tab-text: #585858;
+      /* The dropdown darkens a touch when pressed/open. */
+      --press: rgba(0, 0, 0, 0.06);
+
+      --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-default: #f2efe9;
+        --text-soft: #d3cfc6;
+        --text-light: #8f8a82;
+        --base: #1c1b19;
+        --surface: #262522;
+        --rule: rgba(255, 255, 255, 0.1);
+        --highlight: #4a3a16;
+        --highlight-deep: #6b5520;
+        --link: #7cc4ff;
+        --link-hover: #b3dcff;
+
+        --chrome: var(--base);
+        --tab-text: #9a958d;
+        --press: rgba(255, 255, 255, 0.08);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--base);
+      color: var(--text-default);
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow: hidden; /* the iframe scrolls, not the shell */
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    a:hover { color: var(--link-hover); text-decoration: underline; }
+
+    :focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+
+    /* ---------- app shell ---------- */
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100svh;
+    }
+    /* Without this, `display:flex` overrides the `hidden` attribute, so the
+       app (and its `authpill` dropdown) renders behind the gate — which
+       duplicates the view-transition-name and breaks the unlock morph. */
+    .app[hidden] { display: none; }
+
+    /* ---------- chrome: tab strip ---------- */
+
+    #chrome {
+      position: relative;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* tabs centered in the bar */
+      /* Symmetric gutters reserve room for the absolutely-positioned back
+         button on the left and keep the centered tabs from running under it
+         on narrow screens. */
+      padding: 0.55rem 2.85rem;
+      padding-top: max(0.55rem, env(safe-area-inset-top));
+      background: var(--chrome);
+    }
+
+    /* Toolbar icon buttons, pinned to the bar edges so they don't offset
+       the centered dropdown: home on the left, rail toggle on the right. */
+    .back, .rail-toggle {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      color: var(--tab-text);
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .back { left: 0.6rem; }
+    .rail-toggle { right: 0.6rem; }
+    .back:hover, .rail-toggle:hover {
+      color: var(--text-default);
+      background: var(--press);
+      text-decoration: none;
+    }
+    .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
+    .back svg, .rail-toggle svg { width: 18px; height: 18px; }
+
+    /* A single minimal dropdown, centered in the bar — quieter than a tab
+       strip inside a browser that already has tabs. The native <select>
+       provides the system menu for the options; the closed control has no
+       chrome of its own, just the current title and a caret. `authpill` is
+       the shared element the passphrase input morphs into. */
+    .picker {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      view-transition-name: authpill;
+    }
+    .case_select {
+      appearance: none;
+      -webkit-appearance: none;
+      max-width: 100%;
+      margin: 0;
+      padding: 0.35rem 1.15rem 0.35rem 0.7rem; /* room for the caret */
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-default);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: background 140ms var(--ease);
+    }
+    /* Quietly darker on hover and while pressed/open; default has no chrome. */
+    .case_select:hover,
+    .case_select:active { background: var(--press); }
+    /* No focus ring by default — selects light up :focus-visible even on a
+       mouse click in some engines. Show the ring only while the user is
+       actually navigating by keyboard (body.-kbd, set on Tab). */
+    .case_select:focus { outline: none; }
+    body.-kbd .case_select:focus { outline: 2px solid var(--link); outline-offset: 1px; }
+
+    .picker_caret {
+      position: absolute;
+      right: 0.28rem;
+      width: 13px;
+      height: 13px;
+      color: var(--tab-text);
+      pointer-events: none;
+    }
+
+    /* ---------- stage: iframe stack ---------- */
+
+    #stage {
+      position: relative;
+      flex: 1 1 auto;
+      background: var(--chrome); /* matches the deck canvas before load */
+    }
+
+    /* Frames toggle via visibility (no opacity crossfade, which used to
+       flash the background between them). When switching works, the swap is
+       wrapped in a View Transition so the content crossfades smoothly. */
+    .frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      visibility: hidden;
+    }
+    .frame.-active {
+      visibility: visible;
+    }
+
+    /* A quiet spinner shown while a (large) export streams in. */
+    #stage::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 26px;
+      height: 26px;
+      margin: -13px 0 0 -13px;
+      border: 2px solid var(--rule);
+      border-top-color: var(--text-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      opacity: 0;
+      transition: opacity 200ms var(--ease);
+      pointer-events: none;
+    }
+    #stage.-loading::before { opacity: 1; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      #stage::before { animation: none; }
+    }
+
+    /* ---------- password gate ---------- */
+
+    #gate {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: var(--gutter, 1.5rem);
+      background: var(--base);
+    }
+    #gate[hidden] { display: none; }
+
+    .gate_card {
+      width: min(26rem, 100%);
+      text-align: center;
+    }
+
+    /* `authpill` is the shared element: on a correct passphrase this pill
+       morphs into the tab bar via a View Transition. */
+    .gate_field {
+      position: relative;
+      view-transition-name: authpill;
+    }
+    .gate_field input {
+      width: 100%;
+      /* right padding leaves room for the nested submit button */
+      padding: 0.85rem 3.4rem 0.85rem 1.25rem;
+      font: inherit;
+      font-size: 1rem;
+      color: var(--text-default);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 999px; /* pill */
+      transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
+    }
+    .gate_field input::placeholder { color: var(--text-light); }
+    .gate_field input:focus {
+      outline: none;
+      border-color: var(--highlight-deep);
+      box-shadow: 0 0 0 3px var(--highlight);
+    }
+
+    .gate_submit {
+      position: absolute;
+      top: 50%;
+      right: 0.4rem;
+      transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      width: 2.2rem;
+      height: 2.2rem;
+      padding: 0;
+      color: var(--text-default);
+      background: var(--highlight-deep);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: filter 140ms var(--ease);
+    }
+    .gate_submit:hover { filter: brightness(0.94); }
+    .gate_submit svg { width: 1.05rem; height: 1.05rem; }
+
+    .gate_form { position: relative; }
+    /* The error sits just above the input, positioned absolutely so showing
+       or hiding it never reflows the layout. */
+    p.gate_error {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 0.5rem);
+      margin: 0;
+      font-size: 0.85rem;
+      color: #c0392b;
+    }
+    @media (prefers-color-scheme: dark) {
+      p.gate_error { color: #ff8a7a; }
+    }
+    .gate_error[hidden] { display: block; visibility: hidden; }
+
+    /* The input pill shakes on a wrong passphrase. */
+    .gate_field.-wrong { animation: shake 0.4s var(--ease); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gate_field.-wrong { animation: none; }
+    }
+
+    /* Slow the pill morph a touch for a smoother settle. */
+    ::view-transition-group(authpill) { animation-duration: 360ms; }
+
+    .gate_help {
+      margin: 1.4rem auto 0;
+      max-width: 22rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+    .gate_help a { text-decoration: underline; text-underline-offset: 0.15em; }
+
+    .gate_back {
+      margin-top: 1.1rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* No-JS: the gate can't run, so explain rather than show a dead form. */
+    .noscript {
+      max-width: 26rem;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      text-align: center;
+      color: var(--text-soft);
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    <p class="noscript">
+      These case studies need JavaScript to view.
+      <a href="../">Return to zacharyhalvorson.com</a>.
+    </p>
+  </noscript>
+
+  <!-- Password gate ------------------------------------------------- -->
+  <div id="gate" hidden>
+    <div class="gate_card">
+      <form class="gate_form" id="gate-form" autocomplete="off">
+        <p class="gate_error" id="gate-error" role="alert" hidden>Try again.</p>
+        <div class="gate_field">
+          <input
+            type="text"
+            id="gate-input"
+            name="passphrase"
+            placeholder="Enter passphrase"
+            aria-label="Passphrase"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false">
+          <button type="submit" class="gate_submit" aria-label="Enter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="M13 6l6 6-6 6"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+      <p class="gate_help">
+        Need access, or having trouble with your passphrase? Email
+        <a href="mailto:zacharyhalvorson@me.com?subject=Case%20study%20access">zacharyhalvorson@me.com</a>
+        and I&rsquo;ll get you in.
+      </p>
+      <p class="gate_back"><a href="../">&larr; Back to zacharyhalvorson.com</a></p>
+    </div>
+  </div>
+
+  <!-- App shell ----------------------------------------------------- -->
+  <div class="app" id="app" hidden>
+    <header id="chrome">
+      <a class="back" href="../" aria-label="Back to zacharyhalvorson.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <path d="M9 22V12h6v10"></path>
+        </svg>
+      </a>
+      <div class="picker">
+        <select class="case_select" id="case-select" aria-label="Case study"></select>
+        <svg class="picker_caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </div>
+      <button class="rail-toggle" id="rail-toggle" type="button" aria-pressed="true" aria-label="Toggle slide navigator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+          <path d="M9 3v18"></path>
+        </svg>
+      </button>
+    </header>
+    <main id="stage" aria-label="Case study"></main>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* -------------------------------------------------------------
+       Case-study manifest. To publish a new case study:
+         1. Drop its export at  work/<slug>/index.html
+         2. Add one line here.  Order = tab order; the first entry is
+            the default tab a visitor lands on.
+       ------------------------------------------------------------- */
+    var CASES = [
+      { slug: "rayban-meta",    label: "Livestreaming & POV calling", src: "rayban-meta/" },
+      { slug: "rayban-display", label: "Meta Ray-Ban Display",         src: "rayban-display/" }
+    ];
+
+    /* SHA-256 of the passphrase. Client-side gate only — a deterrent,
+       not real security. */
+    var PASS_HASH = "798147886b5d89368a69437e162aa859d0e3569579576c099d3f1ac8a75e8b55";
+    var UNLOCK_KEY = "work-unlocked-v1";
+
+    /* Styles injected into each export to theme the slide-PLAYER chrome,
+       not the slides. Injected from the parent (same-origin) because the
+       bundler rebuilds the document and wipes anything shipped inside it.
+       Document-level: the deck canvas takes the page background, the main
+       slide gets a soft drop shadow so it floats on the canvas, and
+       `--deck-rail-w` (the host var the deck uses to offset its stage) is
+       widened to clear the floated rail / zeroed when it's hidden. */
+    var DECK_CSS =
+      "html,body{background:#fafaf7 !important}" +
+      "deck-stage{background:#fafaf7 !important}" +
+      ".slide{box-shadow:0 10px 34px rgba(0,0,0,0.12) !important;" +
+      "transition:transform 360ms cubic-bezier(0.2,0.7,0.2,1) !important}" +
+      // When the rail is hidden, scale the slide up to fill the freed space
+      // (the deck scales a parent, not .slide itself, so this composes and
+      // stays crisp). `--fill-scale` is computed in JS from the deck width.
+      "deck-stage.rail-off .slide{transform:scale(var(--fill-scale,1)) !important;" +
+      "transform-origin:center !important}" +
+      "@media (prefers-color-scheme:dark){" +
+      "html,body{background:#1c1b19 !important}" +
+      "deck-stage{background:#1c1b19 !important}" +
+      ".slide{box-shadow:0 12px 40px rgba(0,0,0,0.55) !important}}";
+
+    // Shadow-root level: float the deck's slide navigator (`.rail`) like
+    // Keynote — inset, rounded, a translucent tint slightly darker than the
+    // canvas behind it. The deck positions its stage with an inline `left`,
+    // so we override the stage's left/width directly (the `--deck-rail-w`
+    // variable doesn't drive it). Toggling `.rail-off` on the host slides the
+    // rail off-screen and expands the stage to full width — the deck
+    // re-centers the slide into the freed space — both transitioned.
+    // Injected into deck-stage's (open) shadow root; document CSS can't reach it.
+    var EASE = "cubic-bezier(0.2,0.7,0.2,1)";
+    var STAGE_LEFT = "205px"; // clears the floated rail (left 9 + width 178 + gap)
+    var RAIL_CSS =
+      ".rail{top:14px !important;bottom:14px !important;left:9px !important;" +
+      "height:auto !important;width:178px !important;border:none !important;" +
+      "border-radius:16px !important;padding:10px !important;" +
+      "background:rgba(0,0,0,0.06) !important;" +
+      "box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;" +
+      "transition:transform 360ms " + EASE + ",opacity 280ms " + EASE + " !important}" +
+      // Keep thumbnails at their natural height (the deck already rounds the
+      // inner .frame); without this they shrink to fit the fixed-height rail
+      // and the slide preview gets cropped instead of the rail scrolling.
+      ".thumb{flex-shrink:0 !important}" +
+      ".rail-resize{display:none !important}" +
+      ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + ") !important;" +
+      "transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
+      ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
+      "opacity:0 !important;pointer-events:none !important}" +
+      ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
+      "@media (prefers-color-scheme:dark){" +
+      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}";
+
+    var gate = document.getElementById("gate");
+    var gateForm = document.getElementById("gate-form");
+    var gateField = document.querySelector(".gate_field");
+    var gateInput = document.getElementById("gate-input");
+    var gateError = document.getElementById("gate-error");
+    var app = document.getElementById("app");
+    var selectEl = document.getElementById("case-select");
+    var railToggle = document.getElementById("rail-toggle");
+    var stage = document.getElementById("stage");
+
+    var frames = {};          // slug -> iframe element
+    var active = null;        // slug currently shown
+    var pendingSlug = null;   // most-recently-requested slug (guards stale loads)
+    var railHidden = false;   // slide-navigator visibility (shared across cases)
+
+    /* ----- hashing ----- */
+    function sha256Hex(str) {
+      var bytes = new TextEncoder().encode(str);
+      return crypto.subtle.digest("SHA-256", bytes).then(function (buf) {
+        return Array.prototype.map
+          .call(new Uint8Array(buf), function (b) {
+            return b.toString(16).padStart(2, "0");
+          })
+          .join("");
+      });
+    }
+
+    /* ----- dropdown + frames ----- */
+    function buildCases() {
+      CASES.forEach(function (c) {
+        var opt = document.createElement("option");
+        opt.value = c.slug;
+        opt.textContent = c.label;
+        selectEl.appendChild(opt);
+
+        var frame = document.createElement("iframe");
+        frame.className = "frame";
+        frame.id = "frame-" + c.slug;
+        frame.title = c.label + " case study";
+        frame.setAttribute("loading", "lazy");
+        frame.dataset.src = c.src; // lazy: real src set on first selection
+        stage.appendChild(frame);
+        frames[c.slug] = frame;
+      });
+
+      selectEl.addEventListener("change", function () {
+        selectCase(selectEl.value);
+      });
+    }
+
+    // Swap which case is showing. Assumes its frame is already loaded — the
+    // load is handled separately so we never reveal a blank iframe.
+    function activate(slug) {
+      if (!frames[slug]) return;
+      active = slug;
+      selectEl.value = slug;
+      fitSelect();
+      CASES.forEach(function (c) {
+        frames[c.slug].classList.toggle("-active", c.slug === slug);
+      });
+      if (history.replaceState) {
+        history.replaceState(null, "", "#" + slug);
+      }
+      document.title = labelFor(slug) + " — Zachary Halvorson";
+    }
+
+    // Load an export iframe once; call onReady when it has rendered (or right
+    // away if already loaded). After it lands, background-load the remaining
+    // cases so later switches are instant.
+    function loadFrame(slug, onReady) {
+      var frame = frames[slug];
+      if (!frame) return;
+      if (frame.dataset.loaded === "1") { if (onReady) onReady(); return; }
+      if (onReady) {
+        frame.addEventListener("load", onReady, { once: true });
+        frame.addEventListener("error", onReady, { once: true });
+      }
+      if (frame.src || !frame.dataset.src) return; // already loading
+      var done = function () {
+        frame.dataset.loaded = "1";
+        preloadOthers();
+      };
+      frame.addEventListener("load", done, { once: true });
+      frame.addEventListener("error", done, { once: true });
+      frame.src = frame.dataset.src;
+      themeFrame(frame);
+    }
+
+    function preloadOthers() {
+      Object.keys(frames).forEach(function (slug) { loadFrame(slug); });
+    }
+
+    // User-initiated case change from the dropdown. If the target deck isn't
+    // loaded yet, keep the current one on screen (with a spinner) until the
+    // new one has rendered, THEN crossfade — so the switch never flashes a
+    // blank iframe.
+    function selectCase(slug) {
+      pendingSlug = slug;
+      if (slug === active) return;
+      selectEl.value = slug;
+      fitSelect();
+      if (frames[slug] && frames[slug].dataset.loaded === "1") {
+        withTransition(function () { activate(slug); });
+      } else {
+        showLoading(true);
+        loadFrame(slug, function () {
+          // A faster intermediate selection may have superseded this one;
+          // only swap to the case the user actually landed on.
+          if (pendingSlug !== slug) return;
+          showLoading(false);
+          withTransition(function () { activate(slug); });
+        });
+      }
+    }
+
+    function labelFor(slug) {
+      for (var i = 0; i < CASES.length; i++) {
+        if (CASES[i].slug === slug) return CASES[i].label;
+      }
+      return "Selected Work";
+    }
+
+    // A native <select> sizes to its widest option, leaving a gap before the
+    // caret. Size it to the *current* label instead so the caret hugs the
+    // text. (Caps at the bar width via max-width in CSS.)
+    function fitSelect() {
+      var opt = selectEl.options[selectEl.selectedIndex];
+      if (!opt) return;
+      var cs = getComputedStyle(selectEl);
+      var probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap";
+      probe.style.fontFamily = cs.fontFamily;
+      probe.style.fontSize = cs.fontSize;
+      probe.style.fontWeight = cs.fontWeight;
+      probe.style.letterSpacing = cs.letterSpacing;
+      probe.textContent = opt.text;
+      document.body.appendChild(probe);
+      var textW = probe.getBoundingClientRect().width;
+      document.body.removeChild(probe);
+      var pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      selectEl.style.width = Math.ceil(textW + pad + 1) + "px";
+    }
+
+    function showLoading(on) {
+      stage.classList.toggle("-loading", on);
+    }
+
+    // Run a DOM update inside a View Transition (smooth content crossfade /
+    // the unlock morph), falling back to an instant update where View
+    // Transitions or motion aren't available.
+    function withTransition(fn) {
+      var reduce = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (document.startViewTransition && !reduce) {
+        document.startViewTransition(fn);
+      } else {
+        fn();
+      }
+    }
+
+    // Theme a same-origin export iframe: the document-level canvas/slide
+    // styles, the rail styles inside deck-stage's shadow root, and the
+    // current rail-visibility state. Polled briefly because the bundler
+    // swaps the document a few times during unpack/first paint.
+    function themeFrame(frame) {
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries++;
+        try {
+          var doc = frame.contentDocument;
+          if (doc && doc.documentElement) {
+            if (!doc.getElementById("work-deck-theme")) {
+              var st = doc.createElement("style");
+              st.id = "work-deck-theme";
+              st.textContent = DECK_CSS;
+              (doc.head || doc.documentElement).appendChild(st);
+            }
+            var ds = doc.querySelector("deck-stage");
+            if (ds && ds.shadowRoot && !ds.shadowRoot.getElementById("work-rail-style")) {
+              var rs = doc.createElement("style");
+              rs.id = "work-rail-style";
+              rs.textContent = RAIL_CSS;
+              ds.shadowRoot.appendChild(rs);
+            }
+            if (ds) {
+              ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+              ds.classList.toggle("rail-off", railHidden);
+            }
+          }
+        } catch (e) { /* not ready yet */ }
+        if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
+      }, 100);
+    }
+
+    // The fill scale grows the slide to fill the width freed by hiding the
+    // rail (it reclaims ~the stage offset, less a small margin).
+    function fillScaleFor(ds) {
+      var w = ds.getBoundingClientRect().width;
+      return w > 280 ? (w - 40) / (w - 205) : 1;
+    }
+
+    // Toggle the slide navigator across all loaded decks, keeping each deck's
+    // fill scale current for the toggle/resize.
+    function applyRailState() {
+      Object.keys(frames).forEach(function (slug) {
+        try {
+          var doc = frames[slug].contentDocument;
+          var ds = doc && doc.querySelector("deck-stage");
+          if (!ds) return;
+          ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+          ds.classList.toggle("rail-off", railHidden);
+        } catch (e) { /* cross-origin / not ready */ }
+      });
+    }
+
+    railToggle.addEventListener("click", function () {
+      railHidden = !railHidden;
+      railToggle.setAttribute("aria-pressed", String(!railHidden));
+      applyRailState();
+    });
+
+    // Keep the fill scale accurate when the viewport changes while hidden.
+    window.addEventListener("resize", function () {
+      if (railHidden) applyRailState();
+    });
+
+    // Focus rings only while navigating by keyboard.
+    window.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") document.body.classList.add("-kbd");
+    });
+    window.addEventListener("pointerdown", function () {
+      document.body.classList.remove("-kbd");
+    });
+
+    function defaultSlug() {
+      var hash = location.hash.replace(/^#/, "");
+      if (hash && frames[hash]) return hash;
+      return CASES[0] && CASES[0].slug;
+    }
+
+    /* ----- unlock flow ----- */
+    function reveal() {
+      gate.hidden = true;
+      app.hidden = false;
+      if (!Object.keys(frames).length) buildCases();
+      var slug = defaultSlug();
+      if (slug) {
+        pendingSlug = slug;
+        activate(slug);
+        showLoading(true);
+        loadFrame(slug, function () { if (pendingSlug === slug) showLoading(false); });
+      }
+      // Deliberately don't move focus to the dropdown — that would show its
+      // focus ring on a plain click-unlock; the ring is for keyboard users.
+    }
+
+    function showGate() {
+      app.hidden = true;
+      gate.hidden = false;
+      gateInput.focus();
+    }
+
+    function wrong() {
+      gateError.hidden = false;
+      gateField.classList.remove("-wrong");
+      // reflow to restart the shake animation
+      void gateField.offsetWidth;
+      gateField.classList.add("-wrong");
+      gateInput.select();
+    }
+
+    // On a correct passphrase, morph the input pill into the dropdown with a
+    // View Transition (the shared `authpill` element).
+    function unlock() {
+      withTransition(function () { reveal(); });
+    }
+
+    gateForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var value = gateInput.value.trim().toLowerCase();
+      if (!value) { wrong(); return; }
+      sha256Hex(value).then(function (hex) {
+        if (hex === PASS_HASH) {
+          try { localStorage.setItem(UNLOCK_KEY, "1"); } catch (_) {}
+          unlock();
+        } else {
+          wrong();
+        }
+      });
+    });
+
+    gateInput.addEventListener("input", function () {
+      if (!gateError.hidden) gateError.hidden = true;
+    });
+
+    // Already unlocked on this device? Skip the gate (persists across
+    // navigations, tabs, and return visits).
+    var unlocked = false;
+    try { unlocked = localStorage.getItem(UNLOCK_KEY) === "1"; } catch (_) {}
+    if (unlocked) {
+      reveal();
+    } else {
+      showGate();
+    }
+  })();
+  </script>
+</body>
+</html>
