@@ -173,6 +173,14 @@
     .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
     .back svg, .rail-toggle svg { width: 18px; height: 18px; }
 
+    /* Below the layout breakpoint the slide always fills the stage and the
+       navigator can't earn its keep, so hide the toggle rather than offer a
+       control that does nothing. railHidden already defaults true here, so the
+       slide loads full and uncovered. */
+    @media (max-width: 760px) {
+      .rail-toggle { display: none; }
+    }
+
     /* A single minimal dropdown, centered in the bar — quieter than a tab
        strip inside a browser that already has tabs. The native <select>
        provides the system menu for the options; the closed control has no
@@ -582,7 +590,13 @@
       ".stage{left:0 !important;width:100% !important}" +
       ".rail{z-index:6 !important;width:min(62vw,188px) !important;" +
       "background:rgba(0,0,0,0.10) !important;" +
-      "-webkit-backdrop-filter:blur(12px) !important;backdrop-filter:blur(12px) !important}}" +
+      "-webkit-backdrop-filter:blur(12px) !important;backdrop-filter:blur(12px) !important}" +
+      // The deck's nav pill carries a fullscreen toggle, but fullscreen makes
+      // no sense on a phone (and the embedded frame can't enter it anyway), so
+      // drop the control here along with the divider that would otherwise
+      // dangle at the end of the pill.
+      ".overlay .fullscreen{display:none !important}" +
+      ".overlay .divider:has(+ .fullscreen){display:none !important}}" +
       "@media (max-width:760px) and (prefers-color-scheme:dark){" +
       ".rail{background:rgba(0,0,0,0.42) !important}}";
 
