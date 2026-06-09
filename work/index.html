@@ -173,6 +173,14 @@
     .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
     .back svg, .rail-toggle svg { width: 18px; height: 18px; }
 
+    /* Below the layout breakpoint the slide always fills the stage and the
+       navigator can't earn its keep, so hide the toggle rather than offer a
+       control that does nothing. railHidden already defaults true here, so the
+       slide loads full and uncovered. */
+    @media (max-width: 760px) {
+      .rail-toggle { display: none; }
+    }
+
     /* A single minimal dropdown, centered in the bar — quieter than a tab
        strip inside a browser that already has tabs. The native <select>
        provides the system menu for the options; the closed control has no
