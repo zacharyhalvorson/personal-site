@@ -590,7 +590,13 @@
       ".stage{left:0 !important;width:100% !important}" +
       ".rail{z-index:6 !important;width:min(62vw,188px) !important;" +
       "background:rgba(0,0,0,0.10) !important;" +
-      "-webkit-backdrop-filter:blur(12px) !important;backdrop-filter:blur(12px) !important}}" +
+      "-webkit-backdrop-filter:blur(12px) !important;backdrop-filter:blur(12px) !important}" +
+      // The deck's nav pill carries a fullscreen toggle, but fullscreen makes
+      // no sense on a phone (and the embedded frame can't enter it anyway), so
+      // drop the control here along with the divider that would otherwise
+      // dangle at the end of the pill.
+      ".overlay .fullscreen{display:none !important}" +
+      ".overlay .divider:has(+ .fullscreen){display:none !important}}" +
       "@media (max-width:760px) and (prefers-color-scheme:dark){" +
       ".rail{background:rgba(0,0,0,0.42) !important}}";
 
