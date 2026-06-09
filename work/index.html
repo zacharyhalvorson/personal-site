@@ -568,7 +568,23 @@
       "opacity:0 !important;pointer-events:none !important}" +
       ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
       "@media (prefers-color-scheme:dark){" +
-      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}";
+      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}" +
+      // Narrow viewports: the 188px rail + 215px stage offset would crush the
+      // slide into a tiny sliver pinned to the right edge (the whole reason a
+      // phone showed a postage-stamp slide). Below the site's 760px breakpoint
+      // the slide always fills the stage and the rail floats OVER it like an
+      // overlay navigator instead of consuming layout width. fillScaleFor()
+      // returns 1 here so the rail-off scale-up can't blow the slide past the
+      // viewport, and railHidden defaults true on load so first paint is a
+      // full, uncovered slide. Keyed on the iframe's own width, which equals
+      // the device width since the frame fills the stage.
+      "@media (max-width:760px){" +
+      ".stage{left:0 !important;width:100% !important}" +
+      ".rail{z-index:6 !important;width:min(62vw,188px) !important;" +
+      "background:rgba(0,0,0,0.10) !important;" +
+      "-webkit-backdrop-filter:blur(12px) !important;backdrop-filter:blur(12px) !important}}" +
+      "@media (max-width:760px) and (prefers-color-scheme:dark){" +
+      ".rail{background:rgba(0,0,0,0.42) !important}}";
 
     var gate = document.getElementById("gate");
     var gateForm = document.getElementById("gate-form");
@@ -584,7 +600,10 @@
     var frames = {};          // slug -> iframe element
     var active = null;        // slug currently shown
     var pendingSlug = null;   // most-recently-requested slug (guards stale loads)
-    var railHidden = false;   // slide-navigator visibility (shared across cases)
+    // Slide-navigator visibility (shared across cases). Default hidden on
+    // phones: the rail overlays the slide there, so opening with it shown
+    // would cover the slide the visitor came to read. Desktop keeps it open.
+    var railHidden = !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches);
 
     /* ----- hashing ----- */
     function sha256Hex(str) {
@@ -797,6 +816,10 @@
     // rail (it reclaims ~the stage offset, less a small margin).
     function fillScaleFor(ds) {
       var w = ds.getBoundingClientRect().width;
+      // Below the responsive breakpoint the stage is full-width in BOTH rail
+      // states (the rail overlays rather than offsetting), so the slide
+      // already fills — scaling it up here would overflow the viewport.
+      if (w <= 760) return 1;
       var railW = parseFloat(getComputedStyle(ds).getPropertyValue("--deck-rail-w")) || 188;
       var stageLeft = 9 + railW + 18; // mirror STAGE_LEFT (rail inset + width + gap)
       return w > 280 ? (w - 40) / (w - stageLeft - STAGE_RIGHT) : 1;
@@ -815,6 +838,10 @@
         } catch (e) { /* cross-origin / not ready */ }
       });
     }
+
+    // The button's markup hardcodes aria-pressed="true"; reflect the actual
+    // computed default (rail starts hidden on phones).
+    railToggle.setAttribute("aria-pressed", String(!railHidden));
 
     railToggle.addEventListener("click", function () {
       railHidden = !railHidden;
