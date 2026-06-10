@@ -1348,6 +1348,24 @@ html.lb-open { scroll-snap-type: none; }
 
 /* ---------- chapter: colophon variant ---------- */
 
+/* The closing chapter must stay at least as tall as the LARGE viewport (mobile
+   URL bar retracted), not the small one the shared `.chapter` rule uses. With
+   `min-height: 100svh`, once the toolbar collapses the visual viewport grows to
+   ~lvh while every section stays svh-tall, shrinking the document's maximum
+   scroll offset. For the middle sections that's harmless (there's content
+   below them), but the LAST section has no trailing room: its
+   `scroll-snap-align: start` point ends up past the max scroll offset, so
+   `scroll-snap-type: mandatory` can't settle there and snaps back by the
+   toolbar's height — the "little jump" at the very end of the page. Sizing only
+   this final section to 100lvh keeps a full large-viewport of trailing room so
+   its snap point is always reachable. Earlier sections stay svh so their crisp
+   per-section snap (toolbar shown) is unchanged, and svh==lvh on desktop makes
+   this a no-op there. */
+.chapter-colophon {
+  min-height: 100vh;   /* fallback for engines without the large-viewport unit */
+  min-height: 100lvh;
+}
+
 .education {
   display: flex;
   flex-direction: column;
