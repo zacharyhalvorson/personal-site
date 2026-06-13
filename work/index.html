@@ -509,6 +509,11 @@
        only ever needed once. Same deterrent-not-security caveat applies. */
     var BYPASS_HASH = "hotdogs-from-heaven";
 
+    // Phones: the deck hides its own rail at this width (its internal
+    // `@media (max-width:640px)`), so the shell must stop reserving the rail's
+    // column too. Kept in sync with that breakpoint.
+    var MOBILE_BP = 640;
+
     /* Styles injected into each export to theme the slide-PLAYER chrome,
        not the slides. Injected from the parent (same-origin) because the
        bundler rebuilds the document and wipes anything shipped inside it.
@@ -526,6 +531,14 @@
       // stays crisp). `--fill-scale` is computed in JS from the deck width.
       "deck-stage.rail-off .slide{transform:scale(var(--fill-scale,1)) !important;" +
       "transform-origin:center !important}" +
+      // Phones: when the navigator drawer is open (host not .rail-off) the slide
+      // eases back a touch so the drawer reads as floating above it. (Document
+      // level, not the shadow rail sheet — `.slide` is slotted light DOM.)
+      // Gated on .rail-anim (added after the deck is themed) so the slide can't
+      // briefly paint at 0.94 before rail-off lands on first load.
+      "@media (max-width:" + MOBILE_BP + "px){" +
+      "deck-stage.rail-anim:not(.rail-off) .slide{transform:scale(0.94) !important;" +
+      "transform-origin:center !important}}" +
       "@media (prefers-color-scheme:dark){" +
       "html,body{background:#1c1b19 !important}" +
       "deck-stage{background:#1c1b19 !important}" +
@@ -551,7 +564,12 @@
       "border-radius:16px !important;padding:10px !important;" +
       "background:rgba(0,0,0,0.06) !important;" +
       "box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;" +
-      "transition:transform 360ms " + EASE + ",opacity 280ms " + EASE + " !important}" +
+      // Native-feeling rubber band when scrolling past the ends, kept from
+      // chaining out to the deck/page behind it.
+      "overscroll-behavior:contain !important;-webkit-overflow-scrolling:touch !important;" +
+      "visibility:visible !important;" +
+      // Transform-only (no opacity fade) so the slide-in/out stays fluid.
+      "transition:transform 360ms " + EASE + " !important}" +
       // Keep thumbnails at their natural height (the deck already rounds the
       // inner .frame); without this they shrink to fit the fixed-height rail
       // and the slide preview gets cropped instead of the rail scrolling.
@@ -565,10 +583,31 @@
       // initial position to snap, and only rail toggles to animate.
       ":host(.rail-anim) .stage{transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
       ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
-      "opacity:0 !important;pointer-events:none !important}" +
+      // visibility (not opacity) so there's no fade, yet the drop shadow stops
+      // painting and the thumbnails leave the tab order once it's off-screen.
+      // Delayed to the end of the slide-out so it stays visible while animating.
+      "visibility:hidden !important;pointer-events:none !important;" +
+      "transition:transform 360ms " + EASE + ",visibility 0s linear 360ms !important}" +
       ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
       "@media (prefers-color-scheme:dark){" +
-      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}";
+      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}" +
+      // Phones: the deck hides its own rail here (its `@media max-width:640px`)
+      // and zeroes the rail width, so the stage is full-bleed — the slide fills
+      // the canvas. The navigator becomes a drawer floating OVER the slide
+      // (default hidden; toggled open). Opening gives the rail layout in JS so
+      // the deck materializes its lazy thumbnails (see materializeRailIfOpen).
+      "@media (max-width:" + MOBILE_BP + "px){" +
+      ".stage{left:0 !important;width:100% !important}" +
+      // Drawer floats above the slide AND the deck's own chrome (its bottom
+      // toolbar sits at z-index ~2147483000), with more contrast + depth than
+      // the docked desktop rail since it's now sitting on top of content.
+      ".rail{z-index:2147483647 !important;background:rgba(0,0,0,0.12) !important;" +
+      "-webkit-backdrop-filter:blur(14px) saturate(1.1) !important;" +
+      "backdrop-filter:blur(14px) saturate(1.1) !important;" +
+      "box-shadow:0 16px 50px rgba(0,0,0,0.30) !important}}" +
+      "@media (max-width:" + MOBILE_BP + "px) and (prefers-color-scheme:dark){" +
+      ".rail{background:rgba(14,13,11,0.82) !important;" +
+      "box-shadow:0 18px 54px rgba(0,0,0,0.6) !important}}";
 
     var gate = document.getElementById("gate");
     var gateForm = document.getElementById("gate-form");
@@ -584,7 +623,9 @@
     var frames = {};          // slug -> iframe element
     var active = null;        // slug currently shown
     var pendingSlug = null;   // most-recently-requested slug (guards stale loads)
-    var railHidden = false;   // slide-navigator visibility (shared across cases)
+    // Slide-navigator visibility (shared across cases). Hidden by default on
+    // phones, where it floats over the slide as a drawer rather than docking.
+    var railHidden = window.innerWidth <= MOBILE_BP;
 
     /* ----- hashing ----- */
     function sha256Hex(str) {
@@ -785,6 +826,7 @@
             }
             if (ds) {
               ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+              materializeRailIfOpen(ds);
               ds.classList.toggle("rail-off", railHidden);
             }
           }
@@ -796,10 +838,52 @@
     // The fill scale grows the slide to fill the width freed by hiding the
     // rail (it reclaims ~the stage offset, less a small margin).
     function fillScaleFor(ds) {
+      // Phones: the stage is already full width (RAIL_CSS) whether or not the
+      // rail is shown, so there's no freed space to grow into — keep scale 1.
+      // Keyed on viewport (like every other breakpoint check + the CSS @media).
+      if (window.innerWidth <= MOBILE_BP) return 1;
       var w = ds.getBoundingClientRect().width;
       var railW = parseFloat(getComputedStyle(ds).getPropertyValue("--deck-rail-w")) || 188;
       var stageLeft = 9 + railW + 18; // mirror STAGE_LEFT (rail inset + width + gap)
       return w > 280 ? (w - 40) / (w - stageLeft - STAGE_RIGHT) : 1;
+    }
+
+    // On phones the deck display:none's its rail, so its thumbnails (cloned
+    // lazily by an IntersectionObserver rooted on the rail) never materialize.
+    // When the drawer opens, give the rail layout so that observer fires and
+    // fills the thumbs in. A reflow before the rail-off class drops lets the
+    // slide-in transition run from the off-screen start. No-op once shown.
+    function materializeRailIfOpen(ds) {
+      if (railHidden || window.innerWidth > MOBILE_BP) return;
+      var sr = ds.shadowRoot, rail = sr && sr.querySelector(".rail");
+      if (!rail) return;
+      var frame = rail.querySelector(".thumb .frame");
+      if (frame && frame.children.length) { rail.style.display = "flex"; return; } // already filled
+      // Force a display:none -> flex flip so the deck's IntersectionObserver
+      // (rooted on the rail) re-evaluates and clones the in-view thumbnails —
+      // it otherwise never fires on phones, where the deck keeps the rail
+      // display:none. Runs while the rail is still off-screen (rail-off not yet
+      // dropped, or pre-open), so the flip isn't visible.
+      rail.style.display = "none";
+      void rail.getBoundingClientRect();
+      rail.style.display = "flex";
+      void rail.getBoundingClientRect();
+      // The deck sizes each clone to the frame width but bails while the rail
+      // has none; now that the frames have width, drive that pass too.
+      if (typeof ds._scaleThumbs === "function") ds._scaleThumbs();
+    }
+
+    // Drop the inline display:flex materializeRailIfOpen stamps on phones, so
+    // that above the breakpoint the deck's own rail display rules take back over.
+    function clearRailInlineDisplay() {
+      Object.keys(frames).forEach(function (slug) {
+        try {
+          var doc = frames[slug].contentDocument;
+          var ds = doc && doc.querySelector("deck-stage");
+          var rail = ds && ds.shadowRoot && ds.shadowRoot.querySelector(".rail");
+          if (rail) rail.style.display = "";
+        } catch (e) { /* cross-origin / not ready */ }
+      });
     }
 
     // Toggle the slide navigator across all loaded decks, keeping each deck's
@@ -811,20 +895,45 @@
           var ds = doc && doc.querySelector("deck-stage");
           if (!ds) return;
           ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+          materializeRailIfOpen(ds);
           ds.classList.toggle("rail-off", railHidden);
         } catch (e) { /* cross-origin / not ready */ }
       });
     }
 
+    // Reflect the initial visibility (hidden by default on phones).
+    railToggle.setAttribute("aria-pressed", String(!railHidden));
+
     railToggle.addEventListener("click", function () {
       railHidden = !railHidden;
       railToggle.setAttribute("aria-pressed", String(!railHidden));
       applyRailState();
+      // If the drawer is opened during the deck's first-paint rebuild the lazy
+      // thumbnails can miss; re-run a couple times to settle (no-op once filled).
+      if (!railHidden && window.innerWidth <= MOBILE_BP) {
+        setTimeout(applyRailState, 250);
+        setTimeout(applyRailState, 650);
+      }
     });
 
-    // Keep the fill scale accurate when the viewport changes while hidden.
+    // Keep layout accurate as the viewport changes. Crossing the phone
+    // breakpoint resets the navigator to that mode's default (the two modes
+    // have opposite defaults), and drops the phone-only inline rail display so
+    // the deck owns it again above the breakpoint. rAF-coalesced so a drag- or
+    // URL-bar resize doesn't thrash layout across the iframes.
+    var wasNarrow = window.innerWidth <= MOBILE_BP;
+    var resizeQueued = false;
     window.addEventListener("resize", function () {
-      if (railHidden) applyRailState();
+      var nowNarrow = window.innerWidth <= MOBILE_BP;
+      if (nowNarrow !== wasNarrow) {
+        wasNarrow = nowNarrow;
+        railHidden = nowNarrow;
+        railToggle.setAttribute("aria-pressed", String(!railHidden));
+        if (!nowNarrow) clearRailInlineDisplay();
+      }
+      if (resizeQueued) return;
+      resizeQueued = true;
+      requestAnimationFrame(function () { resizeQueued = false; applyRailState(); });
     });
 
     // Focus rings only while navigating by keyboard.
