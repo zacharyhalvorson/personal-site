@@ -531,14 +531,6 @@
       // stays crisp). `--fill-scale` is computed in JS from the deck width.
       "deck-stage.rail-off .slide{transform:scale(var(--fill-scale,1)) !important;" +
       "transform-origin:center !important}" +
-      // Phones: when the navigator drawer is open (host not .rail-off) the slide
-      // eases back a touch so the drawer reads as floating above it. (Document
-      // level, not the shadow rail sheet — `.slide` is slotted light DOM.)
-      // Gated on .rail-anim (added after the deck is themed) so the slide can't
-      // briefly paint at 0.94 before rail-off lands on first load.
-      "@media (max-width:" + MOBILE_BP + "px){" +
-      "deck-stage.rail-anim:not(.rail-off) .slide{transform:scale(0.94) !important;" +
-      "transform-origin:center !important}}" +
       "@media (prefers-color-scheme:dark){" +
       "html,body{background:#1c1b19 !important}" +
       "deck-stage{background:#1c1b19 !important}" +
@@ -581,7 +573,7 @@
       // first application of these left/width values animates from the deck's
       // default layout — a left->right jump as the page loads. We want the
       // initial position to snap, and only rail toggles to animate.
-      ":host(.rail-anim) .stage{transition:left 360ms " + EASE + ",width 360ms " + EASE + " !important}" +
+      ":host(.rail-anim) .stage{transition:left 360ms " + EASE + ",width 360ms " + EASE + ",transform 360ms " + EASE + " !important}" +
       ":host(.rail-off) .rail{transform:translateX(calc(-100% - 28px)) !important;" +
       // visibility (not opacity) so there's no fade, yet the drop shadow stops
       // painting and the thumbnails leave the tab order once it's off-screen.
@@ -594,10 +586,17 @@
       // Phones: the deck hides its own rail here (its `@media max-width:640px`)
       // and zeroes the rail width, so the stage is full-bleed — the slide fills
       // the canvas. The navigator becomes a drawer floating OVER the slide
-      // (default hidden; toggled open). Opening gives the rail layout in JS so
-      // the deck materializes its lazy thumbnails (see materializeRailIfOpen).
+      // (default hidden; toggled open). setupRail keeps the rail laid out so the
+      // deck still renders its thumbnails.
       "@media (max-width:" + MOBILE_BP + "px){" +
       ".stage{left:0 !important;width:100% !important}" +
+      // When the drawer is open, ease the whole stage back a touch so it reads
+      // as floating above. Scale the STAGE (the outer unit), not the slide —
+      // the deck's .canvas is itself a card, so scaling the slide inside it
+      // exposes that card as a nested wrapper. Gated on .rail-anim so it can't
+      // fire before the deck is themed (and rail-off lands) on first load.
+      ":host(.rail-anim:not(.rail-off)) .stage{transform:scale(0.94) !important;" +
+      "transform-origin:center !important}" +
       // Keep the rail laid out (the deck display:none's it here) so it renders
       // its thumbnails normally; it just floats off-screen as a drawer until
       // opened. Floats above the slide AND the deck's chrome (bottom toolbar is
