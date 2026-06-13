@@ -566,13 +566,10 @@
       // inner .frame); without this they shrink to fit the fixed-height rail
       // and the slide preview gets cropped instead of the rail scrolling.
       // The translateY(var(--ovr)) is the rubber-band: the content (thumbs)
-      // bounces inside the fixed rail frame. The transition springs it back on
-      // release; elasticOverscroll adds `.-ovr` to drop it while dragging so the
-      // thumbs track the trackpad live.
+      // bounces inside the fixed rail frame. elasticOverscroll drives --ovr
+      // every frame (a continuous spring), so no CSS transition here.
       ".thumb{flex-shrink:0 !important;" +
-      "transform:translateY(var(--ovr,0px)) !important;" +
-      "transition:transform 460ms cubic-bezier(0.22,1,0.36,1) !important}" +
-      ".rail.-ovr .thumb{transition:none !important}" +
+      "transform:translateY(var(--ovr,0px)) !important}" +
       // Scrollbar: nested as an inset pill, and only visible while hovering the
       // rail (the deck ships an always-on, edge-flush bar). The gutter stays
       // reserved so the thumb fading in on hover doesn't reflow the thumbnails.
@@ -927,28 +924,35 @@
 
     // Wheel-driven rubber band, matching the native macOS feel that inner
     // scrollers don't get for free. The CONTENT bounces inside the fixed rail
-    // frame (not the frame itself): a damped offset is written to --ovr, which
-    // the .thumb CSS translates; the thumbs track the trackpad 1:1-with-
-    // resistance, and on release the `-ovr` class drops so the stylesheet's
-    // transition springs them back. Only engages once the scroll is pinned at
-    // an edge and pushed further — normal scrolling is left untouched.
+    // frame: a small offset is written to --ovr, which the .thumb CSS
+    // translates. Two things make it feel native: (1) quadratic asymptotic
+    // resistance against a low cap, so it can't be stretched far; (2) a
+    // continuous rAF spring that decays the offset every frame, so it tracks
+    // momentum back to rest with no release-timeout pause. Only engages once
+    // the scroll is pinned at an edge and pushed further.
     function elasticOverscroll(rail) {
-      var offset = 0, releaseT = 0, MAX = 90;
-      function set(v) { offset = v; rail.style.setProperty("--ovr", v.toFixed(1) + "px"); }
-      function release() { rail.classList.remove("-ovr"); set(0); } // CSS eases thumbs back
+      var offset = 0, raf = 0, LIMIT = 40;
+      function commit() { rail.style.setProperty("--ovr", offset.toFixed(2) + "px"); }
+      function frame() {
+        offset *= 0.80; // spring toward 0, always running while engaged
+        if (Math.abs(offset) < 0.4) { offset = 0; commit(); raf = 0; return; }
+        commit();
+        raf = requestAnimationFrame(frame);
+      }
       rail.addEventListener("wheel", function (e) {
         var max = rail.scrollHeight - rail.clientHeight;
         var atTop = rail.scrollTop <= 0, atBottom = rail.scrollTop >= max - 0.5;
         var pushing = (e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom);
         if (!pushing && offset === 0) return; // in range: native scroll
-        e.preventDefault();
-        rail.classList.add("-ovr"); // immediate follow: no transition while dragging
-        var resist = 1 - Math.min(0.75, Math.abs(offset) / MAX);
-        var next = offset - e.deltaY * 0.45 * resist;
-        if (offset !== 0 && (offset > 0) !== (next > 0)) next = 0; // releasing: stop at 0
-        set(Math.max(-MAX, Math.min(MAX, next)));
-        clearTimeout(releaseT);
-        releaseT = setTimeout(release, 55);
+        e.preventDefault();                   // release first (while offset != 0), then native
+        if (pushing) {
+          var f = 1 - Math.min(1, Math.abs(offset) / LIMIT); // resistance ramps to a wall
+          offset += -e.deltaY * 0.45 * f * f;
+          if (offset > LIMIT) offset = LIMIT;
+          else if (offset < -LIMIT) offset = -LIMIT;
+          commit();
+        }
+        if (!raf) raf = requestAnimationFrame(frame);
       }, { passive: false });
     }
 
