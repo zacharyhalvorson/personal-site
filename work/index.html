@@ -619,7 +619,12 @@
       "background:rgba(0,0,0,0.12) !important;" +
       "-webkit-backdrop-filter:blur(14px) saturate(1.1) !important;" +
       "backdrop-filter:blur(14px) saturate(1.1) !important;" +
-      "box-shadow:0 8px 22px rgba(0,0,0,0.18) !important}}" +
+      "box-shadow:0 8px 22px rgba(0,0,0,0.18) !important}" +
+      // The deck's nav pill carries a fullscreen toggle, but fullscreen makes no
+      // sense on a phone (the embedded frame can't enter it anyway), so drop the
+      // control and the divider that would otherwise dangle at the pill's end.
+      ".overlay .fullscreen{display:none !important}" +
+      ".overlay .divider:has(+ .fullscreen){display:none !important}}" +
       "@media (max-width:" + MOBILE_BP + "px) and (prefers-color-scheme:dark){" +
       ".rail{background:rgba(14,13,11,0.82) !important;" +
       "box-shadow:0 8px 22px rgba(0,0,0,0.55) !important}}";
@@ -855,6 +860,10 @@
       // Keyed on viewport (like every other breakpoint check + the CSS @media).
       if (window.innerWidth <= MOBILE_BP) return 1;
       var w = ds.getBoundingClientRect().width;
+      // Below the responsive breakpoint the stage is full-width in BOTH rail
+      // states (the rail overlays rather than offsetting), so the slide
+      // already fills — scaling it up here would overflow the viewport.
+      if (w <= 760) return 1;
       var railW = parseFloat(getComputedStyle(ds).getPropertyValue("--deck-rail-w")) || 188;
       var stageLeft = 9 + railW + 18; // mirror STAGE_LEFT (rail inset + width + gap)
       return w > 280 ? (w - 40) / (w - stageLeft - STAGE_RIGHT) : 1;
