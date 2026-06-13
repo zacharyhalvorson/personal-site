@@ -573,6 +573,18 @@
       "transform:translateY(var(--ovr,0px)) !important;" +
       "transition:transform 460ms cubic-bezier(0.22,1,0.36,1) !important}" +
       ".rail.-ovr .thumb{transition:none !important}" +
+      // Scrollbar: nested as an inset pill, and only visible while hovering the
+      // rail (the deck ships an always-on, edge-flush bar). The gutter stays
+      // reserved so the thumb fading in on hover doesn't reflow the thumbnails.
+      ".rail::-webkit-scrollbar{width:11px !important;background:transparent !important}" +
+      ".rail::-webkit-scrollbar-track{background:transparent !important;margin:12px 0 !important}" +
+      ".rail::-webkit-scrollbar-thumb{background:transparent !important;border:3px solid transparent !important;" +
+      "border-radius:999px !important;background-clip:content-box !important}" +
+      ".rail:hover::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.26) !important}" +
+      ".rail:hover::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.42) !important}" +
+      // Firefox fallback (no inset, but hover-only).
+      ".rail{scrollbar-width:thin !important;scrollbar-color:transparent transparent !important}" +
+      ".rail:hover{scrollbar-color:rgba(0,0,0,0.3) transparent !important}" +
       ".rail-resize{display:none !important}" +
       ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important}" +
       // The slide-over transition is gated behind `.rail-anim`, added one
@@ -589,7 +601,10 @@
       "transition:transform 360ms " + EASE + ",visibility 0s linear 360ms !important}" +
       ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
       "@media (prefers-color-scheme:dark){" +
-      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}}" +
+      ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}" +
+      ".rail:hover::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.30) !important}" +
+      ".rail:hover::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.45) !important}" +
+      ".rail:hover{scrollbar-color:rgba(255,255,255,0.32) transparent !important}}" +
       // Phones: the deck hides its own rail here (its `@media max-width:640px`)
       // and zeroes the rail width, so the stage is full-bleed — the slide fills
       // the canvas. The navigator becomes a drawer floating OVER the slide
