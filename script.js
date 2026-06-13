@@ -141,6 +141,58 @@
   // Apply to everything that exists at load time.
   document.querySelectorAll('.media_item img, .media_item video, .intro_photo img').forEach(watchSquircle);
 
+  // ---------- quick fade-in for project media ----------
+  // Lazy <img>s and video posters otherwise pop in the instant they finish
+  // decoding as you scroll past — a hard flash. Ease them in instead. Pure
+  // progressive enhancement: no opacity:0 lives in the CSS, so with JS off the
+  // media paints normally, and anything already painted, broken, or without a
+  // poster is left fully visible here so a card can never get stuck hidden.
+  // The intro portrait is deliberately excluded: it's the eager, above-the-fold
+  // LCP image and shouldn't be delayed behind a fade.
+  (function () {
+    var FADE = 'opacity 260ms var(--ease)';
+    function hide(el) { el.style.opacity = '0'; el.style.transition = FADE; }
+    function show(el) { el.style.opacity = '1'; }
+
+    document.querySelectorAll('.media_item img').forEach(function (img) {
+      if (img.complete && img.naturalWidth > 0) return; // already painted, no flash to mask
+      hide(img);
+      var done = function () {
+        show(img);
+        img.removeEventListener('load', done);
+        img.removeEventListener('error', done);
+      };
+      img.addEventListener('load', done);
+      img.addEventListener('error', done); // never leave a broken image invisible
+    });
+
+    // Videos have no poster-load event, so preload the poster with a probe
+    // <img> and fade the <video> in when that resolves. Defer the probe until
+    // the video nears the viewport (IntersectionObserver) so off-screen posters
+    // aren't fetched eagerly — the markup uses preload="none" for that reason.
+    var videos = [].slice.call(document.querySelectorAll('.media_item video'));
+    function fadePoster(video) {
+      var poster = video.getAttribute('poster');
+      if (!poster) { show(video); return; } // nothing to wait on
+      var probe = new Image();
+      probe.onload = probe.onerror = function () { show(video); };
+      probe.src = poster;
+      if (probe.complete) show(video); // already cached
+    }
+    if (typeof IntersectionObserver !== 'undefined') {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          fadePoster(e.target);
+        });
+      }, { rootMargin: '200px' });
+      videos.forEach(function (v) { hide(v); io.observe(v); });
+    } else {
+      videos.forEach(fadePoster);
+    }
+  })();
+
   // ---------- rail nav: highlight the current section ----------
   // As the user scrolls between scroll-snapped chapters, mark the rail link
   // whose href matches the section currently in view. Hover/focus expansion
