@@ -565,7 +565,14 @@
       // Keep thumbnails at their natural height (the deck already rounds the
       // inner .frame); without this they shrink to fit the fixed-height rail
       // and the slide preview gets cropped instead of the rail scrolling.
-      ".thumb{flex-shrink:0 !important}" +
+      // The translateY(var(--ovr)) is the rubber-band: the content (thumbs)
+      // bounces inside the fixed rail frame. The transition springs it back on
+      // release; elasticOverscroll adds `.-ovr` to drop it while dragging so the
+      // thumbs track the trackpad live.
+      ".thumb{flex-shrink:0 !important;" +
+      "transform:translateY(var(--ovr,0px)) !important;" +
+      "transition:transform 460ms cubic-bezier(0.22,1,0.36,1) !important}" +
+      ".rail.-ovr .thumb{transition:none !important}" +
       ".rail-resize{display:none !important}" +
       ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important}" +
       // The slide-over transition is gated behind `.rail-anim`, added one
@@ -884,9 +891,9 @@
 
         // 3) Elastic overscroll. macOS rubber-bands only the root document, not
         //    inner scrollers (and overscroll-behavior can't synthesize it), so
-        //    on a wheel/trackpad past an edge, ease the panel a damped amount
-        //    and spring it back — matching the native bounce iOS already gives
-        //    the rail via touch.
+        //    on a wheel/trackpad past an edge, bounce the thumbnails inside the
+        //    fixed rail frame — matching the native bounce iOS already gives the
+        //    rail via touch.
         elasticOverscroll(rail);
 
         // 4) Tap-off to dismiss (phones only, where the rail is a drawer over
@@ -903,38 +910,30 @@
       } catch (e) { /* cross-origin / not ready */ }
     }
 
-    // Wheel-driven rubber band for a scroll container. Only engages once the
-    // scroll is pinned at an edge and pushed further; otherwise it leaves the
-    // native scroll alone. A rAF spring eases the panel toward a target offset
-    // that decays to 0 shortly after the gesture stops, so it self-corrects and
-    // can never get stuck. Manual per-frame transform (no CSS transition), so a
-    // later drawer toggle animates with the stylesheet rule.
+    // Wheel-driven rubber band, matching the native macOS feel that inner
+    // scrollers don't get for free. The CONTENT bounces inside the fixed rail
+    // frame (not the frame itself): a damped offset is written to --ovr, which
+    // the .thumb CSS translates; the thumbs track the trackpad 1:1-with-
+    // resistance, and on release the `-ovr` class drops so the stylesheet's
+    // transition springs them back. Only engages once the scroll is pinned at
+    // an edge and pushed further — normal scrolling is left untouched.
     function elasticOverscroll(rail) {
-      var offset = 0, target = 0, raf = 0, releaseT = 0, MAX = 72;
-      function tick() {
-        offset += (target - offset) * 0.2;
-        if (target === 0 && Math.abs(offset) < 0.4) {
-          offset = 0; raf = 0;
-          rail.style.transform = "";
-          rail.style.transition = "";
-          return;
-        }
-        rail.style.transform = "translateY(" + offset.toFixed(2) + "px)";
-        raf = requestAnimationFrame(tick);
-      }
+      var offset = 0, releaseT = 0, MAX = 90;
+      function set(v) { offset = v; rail.style.setProperty("--ovr", v.toFixed(1) + "px"); }
+      function release() { rail.classList.remove("-ovr"); set(0); } // CSS eases thumbs back
       rail.addEventListener("wheel", function (e) {
         var max = rail.scrollHeight - rail.clientHeight;
-        var over = (e.deltaY < 0 && rail.scrollTop <= 0) ||
-                   (e.deltaY > 0 && rail.scrollTop >= max - 0.5);
-        if (!over && offset === 0 && target === 0) return; // in range: native scroll
-        if (over) {
-          e.preventDefault();
-          var resist = 1 - Math.min(0.85, Math.abs(target) / MAX);
-          target = Math.max(-MAX, Math.min(MAX, target - e.deltaY * 0.32 * resist));
-        }
+        var atTop = rail.scrollTop <= 0, atBottom = rail.scrollTop >= max - 0.5;
+        var pushing = (e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom);
+        if (!pushing && offset === 0) return; // in range: native scroll
+        e.preventDefault();
+        rail.classList.add("-ovr"); // immediate follow: no transition while dragging
+        var resist = 1 - Math.min(0.75, Math.abs(offset) / MAX);
+        var next = offset - e.deltaY * 0.45 * resist;
+        if (offset !== 0 && (offset > 0) !== (next > 0)) next = 0; // releasing: stop at 0
+        set(Math.max(-MAX, Math.min(MAX, next)));
         clearTimeout(releaseT);
-        releaseT = setTimeout(function () { target = 0; }, 60);
-        if (!raf) { rail.style.transition = "none"; raf = requestAnimationFrame(tick); }
+        releaseT = setTimeout(release, 55);
       }, { passive: false });
     }
 
