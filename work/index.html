@@ -889,6 +889,18 @@
         //    and spring it back — matching the native bounce iOS already gives
         //    the rail via touch.
         elasticOverscroll(rail);
+
+        // 4) Tap-off to dismiss (phones only, where the rail is a drawer over
+        //    the slide). A tap outside the rail closes it and is consumed, so
+        //    the deck doesn't also navigate on that tap. Capturing on the host,
+        //    ahead of the deck's own tap handler.
+        ds.addEventListener("click", function (e) {
+          if (railHidden || window.innerWidth > MOBILE_BP) return;
+          if (rail && e.composedPath().indexOf(rail) !== -1) return; // inside the drawer
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          setRailHidden(true);
+        }, true);
       } catch (e) { /* cross-origin / not ready */ }
     }
 
@@ -941,14 +953,18 @@
       });
     }
 
+    // Single entry point for changing navigator visibility (toggle button,
+    // tap-off dismiss, breakpoint crossing).
+    function setRailHidden(hidden) {
+      railHidden = hidden;
+      railToggle.setAttribute("aria-pressed", String(!railHidden));
+      applyRailState();
+    }
+
     // Reflect the initial visibility (hidden by default on phones).
     railToggle.setAttribute("aria-pressed", String(!railHidden));
 
-    railToggle.addEventListener("click", function () {
-      railHidden = !railHidden;
-      railToggle.setAttribute("aria-pressed", String(!railHidden));
-      applyRailState();
-    });
+    railToggle.addEventListener("click", function () { setRailHidden(!railHidden); });
 
     // Keep layout accurate as the viewport changes. Crossing the phone
     // breakpoint resets the navigator to that mode's default (the two modes
