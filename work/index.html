@@ -827,7 +827,7 @@
               // later rail toggles glide (no left->right jump on load).
               void ds.getBoundingClientRect();
               ds.classList.add("rail-anim");
-              observeRail(frame, ds);
+              setupRail(frame, ds);
             }
             if (ds) {
               ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
@@ -852,23 +852,79 @@
       return w > 280 ? (w - 40) / (w - stageLeft - STAGE_RIGHT) : 1;
     }
 
-    // The deck renders its own thumbnails — cloning them lazily and sizing them
-    // to the rail (exactly as on desktop) — but it skips that work whenever the
-    // rail has no layout, which it withholds below 640px. RAIL_CSS gives the
-    // rail layout on phones (it just floats off-screen as a drawer), so the
-    // clones materialize; we then poke the deck's own resize path whenever the
-    // rail's size settles so it sizes them. No custom scaling, no forcing — the
-    // deck does it. Harmless on desktop (the deck already sized them).
-    function observeRail(frame, ds) {
+    // One-time setup for a deck's slide-navigator rail (runs when RAIL_CSS is
+    // injected). Three concerns, all keyed off the same rail element:
+    function setupRail(frame, ds) {
       try {
         var win = frame.contentWindow;
         var rail = ds.shadowRoot && ds.shadowRoot.querySelector(".rail");
-        if (!win || !win.ResizeObserver || !rail) return;
-        var ro = new win.ResizeObserver(function () {
-          try { win.dispatchEvent(new win.Event("resize")); } catch (e) {}
-        });
-        ro.observe(rail);
+        if (!rail) return;
+
+        // 1) Thumbnail sizing. The deck clones + sizes its thumbnails to the
+        //    rail exactly as on desktop, but skips that work whenever the rail
+        //    has no layout — which it withholds below 640px. RAIL_CSS keeps the
+        //    rail laid out (it just floats off-screen as a drawer), so the
+        //    clones materialize; poke the deck's own resize path whenever the
+        //    rail's size settles so it sizes them. Harmless on desktop.
+        if (win && win.ResizeObserver) {
+          new win.ResizeObserver(function () {
+            try { win.dispatchEvent(new win.Event("resize")); } catch (e) {}
+          }).observe(rail);
+        }
+
+        // 2) Read-only. The deck makes thumbnails draggable to reorder and
+        //    right-clickable to skip/delete — authoring affordances that don't
+        //    belong in the portfolio reader, where the order is fixed. Cancel
+        //    both. Capturing, so it covers thumbs the deck re-creates on every
+        //    render without re-binding.
+        rail.addEventListener("dragstart", function (e) { e.preventDefault(); }, true);
+        rail.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }, true);
+
+        // 3) Elastic overscroll. macOS rubber-bands only the root document, not
+        //    inner scrollers (and overscroll-behavior can't synthesize it), so
+        //    on a wheel/trackpad past an edge, ease the panel a damped amount
+        //    and spring it back — matching the native bounce iOS already gives
+        //    the rail via touch.
+        elasticOverscroll(rail);
       } catch (e) { /* cross-origin / not ready */ }
+    }
+
+    // Wheel-driven rubber band for a scroll container. Only engages once the
+    // scroll is pinned at an edge and pushed further; otherwise it leaves the
+    // native scroll alone. A rAF spring eases the panel toward a target offset
+    // that decays to 0 shortly after the gesture stops, so it self-corrects and
+    // can never get stuck. Manual per-frame transform (no CSS transition), so a
+    // later drawer toggle animates with the stylesheet rule.
+    function elasticOverscroll(rail) {
+      var offset = 0, target = 0, raf = 0, releaseT = 0, MAX = 72;
+      function tick() {
+        offset += (target - offset) * 0.2;
+        if (target === 0 && Math.abs(offset) < 0.4) {
+          offset = 0; raf = 0;
+          rail.style.transform = "";
+          rail.style.transition = "";
+          return;
+        }
+        rail.style.transform = "translateY(" + offset.toFixed(2) + "px)";
+        raf = requestAnimationFrame(tick);
+      }
+      rail.addEventListener("wheel", function (e) {
+        var max = rail.scrollHeight - rail.clientHeight;
+        var over = (e.deltaY < 0 && rail.scrollTop <= 0) ||
+                   (e.deltaY > 0 && rail.scrollTop >= max - 0.5);
+        if (!over && offset === 0 && target === 0) return; // in range: native scroll
+        if (over) {
+          e.preventDefault();
+          var resist = 1 - Math.min(0.85, Math.abs(target) / MAX);
+          target = Math.max(-MAX, Math.min(MAX, target - e.deltaY * 0.32 * resist));
+        }
+        clearTimeout(releaseT);
+        releaseT = setTimeout(function () { target = 0; }, 60);
+        if (!raf) { rail.style.transition = "none"; raf = requestAnimationFrame(tick); }
+      }, { passive: false });
     }
 
     // Toggle the slide navigator across all loaded decks, keeping each deck's
