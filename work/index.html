@@ -556,20 +556,13 @@
       "border-radius:16px !important;padding:10px !important;" +
       "background:rgba(0,0,0,0.06) !important;" +
       "box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;" +
-      // Native-feeling rubber band when scrolling past the ends, kept from
-      // chaining out to the deck/page behind it.
-      "overscroll-behavior:contain !important;-webkit-overflow-scrolling:touch !important;" +
       "visibility:visible !important;" +
       // Transform-only (no opacity fade) so the slide-in/out stays fluid.
       "transition:transform 360ms " + EASE + " !important}" +
       // Keep thumbnails at their natural height (the deck already rounds the
       // inner .frame); without this they shrink to fit the fixed-height rail
       // and the slide preview gets cropped instead of the rail scrolling.
-      // The translateY(var(--ovr)) is the rubber-band: the content (thumbs)
-      // bounces inside the fixed rail frame. elasticOverscroll drives --ovr
-      // every frame (a continuous spring), so no CSS transition here.
-      ".thumb{flex-shrink:0 !important;" +
-      "transform:translateY(var(--ovr,0px)) !important}" +
+      ".thumb{flex-shrink:0 !important}" +
       // Scrollbar: nested as an inset pill, and only visible while hovering the
       // rail (the deck ships an always-on, edge-flush bar). The gutter stays
       // reserved so the thumb fading in on hover doesn't reflow the thumbnails.
@@ -901,14 +894,7 @@
           e.stopPropagation();
         }, true);
 
-        // 3) Elastic overscroll. macOS rubber-bands only the root document, not
-        //    inner scrollers (and overscroll-behavior can't synthesize it), so
-        //    on a wheel/trackpad past an edge, bounce the thumbnails inside the
-        //    fixed rail frame — matching the native bounce iOS already gives the
-        //    rail via touch.
-        elasticOverscroll(rail);
-
-        // 4) Tap-off to dismiss (phones only, where the rail is a drawer over
+        // 3) Tap-off to dismiss (phones only, where the rail is a drawer over
         //    the slide). A tap outside the rail closes it and is consumed, so
         //    the deck doesn't also navigate on that tap. Capturing on the host,
         //    ahead of the deck's own tap handler.
@@ -922,39 +908,6 @@
       } catch (e) { /* cross-origin / not ready */ }
     }
 
-    // Wheel-driven rubber band, matching the native macOS feel that inner
-    // scrollers don't get for free. The CONTENT bounces inside the fixed rail
-    // frame: a small offset is written to --ovr, which the .thumb CSS
-    // translates. Two things make it feel native: (1) quadratic asymptotic
-    // resistance against a low cap, so it can't be stretched far; (2) a
-    // continuous rAF spring that decays the offset every frame, so it tracks
-    // momentum back to rest with no release-timeout pause. Only engages once
-    // the scroll is pinned at an edge and pushed further.
-    function elasticOverscroll(rail) {
-      var offset = 0, raf = 0, LIMIT = 40;
-      function commit() { rail.style.setProperty("--ovr", offset.toFixed(2) + "px"); }
-      function frame() {
-        offset *= 0.80; // spring toward 0, always running while engaged
-        if (Math.abs(offset) < 0.4) { offset = 0; commit(); raf = 0; return; }
-        commit();
-        raf = requestAnimationFrame(frame);
-      }
-      rail.addEventListener("wheel", function (e) {
-        var max = rail.scrollHeight - rail.clientHeight;
-        var atTop = rail.scrollTop <= 0, atBottom = rail.scrollTop >= max - 0.5;
-        var pushing = (e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom);
-        if (!pushing && offset === 0) return; // in range: native scroll
-        e.preventDefault();                   // release first (while offset != 0), then native
-        if (pushing) {
-          var f = 1 - Math.min(1, Math.abs(offset) / LIMIT); // resistance ramps to a wall
-          offset += -e.deltaY * 0.45 * f * f;
-          if (offset > LIMIT) offset = LIMIT;
-          else if (offset < -LIMIT) offset = -LIMIT;
-          commit();
-        }
-        if (!raf) raf = requestAnimationFrame(frame);
-      }, { passive: false });
-    }
 
     // Toggle the slide navigator across all loaded decks, keeping each deck's
     // fill scale current for the toggle/resize.
