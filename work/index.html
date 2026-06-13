@@ -840,10 +840,7 @@
               ds.classList.add("rail-anim");
               setupRail(frame, ds);
             }
-            if (ds) {
-              ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
-              ds.classList.toggle("rail-off", railHidden);
-            }
+            if (ds) applyRailToDeck(ds);
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
@@ -869,16 +866,24 @@
       try {
         var win = frame.contentWindow;
         var rail = ds.shadowRoot && ds.shadowRoot.querySelector(".rail");
-        if (!rail) return;
+        if (!rail || ds.dataset.railSetup) return; // once per deck, even if re-themed
+        ds.dataset.railSetup = "1";
 
         // 1) Thumbnail sizing. The deck clones + sizes its thumbnails to the
         //    rail exactly as on desktop, but skips that work whenever the rail
         //    has no layout — which it withholds below 640px. RAIL_CSS keeps the
         //    rail laid out (it just floats off-screen as a drawer), so the
-        //    clones materialize; poke the deck's own resize path whenever the
-        //    rail's size settles so it sizes them. Harmless on desktop.
+        //    clones materialize; poke the deck's own resize path when the rail's
+        //    WIDTH settles (initial layout, scrollbar appearing) so it sizes
+        //    them. Width only — height changes are viewport resizes the deck
+        //    already handles natively, so reacting to them would just double its
+        //    work on every resize.
         if (win && win.ResizeObserver) {
+          var lastW = -1;
           new win.ResizeObserver(function () {
+            var w = rail.clientWidth;
+            if (w === lastW) return;
+            lastW = w;
             try { win.dispatchEvent(new win.Event("resize")); } catch (e) {}
           }).observe(rail);
         }
@@ -908,23 +913,26 @@
       } catch (e) { /* cross-origin / not ready */ }
     }
 
+    // Reflect the current navigator state onto one deck (fill scale + rail-off).
+    function applyRailToDeck(ds) {
+      ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
+      ds.classList.toggle("rail-off", railHidden);
+    }
 
-    // Toggle the slide navigator across all loaded decks, keeping each deck's
-    // fill scale current for the toggle/resize.
+    // Apply the navigator state across all loaded decks.
     function applyRailState() {
       Object.keys(frames).forEach(function (slug) {
         try {
           var doc = frames[slug].contentDocument;
           var ds = doc && doc.querySelector("deck-stage");
-          if (!ds) return;
-          ds.style.setProperty("--fill-scale", fillScaleFor(ds).toFixed(4));
-          ds.classList.toggle("rail-off", railHidden);
+          if (ds) applyRailToDeck(ds);
         } catch (e) { /* cross-origin / not ready */ }
       });
     }
 
-    // Single entry point for changing navigator visibility (toggle button,
-    // tap-off dismiss, breakpoint crossing).
+    // Set navigator visibility from the toggle button and the tap-off dismiss.
+    // (The resize handler sets railHidden directly on a breakpoint crossing so
+    // it can share the single rAF-coalesced applyRailState below.)
     function setRailHidden(hidden) {
       railHidden = hidden;
       railToggle.setAttribute("aria-pressed", String(!railHidden));
