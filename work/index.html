@@ -488,10 +488,14 @@
     "use strict";
 
     /* -------------------------------------------------------------
-       Case-study manifest. To publish a new case study:
+       Case-study manifest. To publish or update a case study:
          1. Drop its export at  work/<slug>/index.html
-         2. Add one line here.  Order = tab order; the first entry is
+         2. Optimize its videos for fast loading (re-run after EVERY
+            re-export — a fresh export resets the <video> tags):
+              node work/optimize-deck.mjs <slug>
+         3. Add one line here.  Order = tab order; the first entry is
             the default tab a visitor lands on.
+       See work/README.md for the full workflow.
        ------------------------------------------------------------- */
     var CASES = [
       { slug: "rayban-meta",    label: "Livestreaming & POV calling", src: "rayban-meta/" },
