@@ -246,6 +246,15 @@
     .frame.-active {
       visibility: visible;
     }
+    /* First reveal fades the deck in over the page-coloured stage (a plain
+       snap read as a flash). Switching between cases keeps using the View
+       Transition crossfade, so this one-shot animation is only added to the
+       very first frame shown (see activate(..., fade)). */
+    @keyframes frame-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .frame.-fade-in { animation: frame-fade-in 360ms var(--ease) both; }
+    @media (prefers-reduced-motion: reduce) {
+      .frame.-fade-in { animation: none; }
+    }
 
     /* ---------- password gate ---------- */
 
@@ -488,10 +497,14 @@
     "use strict";
 
     /* -------------------------------------------------------------
-       Case-study manifest. To publish a new case study:
+       Case-study manifest. To publish or update a case study:
          1. Drop its export at  work/<slug>/index.html
-         2. Add one line here.  Order = tab order; the first entry is
+         2. Optimize its videos for fast loading (re-run after EVERY
+            re-export — a fresh export resets the <video> tags):
+              node work/optimize-deck.mjs <slug>
+         3. Add one line here.  Order = tab order; the first entry is
             the default tab a visitor lands on.
+       See work/README.md for the full workflow.
        ------------------------------------------------------------- */
     var CASES = [
       { slug: "rayban-meta",    label: "Livestreaming & POV calling", src: "rayban-meta/" },
@@ -576,6 +589,13 @@
       ".rail{scrollbar-width:thin !important;scrollbar-color:transparent transparent !important}" +
       ".rail:hover{scrollbar-color:rgba(0,0,0,0.3) transparent !important}" +
       ".rail-resize{display:none !important}" +
+      // The deck holds its stage + rail at opacity:0 until document.fonts.ready
+      // (capped at 2s) so its first paint has the webfont. In this reader that
+      // gate just buys a ~2s blank canvas that then flashes in — the deck
+      // defaults to the system font stack anyway and loads its one webfont
+      // (Space Mono) with font-display:swap, so reveal immediately and let the
+      // mono bits swap in. Removes both the wait and the flash on first load.
+      ":host([data-fonts-pending]) .stage,:host([data-fonts-pending]) .rail{opacity:1 !important;pointer-events:auto !important}" +
       ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important}" +
       // The slide-over transition is gated behind `.rail-anim`, added one
       // layout after the themed position lands. Without that gate, the very
@@ -680,17 +700,35 @@
       selectEl.addEventListener("change", function () {
         selectCase(selectEl.value);
       });
+
+      // Warm the not-yet-opened cases the moment the visitor shows intent to
+      // switch (hovering or focusing the picker), so a prefetch that's still
+      // waiting on idle time — or was skipped on a slow/Data-Saver connection
+      // — is already in flight before they pick. Cheap and idempotent: each
+      // loadFrame is a no-op once its frame is loading or loaded.
+      ["pointerenter", "focus"].forEach(function (ev) {
+        selectEl.addEventListener(ev, preloadOthers);
+      });
     }
 
     // Swap which case is showing. Assumes its frame is already loaded — the
     // load is handled separately so we never reveal a blank iframe.
-    function activate(slug) {
+    function activate(slug, fade) {
       if (!frames[slug]) return;
       active = slug;
       selectEl.value = slug;
       fitSelect();
       CASES.forEach(function (c) {
-        frames[c.slug].classList.toggle("-active", c.slug === slug);
+        var f = frames[c.slug];
+        var on = c.slug === slug;
+        f.classList.toggle("-active", on);
+        // Fade the very first reveal in (case switches use a View Transition
+        // instead). Restart the animation cleanly if a frame is reused.
+        if (on && fade) {
+          f.classList.remove("-fade-in");
+          void f.offsetWidth;
+          f.classList.add("-fade-in");
+        }
       });
       if (history.replaceState) {
         history.replaceState(null, "", "#" + slug);
@@ -712,12 +750,36 @@
       if (frame.src || !frame.dataset.src) return; // already loading
       var done = function () {
         frame.dataset.loaded = "1";
-        preloadOthers();
+        schedulePreload();
       };
       frame.addEventListener("load", done, { once: true });
       frame.addEventListener("error", done, { once: true });
       frame.src = frame.dataset.src;
       themeFrame(frame);
+    }
+
+    // Background-load the case studies the visitor hasn't opened yet so a
+    // later switch is instant — but politely. The other export is a ~23 MB
+    // inlined file; pulling it the instant the first deck finishes loading
+    // makes it fight the deck the visitor is actually reading for bandwidth
+    // (slowing the first slide's media + reveal), and burns data on a case
+    // they may never open. So defer the prefetch to idle time, and skip it
+    // under Data Saver or on a 2g-class connection. Switching still works
+    // there — selectCase loads the target on demand (with a spinner) — and
+    // the picker's intent hints (buildCases) warm it the moment the visitor
+    // looks like they're about to switch.
+    var preloadScheduled = false;
+    function schedulePreload() {
+      if (preloadScheduled) return;
+      preloadScheduled = true;
+      var conn = navigator.connection || {};
+      var et = conn.effectiveType || "";
+      if (conn.saveData || et === "2g" || et === "slow-2g") return;
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(preloadOthers, { timeout: 4000 });
+      } else {
+        setTimeout(preloadOthers, 1500);
+      }
     }
 
     function preloadOthers() {
@@ -741,7 +803,13 @@
           var doc = frame.contentDocument;
           var ds = doc && doc.querySelector("deck-stage");
           var slide = doc && doc.querySelector(".slide");
-          themed = !!(ds && slide && slide.getBoundingClientRect().width > 0 &&
+          // Also require the shell's shadow-root theming to be in place — it
+          // carries the rule that overrides the deck's opacity:0 fonts gate, so
+          // gating on it guarantees the stage is actually visible before we
+          // reveal (no blank-then-flash if body bg lands a tick earlier).
+          var themedRoot = ds && ds.shadowRoot &&
+            ds.shadowRoot.getElementById("work-rail-style");
+          themed = !!(ds && slide && themedRoot && slide.getBoundingClientRect().width > 0 &&
             getComputedStyle(doc.body).backgroundColor === base);
         } catch (e) { /* mid-rebuild; treat as not-yet-themed */ }
         streak = themed ? streak + 1 : 0;
@@ -845,11 +913,50 @@
               ds.classList.add("rail-anim");
               setupRail(frame, ds);
             }
-            if (ds) applyRailToDeck(ds);
+            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); }
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
       }, 100);
+    }
+
+    // Play only the on-screen slide's videos. The exports author their slide
+    // videos as `preload="none"` (no `autoplay`), so the browser fetches none
+    // of them on its own — a deck can carry tens of MB of loops across slides
+    // that the visitor may never reach. Here we play the videos on the active
+    // slide and pause the rest, so a clip's bytes are only pulled once its
+    // slide is actually shown (and stay buffered after, for instant revisits).
+    // Driven off the deck's own `data-deck-active` marker via a MutationObserver
+    // so it tracks every navigation. Same-origin; wrapped so any structural
+    // surprise just no-ops (videos then simply rest on their posters).
+    function setupVideoDefer(frame, ds) {
+      if (ds.dataset.videoDefer) return;
+      ds.dataset.videoDefer = "1";
+      try {
+        var doc = frame.contentDocument;
+        var videos = [].slice.call(doc.querySelectorAll("video"));
+        if (!videos.length) return;
+        function sync() {
+          // During print the deck briefly marks *every* slide active; don't
+          // mass-fetch then — only drive playback when exactly one is current.
+          var single = ds.querySelectorAll(":scope > [data-deck-active]").length === 1;
+          videos.forEach(function (v) {
+            var on = single && !!v.closest("[data-deck-active]");
+            if (on) {
+              if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+            } else if (!v.paused) {
+              v.pause();
+            }
+          });
+        }
+        var MO = (frame.contentWindow && frame.contentWindow.MutationObserver) || MutationObserver;
+        new MO(sync).observe(ds, {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ["data-deck-active"]
+        });
+        sync();
+      } catch (e) { /* cross-origin / not ready — videos rest on posters */ }
     }
 
     // The fill scale grows the slide to fill the width freed by hiding the
@@ -1004,7 +1111,7 @@
           if (pendingSlug !== slug) return;
           whenThemed(frames[slug], function () {
             if (pendingSlug !== slug) return;
-            activate(slug);
+            activate(slug, true); // fade the first deck in
           });
         });
       }

@@ -6,7 +6,7 @@
 <title>Ray-Ban Meta · Livestreaming &amp; POV Video Calling · Case Study</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
   deck-stage:not(:defined) { visibility: hidden; }
 
@@ -759,7 +759,7 @@
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
           <div class="phone phone--sm" style="width:300px;">
             <div class="screen">
-              <video src="images/companion-stream.mp4" autoplay loop muted playsinline></video>
+              <video src="images/companion-stream.mp4" poster="images/poster-companion-stream.jpg" preload="none" loop muted playsinline></video>
             </div>
           </div>
           <p class="expl-label" style="margin-top:30px;">Companion app</p>
@@ -768,7 +768,7 @@
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
           <div class="phone phone--sm" style="width:300px;">
             <div class="screen">
-              <video src="images/integrated-stream.mp4" autoplay loop muted playsinline></video>
+              <video src="images/integrated-stream.mp4" poster="images/poster-integrated-stream.jpg" preload="none" loop muted playsinline></video>
             </div>
           </div>
           <p class="expl-label" style="margin-top:30px; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:8px;"><span style="width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none;"></span>Family of Apps</p>
@@ -863,21 +863,21 @@
       </div>
       <div class="expl-cell" data-om-id="f9393c25:212">
         <div class="media squircle" style="aspect-ratio:314/285;" data-om-id="f9393c25:213">
-          <video class="expl-video" src="videos/toggle.mp4" autoplay loop muted playsinline data-om-id="f9393c25:214"></video>
+          <video class="expl-video" src="videos/toggle.mp4" poster="videos/poster-toggle.jpg" preload="none" loop muted playsinline data-om-id="f9393c25:214"></video>
         </div>
         <p class="expl-label" data-om-id="f9393c25:215">Floating Toggle</p>
         <p class="expl-why" data-om-id="f9393c25:216">Easily integreated, touch-friendly camera switching pinned to the side of any camera app UI.</p>
       </div>
       <div class="expl-cell" data-om-id="f9393c25:217">
         <div class="media squircle" style="aspect-ratio:314/285;" data-om-id="f9393c25:218">
-          <video class="expl-video" src="videos/widget.mp4" autoplay loop muted playsinline data-om-id="f9393c25:219"></video>
+          <video class="expl-video" src="videos/widget.mp4" poster="videos/poster-widget.jpg" preload="none" loop muted playsinline data-om-id="f9393c25:219"></video>
         </div>
         <p class="expl-label" data-om-id="f9393c25:220">Gesture-based widget</p>
         <p class="expl-why" data-om-id="f9393c25:221">Bystander privacy with a required gesture to activate meant adding user education to guide.</p>
       </div>
       <div class="expl-cell" data-om-id="f9393c25:222">
         <div class="media squircle" style="aspect-ratio:314/285;" data-om-id="f9393c25:223">
-          <video class="expl-video" src="videos/meta-widget.mp4" autoplay loop muted playsinline data-om-id="f9393c25:224"></video>
+          <video class="expl-video" src="videos/meta-widget.mp4" poster="videos/poster-meta-widget.jpg" preload="none" loop muted playsinline data-om-id="f9393c25:224"></video>
         </div>
         <p class="expl-label" data-om-id="f9393c25:225">Meta-branded with theming</p>
         <p class="expl-why" data-om-id="f9393c25:226">Keeping the required gesture, but settling into a neutral, system-styled treatment that could be themed.</p>
@@ -896,7 +896,7 @@
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div class="phone" style="width:308px;">
             <div class="screen">
-              <video src="images/calling-messenger.mp4" poster="images/poster-calling-messenger.jpg" autoplay loop muted playsinline></video>
+              <video src="images/calling-messenger.mp4" poster="images/poster-calling-messenger.jpg" preload="none" loop muted playsinline></video>
             </div>
           </div>
           <div class="foa-app" style="margin-top:26px; gap:13px;">
@@ -907,7 +907,7 @@
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div class="phone" style="width:308px;">
             <div class="screen">
-              <video src="images/calling-whatsapp.mp4" poster="images/poster-calling-whatsapp.jpg" autoplay loop muted playsinline></video>
+              <video src="images/calling-whatsapp.mp4" poster="images/poster-calling-whatsapp.jpg" preload="none" loop muted playsinline></video>
             </div>
           </div>
           <div class="foa-app" style="margin-top:26px; gap:13px;">
@@ -941,7 +941,7 @@
       </div>
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="4ba0b514:179">
         <div class="media" style="aspect-ratio:1984/1814; overflow:hidden;" data-om-id="4ba0b514:180">
-          <video src="images/edge-cases.mp4" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+          <video src="images/edge-cases.mp4" poster="images/poster-edge-cases.jpg" preload="none" loop muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
         </div>
         <p class="slot-cap" data-om-id="4ba0b514:182">Interactive matrix of fail modes</p>
       </div>
@@ -967,7 +967,7 @@
         <div style="position:relative; display:inline-block;">
           <div class="media" style="width:812px; height:670px;"><image-slot id="proto-figma" shape="rect" fit="contain" src="images/figma-prototyping-kit.png" placeholder="Third Camera Library"></image-slot></div>
           <div style="position:absolute; right:-48px; bottom:96px; width:304px; aspect-ratio:1430/1270; border-radius:16px; overflow:hidden; background:#000; box-shadow:0 24px 48px -14px rgba(20,28,42,0.5);">
-            <video src="images/error-flow.mp4" poster="images/poster-error-flow.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+            <video src="images/error-flow.mp4" poster="images/poster-error-flow.jpg" preload="none" loop muted playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
           </div>
         </div>
         <p class="slot-cap" style="margin-top:28px;">Third Camera Library · shared prototyping kit</p>
@@ -988,7 +988,7 @@
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;" data-om-id="4ba0b514:193">
         <div class="phone" style="width:300px;" data-om-id="4ba0b514:194">
           <div class="screen" data-om-id="4ba0b514:195">
-            <video src="images/talent-show.mp4" autoplay loop muted playsinline></video>
+            <video src="images/talent-show.mp4" poster="images/poster-talent-show.jpg" preload="none" loop muted playsinline></video>
           </div>
         </div>
         <p class="slot-cap" style="margin-top:24px;" data-om-id="4ba0b514:197">Making dogfooding fun</p>
@@ -1037,7 +1037,7 @@
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
         <div class="phone" style="width:300px;">
           <div class="screen">
-            <video src="images/attribution.mp4" poster="images/poster-attribution.jpg" autoplay loop muted playsinline></video>
+            <video src="images/attribution.mp4" poster="images/poster-attribution.jpg" preload="none" loop muted playsinline></video>
           </div>
         </div>
         <p class="slot-cap" style="margin-top:24px;">Tap-to-buy on a live stream</p>
