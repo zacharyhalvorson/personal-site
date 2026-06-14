@@ -1484,7 +1484,7 @@ html.lb-open { scroll-snap-type: none; }
   }
   html { scroll-snap-type: none; scroll-behavior: auto; }
   body { font-size: 11pt; line-height: 1.4; }
-  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials, .chapter_figure, .lightbox { display: none !important; }
+  .progress, .rail, .skip, .chapter_next, .intro_photo, .socials, .chapter_figure, .lightbox, .scroll-tail { display: none !important; }
   .chapter-project .chapter_body { display: block; }
   .chapter {
     min-height: 0;
