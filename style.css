@@ -1348,22 +1348,32 @@ html.lb-open { scroll-snap-type: none; }
 
 /* ---------- chapter: colophon variant ---------- */
 
-/* The closing chapter must stay at least as tall as the LARGE viewport (mobile
-   URL bar retracted), not the small one the shared `.chapter` rule uses. With
-   `min-height: 100svh`, once the toolbar collapses the visual viewport grows to
-   ~lvh while every section stays svh-tall, shrinking the document's maximum
-   scroll offset. For the middle sections that's harmless (there's content
-   below them), but the LAST section has no trailing room: its
-   `scroll-snap-align: start` point ends up past the max scroll offset, so
-   `scroll-snap-type: mandatory` can't settle there and snaps back by the
-   toolbar's height — the "little jump" at the very end of the page. Sizing only
-   this final section to 100lvh keeps a full large-viewport of trailing room so
-   its snap point is always reachable. Earlier sections stay svh so their crisp
-   per-section snap (toolbar shown) is unchanged, and svh==lvh on desktop makes
-   this a no-op there. */
-.chapter-colophon {
-  min-height: 100vh;   /* fallback for engines without the large-viewport unit */
-  min-height: 100lvh;
+/* The closing chapter keeps the shared `.chapter` height (100svh) — it must NOT
+   be taller than the viewport. Earlier attempts sized it to 100lvh to give the
+   last snap point trailing room, but that made it TALLER than the svh viewport
+   while the mobile toolbar is shown. A snap area larger than the snapport
+   relaxes mandatory snapping (the spec lets the viewport rest anywhere inside
+   it), so momentum sails past `scroll-snap-align: start` to the bottom of the
+   page — the "it jumps to the bottom, like the section is too big" symptom.
+   The trailing-room problem is solved instead by `.scroll-tail` below, which
+   adds slack OUTSIDE the snap sections. */
+
+/* Slack at the very end of the document, sized to the mobile toolbar's height
+   (the gap between the large and small viewports). On iOS Safari the visual
+   viewport grows from svh to lvh as the URL bar retracts, which shrinks the
+   document's maximum scroll offset; without trailing room the final section's
+   `scroll-snap-align: start` point lands past that offset and mandatory
+   snapping yanks back by the toolbar's height — the original "little jump".
+   This non-snapping spacer keeps a toolbar's worth of reachable scroll past
+   the last snap point so the colophon always settles at its start, while every
+   snap section stays exactly svh (never an oversized snap area). On desktop
+   lvh == svh, so the height is 0 and this is a no-op. */
+.scroll-tail {
+  height: calc(100lvh - 100svh);
+  /* Not a snap target — it's pure slack; the colophon's start stays the final
+     snap point the viewport can ever settle on. */
+  scroll-snap-align: none;
+  pointer-events: none;
 }
 
 .education {

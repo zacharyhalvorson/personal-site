@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./style.css?v=20260527k">
-    <script src="./script.js?v=20260527k" defer></script>
+    <link rel="stylesheet" href="./style.css?v=20260614a">
+    <script src="./script.js?v=20260614a" defer></script>
     <link rel="canonical" href="https://zacharyhalvorson.com/">
 
     <title>Zachary Halvorson — Staff Product Designer</title>
@@ -355,5 +355,8 @@
       </section>
 
     </main>
+    <!-- Trailing slack so the last section's scroll-snap point stays reachable
+         once the mobile toolbar retracts. See `.scroll-tail` in style.css. -->
+    <div class="scroll-tail" aria-hidden="true"></div>
   </body>
 </html>
