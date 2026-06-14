@@ -878,11 +878,50 @@
               ds.classList.add("rail-anim");
               setupRail(frame, ds);
             }
-            if (ds) applyRailToDeck(ds);
+            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); }
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
       }, 100);
+    }
+
+    // Play only the on-screen slide's videos. The exports author their slide
+    // videos as `preload="none"` (no `autoplay`), so the browser fetches none
+    // of them on its own — a deck can carry tens of MB of loops across slides
+    // that the visitor may never reach. Here we play the videos on the active
+    // slide and pause the rest, so a clip's bytes are only pulled once its
+    // slide is actually shown (and stay buffered after, for instant revisits).
+    // Driven off the deck's own `data-deck-active` marker via a MutationObserver
+    // so it tracks every navigation. Same-origin; wrapped so any structural
+    // surprise just no-ops (videos then simply rest on their posters).
+    function setupVideoDefer(frame, ds) {
+      if (ds.dataset.videoDefer) return;
+      ds.dataset.videoDefer = "1";
+      try {
+        var doc = frame.contentDocument;
+        var videos = [].slice.call(doc.querySelectorAll("video"));
+        if (!videos.length) return;
+        function sync() {
+          // During print the deck briefly marks *every* slide active; don't
+          // mass-fetch then — only drive playback when exactly one is current.
+          var single = ds.querySelectorAll(":scope > [data-deck-active]").length === 1;
+          videos.forEach(function (v) {
+            var on = single && !!v.closest("[data-deck-active]");
+            if (on) {
+              if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+            } else if (!v.paused) {
+              v.pause();
+            }
+          });
+        }
+        var MO = (frame.contentWindow && frame.contentWindow.MutationObserver) || MutationObserver;
+        new MO(sync).observe(ds, {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ["data-deck-active"]
+        });
+        sync();
+      } catch (e) { /* cross-origin / not ready — videos rest on posters */ }
     }
 
     // The fill scale grows the slide to fill the width freed by hiding the
