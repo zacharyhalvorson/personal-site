@@ -107,6 +107,24 @@ function rewriteTag(tag, posterRel, hadPoster) {
   return out;
 }
 
+// Make any render-blocking Google Fonts stylesheet load asynchronously. A raw
+// export links the webfont CSS as a normal <link rel="stylesheet">, which
+// blocks the deck's first paint on a round-trip to fonts.googleapis.com. The
+// deck defaults to the system font stack and uses font-display:swap, so the
+// font can load lazily and swap in. The `media="print" onload` swap is the
+// standard non-blocking pattern. Preconnect hints are left as-is (they help).
+function rewriteFontLinks(html) {
+  let count = 0;
+  const out = html.replace(/<link\b[^>]*>/gi, (tag) => {
+    if (!/rel\s*=\s*["']?stylesheet/i.test(tag)) return tag;
+    if (!/href\s*=\s*["'][^"']*fonts\.googleapis\.com/i.test(tag)) return tag;
+    if (/\bmedia\s*=\s*["']?print/i.test(tag) || /\bonload\s*=/i.test(tag)) return tag; // already async
+    count++;
+    return tag.replace(/\s*\/?>$/, ` media="print" onload="this.media='all'">`);
+  });
+  return { html: out, count };
+}
+
 function ffmpegPoster(videoAbs, posterAbs) {
   execFileSync(
     "ffmpeg",
@@ -119,16 +137,15 @@ function processDeck(indexPath) {
   const deckDir = dirname(indexPath);
   const slug = basename(deckDir);
   let html = readFileSync(indexPath, "utf8");
-  const tags = html.match(/<video\b[^>]*>/gi) || [];
-  if (!tags.length) {
-    console.log(`· ${slug}: no <video> tags, skipped`);
-    return;
-  }
+
+  // Render-blocking webfont CSS → async (independent of whether there's video).
+  const fonts = rewriteFontLinks(html);
+  html = fonts.html;
 
   let rewritten = 0, postersMade = 0, skipped = 0;
   const seen = new Set();
 
-  for (const tag of tags) {
+  for (const tag of (html.match(/<video\b[^>]*>/gi) || [])) {
     if (seen.has(tag)) continue; // identical tags: one replaceAll covers all
     seen.add(tag);
 
@@ -161,9 +178,11 @@ function processDeck(indexPath) {
     }
   }
 
-  if (rewritten || postersMade) {
+  if (rewritten || postersMade || fonts.count) {
     writeFileSync(indexPath, html);
-    console.log(`✓ ${slug}: ${rewritten} tag(s) rewritten, ${postersMade} poster(s) generated${skipped ? `, ${skipped} skipped` : ""}`);
+    const bits = [`${rewritten} tag(s) rewritten`, `${postersMade} poster(s) generated`];
+    if (fonts.count) bits.push(`${fonts.count} font link(s) made async`);
+    console.log(`✓ ${slug}: ${bits.join(", ")}${skipped ? `, ${skipped} skipped` : ""}`);
   } else {
     console.log(`· ${slug}: already optimized${skipped ? ` (${skipped} non-file src skipped)` : ""}`);
   }

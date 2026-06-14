@@ -246,6 +246,15 @@
     .frame.-active {
       visibility: visible;
     }
+    /* First reveal fades the deck in over the page-coloured stage (a plain
+       snap read as a flash). Switching between cases keeps using the View
+       Transition crossfade, so this one-shot animation is only added to the
+       very first frame shown (see activate(..., fade)). */
+    @keyframes frame-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .frame.-fade-in { animation: frame-fade-in 360ms var(--ease) both; }
+    @media (prefers-reduced-motion: reduce) {
+      .frame.-fade-in { animation: none; }
+    }
 
     /* ---------- password gate ---------- */
 
@@ -580,6 +589,13 @@
       ".rail{scrollbar-width:thin !important;scrollbar-color:transparent transparent !important}" +
       ".rail:hover{scrollbar-color:rgba(0,0,0,0.3) transparent !important}" +
       ".rail-resize{display:none !important}" +
+      // The deck holds its stage + rail at opacity:0 until document.fonts.ready
+      // (capped at 2s) so its first paint has the webfont. In this reader that
+      // gate just buys a ~2s blank canvas that then flashes in — the deck
+      // defaults to the system font stack anyway and loads its one webfont
+      // (Space Mono) with font-display:swap, so reveal immediately and let the
+      // mono bits swap in. Removes both the wait and the flash on first load.
+      ":host([data-fonts-pending]) .stage,:host([data-fonts-pending]) .rail{opacity:1 !important;pointer-events:auto !important}" +
       ".stage{left:" + STAGE_LEFT + " !important;width:calc(100% - " + STAGE_LEFT + " - " + STAGE_RIGHT + "px) !important}" +
       // The slide-over transition is gated behind `.rail-anim`, added one
       // layout after the themed position lands. Without that gate, the very
@@ -697,13 +713,22 @@
 
     // Swap which case is showing. Assumes its frame is already loaded — the
     // load is handled separately so we never reveal a blank iframe.
-    function activate(slug) {
+    function activate(slug, fade) {
       if (!frames[slug]) return;
       active = slug;
       selectEl.value = slug;
       fitSelect();
       CASES.forEach(function (c) {
-        frames[c.slug].classList.toggle("-active", c.slug === slug);
+        var f = frames[c.slug];
+        var on = c.slug === slug;
+        f.classList.toggle("-active", on);
+        // Fade the very first reveal in (case switches use a View Transition
+        // instead). Restart the animation cleanly if a frame is reused.
+        if (on && fade) {
+          f.classList.remove("-fade-in");
+          void f.offsetWidth;
+          f.classList.add("-fade-in");
+        }
       });
       if (history.replaceState) {
         history.replaceState(null, "", "#" + slug);
@@ -778,7 +803,13 @@
           var doc = frame.contentDocument;
           var ds = doc && doc.querySelector("deck-stage");
           var slide = doc && doc.querySelector(".slide");
-          themed = !!(ds && slide && slide.getBoundingClientRect().width > 0 &&
+          // Also require the shell's shadow-root theming to be in place — it
+          // carries the rule that overrides the deck's opacity:0 fonts gate, so
+          // gating on it guarantees the stage is actually visible before we
+          // reveal (no blank-then-flash if body bg lands a tick earlier).
+          var themedRoot = ds && ds.shadowRoot &&
+            ds.shadowRoot.getElementById("work-rail-style");
+          themed = !!(ds && slide && themedRoot && slide.getBoundingClientRect().width > 0 &&
             getComputedStyle(doc.body).backgroundColor === base);
         } catch (e) { /* mid-rebuild; treat as not-yet-themed */ }
         streak = themed ? streak + 1 : 0;
@@ -1080,7 +1111,7 @@
           if (pendingSlug !== slug) return;
           whenThemed(frames[slug], function () {
             if (pendingSlug !== slug) return;
-            activate(slug);
+            activate(slug, true); // fade the first deck in
           });
         });
       }

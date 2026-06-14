@@ -26,10 +26,15 @@ every slide is in the DOM at once — so the browser eagerly downloads **all** t
 clips on first load (tens of MB), most for slides nobody scrolls to. Two pieces
 fix this:
 
-- **`optimize-deck.mjs`** (run per export) rewrites each `<video>` to
-  `preload="none"` with no `autoplay`, and gives every clip a **poster** still
-  (a frame extracted with `ffmpeg`). The poster is what shows on the slide and
-  in the navigator rail thumbnail before/while the clip is deferred.
+- **`optimize-deck.mjs`** (run per export) does two things to each deck:
+  - rewrites every `<video>` to `preload="none"` with no `autoplay`, and gives
+    each clip a **poster** still (a frame extracted with `ffmpeg`). The poster
+    is what shows on the slide and in the navigator rail thumbnail before/while
+    the clip is deferred.
+  - makes the deck's Google Fonts stylesheet load **async** (the raw export
+    links it render-blocking, which stalls the first paint on a round-trip to
+    `fonts.googleapis.com`). The deck defaults to the system font stack with
+    `font-display: swap`, so the webfont can swap in lazily.
 - **The reader shell** (`work/index.html`, automatic for every deck) plays only
   the **on-screen slide's** videos and pauses the rest. So a clip's bytes are
   pulled only when its slide is actually shown, then stay buffered for instant
