@@ -680,6 +680,15 @@
       selectEl.addEventListener("change", function () {
         selectCase(selectEl.value);
       });
+
+      // Warm the not-yet-opened cases the moment the visitor shows intent to
+      // switch (hovering or focusing the picker), so a prefetch that's still
+      // waiting on idle time — or was skipped on a slow/Data-Saver connection
+      // — is already in flight before they pick. Cheap and idempotent: each
+      // loadFrame is a no-op once its frame is loading or loaded.
+      ["pointerenter", "focus"].forEach(function (ev) {
+        selectEl.addEventListener(ev, preloadOthers);
+      });
     }
 
     // Swap which case is showing. Assumes its frame is already loaded — the
@@ -712,12 +721,36 @@
       if (frame.src || !frame.dataset.src) return; // already loading
       var done = function () {
         frame.dataset.loaded = "1";
-        preloadOthers();
+        schedulePreload();
       };
       frame.addEventListener("load", done, { once: true });
       frame.addEventListener("error", done, { once: true });
       frame.src = frame.dataset.src;
       themeFrame(frame);
+    }
+
+    // Background-load the case studies the visitor hasn't opened yet so a
+    // later switch is instant — but politely. The other export is a ~23 MB
+    // inlined file; pulling it the instant the first deck finishes loading
+    // makes it fight the deck the visitor is actually reading for bandwidth
+    // (slowing the first slide's media + reveal), and burns data on a case
+    // they may never open. So defer the prefetch to idle time, and skip it
+    // under Data Saver or on a 2g-class connection. Switching still works
+    // there — selectCase loads the target on demand (with a spinner) — and
+    // the picker's intent hints (buildCases) warm it the moment the visitor
+    // looks like they're about to switch.
+    var preloadScheduled = false;
+    function schedulePreload() {
+      if (preloadScheduled) return;
+      preloadScheduled = true;
+      var conn = navigator.connection || {};
+      var et = conn.effectiveType || "";
+      if (conn.saveData || et === "2g" || et === "slow-2g") return;
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(preloadOthers, { timeout: 4000 });
+      } else {
+        setTimeout(preloadOthers, 1500);
+      }
     }
 
     function preloadOthers() {
