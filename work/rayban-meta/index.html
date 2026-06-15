@@ -203,6 +203,7 @@
     color: var(--accent);
     flex: none;
   }
+  .slot-cap--plain::before { content: none; }
 
   /* media wrapper: enforces image aspect-ratio reliably; slot fills it */
   .media { position: relative; width: 100%; }
@@ -288,6 +289,23 @@
   }
 
   .topline { border-top: 1px solid var(--line); padding-top: 22px; }
+
+  /* inline-header step rows (compact list) */
+  .steps-stack { display: flex; flex-direction: column; gap: 20px; }
+  .step-row {
+    display: flex;
+    gap: 24px;
+    align-items: baseline;
+  }
+  .step-row .block-num { flex: none; }
+  .step-row .step-p {
+    font-size: var(--type-body);
+    line-height: 1.4;
+    color: var(--muted);
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .step-row .step-p strong { color: var(--ink); font-weight: 600; }
 
   /* app chips */
   .apps { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -564,14 +582,16 @@
       <p class="kicker anim" data-om-id="4ba0b514:32">Problem framing</p>
       <span class="pageno" data-om-id="4ba0b514:33">02 / 20</span>
     </div>
-    <div class="grow" style="display:flex; flex-direction:column; justify-content:center; max-width:1400px;" data-om-id="4ba0b514:34">
-      <p class="statement anim-2" data-om-id="4ba0b514:35">The new glasses needed a <span class="mark" data-om-id="4ba0b514:36">flagship feature</span> to carry their story.</p>
-      <div class="spacer-md" data-om-id="4ba0b514:37"></div>
-      <div class="cols two anim-3" style="max-width:1180px;" data-om-id="4ba0b514:38">
-        <p class="body" data-om-id="4ba0b514:39">Ray-Ban Meta needed a hero capability to anchor the narrative, not just a spec bump.</p>
-        <p class="body" data-om-id="4ba0b514:41">Hardware alone wouldn't differentiate. The story had to be something people couldn't experience anywhere else.</p>
-      </div>
+    <div class="spacer-md"></div>
+    <h1 class="title anim-2" style="max-width:24ch;">The Wearables team set out to build a new category Meta could lead.</h1>
+    <p class="body anim-2" style="max-width:66ch; margin-top:24px;">A new hardware category was a chance to own their customer relationship end to end. Ray-Ban Stories, the prior generation, proved the form factor but never broke through, lagging on the three things that needed for that breakthrough.</p>
+    <div class="grow"></div>
+    <div class="cols three anim-3">
+      <div class="block topline"><span class="block-num">Sales</span><h3 class="block-head">Under 300K</h3><p class="block-body">Modest volume that never reached a mainstream audience.</p></div>
+      <div class="block topline"><span class="block-num">Retention</span><h3 class="block-head">Left in the drawer</h3><p class="block-body">No daily reason to reach for them, so they fell out of routine.</p></div>
+      <div class="block topline"><span class="block-num">Influence</span><h3 class="block-head">No moment</h3><p class="block-body">Never sparked the content or moment that makes people want in.</p></div>
     </div>
+    <div class="spacer-md"></div>
     <div class="footer anim-4" data-om-id="4ba0b514:42"><span data-om-id="4ba0b514:43">Ray-Ban Meta</span><span data-om-id="4ba0b514:44">Zachary Halvorson</span></div>
   </section>
 
@@ -586,7 +606,7 @@
     <div class="grow"></div>
     <div class="cols two anim-3" style="grid-template-columns: 1.05fr 0.95fr; gap:90px; align-items:center;">
       <div style="display:flex; flex-direction:column; gap:26px;">
-        <p class="body">The previous generation, Ray-Ban Stories, could already capture short clips, but thermal and battery limits made continuous streaming a non-starter.</p>
+        <p class="body">Ray-Ban Stories could already capture short clips, but thermal and battery limits made continuous streaming a non-starter.</p>
         <p class="body">The <strong>Ray-Ban Meta</strong> processor changed the equation. For the first time the glasses could hold a continuous, hands-free point of view, untethered, long enough to actually be live.</p>
       </div>
       <div style="display:flex; align-items:center; gap:48px; justify-content:center;">
@@ -617,16 +637,16 @@
     <div class="cols two anim-3" style="grid-template-columns: 1fr 1fr; gap:80px;">
       <div style="display:flex; flex-direction:column; gap:16px;">
         <p class="block-num">Why now</p>
-        <p class="body" style="font-size:28px;">Post-pandemic, POV video was surging, GoPro action sports, immersive travel walks, and a wave of first-person cooking from creators like Kenji López-Alt and Owen Han. Research showed the content was <strong>laborious to make</strong>; creation was the bottleneck on how much could exist. The glasses could remove it.</p>
+        <p class="body" style="font-size:28px;">Post-pandemic, POV video was surging, GoPro action sports, immersive travel walks, and a wave of first-person cooking from creators like Kenji López-Alt and Susi Vidal. Research showed <span class="mark">the content was laborious to make</span>; creation was the bottleneck on how much could exist. The glasses could remove it.</p>
       </div>
       <div style="display:flex; flex-direction:column; gap:16px;">
         <p class="block-num">Why streaming won</p>
-        <p class="body" style="font-size:28px;">Of the capture modes in flight, streaming integrated most <strong>seamlessly across the Family of Apps</strong>. Livestreamers are a small audience, but they post <span class="mark">aspirational</span> content with outsized reach, and tap-to-buy attribution could turn those views into glasses sales.</p>
+        <p class="body" style="font-size:28px;">Of the features explored, streaming integrated most <strong>seamlessly across the Family of Apps</strong>. Livestreamers are a small cohort, but they post <span class="mark">aspirational content</span> with outsized reach, and tap-to-buy attribution could turn those impressions into sales.</p>
       </div>
     </div>
     <div class="grow"></div>
     <div class="anim-3" style="border-top:1px solid var(--line); padding-top:24px;">
-      <p class="block-num" style="margin:0 0 16px;">Capture modes explored</p>
+      <p class="block-num" style="margin:0 0 16px;">Features explored</p>
       <div class="apps" style="gap:14px; align-items:center;">
         <span style="display:inline-flex; align-items:center; gap:14px; padding:9px 14px 9px 20px; border:1px solid var(--line); border-radius:999px; background:var(--card); white-space:nowrap;">
           <span class="chip" style="border:none; padding:0; background:none; color:var(--faint); opacity:0.7; white-space:nowrap;">Panorama</span>
@@ -669,12 +689,12 @@
       <div class="block topline">
         <span class="block-num">Sales &amp; marketing driver</span>
         <h3 class="block-head">Livestreaming</h3>
-        <p class="block-body">A splashy launch moment, aspirational POV like a race-car driver's view to headline Meta Connect, paired with <strong>tap-to-buy attribution</strong> that turns a creator's reach into device sales.</p>
+        <p class="block-body">A splashy launch moment, aspirational POV like a race-car driver's view to headline Meta Connect, paired with <strong>tap-to-buy attribution</strong> that <span class="mark">turns a creator's reach into device sales</span>.</p>
       </div>
       <div class="block topline">
         <span class="block-num">Retention driver</span>
         <h3 class="block-head">POV video calling</h3>
-        <p class="block-body">The intimate, everyday experience of <span class="mark">sharing what you see</span> with the people you love, the repeat use that keeps the glasses on your face.</p>
+        <p class="block-body">User research kept surfacing one want above all — to <span class="mark">feel present with the family and friends they love</span>. POV video calling answered it directly: the intimate, everyday experience of sharing what you see, the repeat use that keeps the glasses on your face.</p>
       </div>
     </div>
     <div class="spacer-md"></div>
@@ -719,24 +739,27 @@
       <p class="kicker anim" data-om-id="4ba0b514:103">How I moved it</p>
       <span class="pageno" data-om-id="4ba0b514:104">07 / 20</span>
     </div>
-    <div class="spacer-md" data-om-id="4ba0b514:105"></div>
-    <h1 class="title anim-2" style="max-width:24ch;" data-om-id="4ba0b514:106">Bringing people along with prototypes and a clear plan for integration.</h1>
-    <div class="grow" data-om-id="4ba0b514:107"></div>
-    <div class="cols three anim-3" data-om-id="4ba0b514:108">
-      <div class="block topline" data-om-id="4ba0b514:109">
-        <span class="block-num" data-om-id="4ba0b514:110">01</span>
-        <h3 class="block-head" data-om-id="4ba0b514:111">Make it real</h3>
-        <p class="block-body" data-om-id="4ba0b514:112">The hardware didn't exist yet, so I prototyped the novel interaction with a Raspberry Pi at one point and whatever tools we could hack together, making it real enough to feel.</p>
+    <div class="spacer-md"></div>
+    <div class="cols two anim-2" style="grid-template-columns: 1.1fr 0.9fr; gap:80px; flex:1; align-items:stretch;">
+      <div style="display:flex; flex-direction:column; justify-content:center;">
+        <h1 class="title" style="max-width:20ch; font-size:60px;" data-om-id="4ba0b514:106">Bringing people along with prototypes and a clear plan.</h1>
+        <div class="steps-stack anim-3" style="margin-top:40px;">
+          <div class="step-row" data-om-id="4ba0b514:109">
+            <p class="step-p" data-om-id="4ba0b514:112"><strong data-om-id="4ba0b514:111">Make it real.</strong> Prototyped the interaction with a Raspberry Pi and whatever we could hack together — real enough to feel.</p>
+          </div>
+          <div class="step-row" data-om-id="4ba0b514:113">
+            <p class="step-p" data-om-id="4ba0b514:116"><strong data-om-id="4ba0b514:115">Rally the room.</strong> Came with concrete integration proposals and built belief across leadership and XFN.</p>
+          </div>
+          <div class="step-row" data-om-id="4ba0b514:117">
+            <p class="step-p" data-om-id="4ba0b514:120"><strong data-om-id="4ba0b514:119">Build the system.</strong> Turned one feature into a reusable live-video library other teams could build on.</p>
+          </div>
+        </div>
       </div>
-      <div class="block topline" data-om-id="4ba0b514:113">
-        <span class="block-num" data-om-id="4ba0b514:114">02</span>
-        <h3 class="block-head" data-om-id="4ba0b514:115">Rally the room</h3>
-        <p class="block-body" data-om-id="4ba0b514:116">I did the homework, came with concrete integration proposals and a real grasp of every surface I was pitching into, and built belief across leadership and XFN.</p>
-      </div>
-      <div class="block topline" data-om-id="4ba0b514:117">
-        <span class="block-num" data-om-id="4ba0b514:118">03</span>
-        <h3 class="block-head" data-om-id="4ba0b514:119">Build the system</h3>
-        <p class="block-body" data-om-id="4ba0b514:120">Turned one feature into a reusable live-video system, a Meta-wide library other teams could build on, not a one-off.</p>
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div class="media squircle" style="width:470px; aspect-ratio:3024/4032;">
+          <image-slot id="supernova-demo" shape="rect" fit="cover" src="images/supernova-demo.jpeg" placeholder="Supernova demo"></image-slot>
+        </div>
+        <p class="slot-cap slot-cap--plain" style="margin:14px 0 0; max-width:24ch;">Evangelizing streaming at a demo event</p>
       </div>
     </div>
     <div class="spacer-md" data-om-id="4ba0b514:121"></div>
@@ -753,26 +776,26 @@
     <div class="cols two anim-2" style="grid-template-columns: 0.82fr 1.18fr; gap:64px; flex:1; align-items:center;">
       <div style="display:flex; flex-direction:column; justify-content:center;">
         <h1 class="title" style="max-width:18ch;">Bolted on, or built in.</h1>
-        <p class="body" style="max-width:40ch; margin-top:24px;">The same livestream could sit in a siloed surface inside our companion app, or run natively in the apps people already open every day. I led the push to directly integrate and leverage the existing product surfaces streamers already used and loved.</p>
+        <p class="body" style="max-width:40ch; margin-top:24px;">The original push from Product was to build streaming into the companion app to avoid operational complexity. I led the push to directly integrate and leverage the existing product surfaces streamers already used and loved.</p>
       </div>
-      <div style="display:flex; justify-content:center; align-items:flex-start; gap:88px;">
+      <div style="display:flex; justify-content:center; align-items:flex-start; gap:56px;">
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
-          <div class="phone phone--sm" style="width:300px;">
+          <div class="phone phone--sm" style="width:308px;">
             <div class="screen">
-              <video src="images/companion-stream.mp4" poster="images/poster-companion-stream.jpg" preload="none" loop muted playsinline></video>
+              <video preload="none" data-src="images/companion-stream.mp4" poster="images/poster-companion-stream.jpg" autoplay loop muted playsinline></video>
             </div>
           </div>
-          <p class="expl-label" style="margin-top:30px;">Companion app</p>
-          <p class="expl-why" style="max-width:26ch; margin:0 auto;">Streaming siloed in a separate app.</p>
+          <div style="display:flex; justify-content:center; margin-top:24px;"><span class="foa-ico" style="width:32px; height:32px;"><image-slot id="int-view" shape="rounded" radius="8" fit="cover" src="images/icon-view.png" placeholder="View"></image-slot></span></div>
+          <p class="expl-why" style="max-width:30ch; margin:14px auto 0;">Streaming as a third-party client in a separate app</p>
         </div>
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
-          <div class="phone phone--sm" style="width:300px;">
+          <div class="phone phone--sm" style="width:308px;">
             <div class="screen">
-              <video src="images/integrated-stream.mp4" poster="images/poster-integrated-stream.jpg" preload="none" loop muted playsinline></video>
+              <video preload="none" data-src="images/integrated-stream.mp4" poster="images/poster-integrated-stream.jpg" autoplay loop muted playsinline></video>
             </div>
           </div>
-          <p class="expl-label" style="margin-top:30px; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:8px;"><span style="width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none;"></span>Family of Apps</p>
-          <p class="expl-why" style="max-width:26ch; margin:0 auto;">Live natively in Instagram &amp; WhatsApp.</p>
+          <div style="display:flex; justify-content:center; gap:10px; margin-top:24px;"><span class="foa-ico" style="width:32px; height:32px;"><image-slot id="int-ig" shape="rounded" radius="8" fit="cover" src="images/icon-instagram.png" placeholder="IG"></image-slot></span><span class="foa-ico" style="width:32px; height:32px;"><image-slot id="int-wa" shape="rounded" radius="8" fit="cover" src="images/icon-whatsapp.png" placeholder="WA"></image-slot></span><span class="foa-ico" style="width:32px; height:32px;"><image-slot id="int-msgr" shape="rounded" radius="8" fit="cover" src="images/icon-messenger.png" placeholder="M"></image-slot></span><span class="foa-ico" style="width:32px; height:32px;"><image-slot id="int-fb" shape="rounded" radius="8" fit="cover" src="images/icon-facebook.png" placeholder="FB"></image-slot></span></div>
+          <p class="expl-why" style="max-width:30ch; margin:14px auto 0;">Direct integration into camera surfaces</p>
         </div>
       </div>
     </div>
@@ -781,9 +804,9 @@
   </section>
 
   <!-- 6 · ARTIFACT 01 -->
-  <section class="slide" data-label="Artifact · Reels prototype" data-om-id="4ba0b514:125" data-screen-label="09 Artifact · Reels prototype" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="5" data-deck-active="">
+  <section class="slide" data-label="Making the case · Reels" data-om-id="4ba0b514:125" data-screen-label="09 Making the case · Reels" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="5" data-deck-active="">
     <div class="rail" data-om-id="4ba0b514:126">
-      <p class="kicker anim" data-om-id="4ba0b514:127">Craft artifact · 01</p>
+      <p class="kicker anim" data-om-id="4ba0b514:127">Making the case</p>
       <span class="pageno" data-om-id="4ba0b514:128">09 / 20</span>
     </div>
     <div class="spacer-sm" data-om-id="4ba0b514:129"></div>
@@ -863,21 +886,21 @@
       </div>
       <div class="expl-cell" data-om-id="f9393c25:212">
         <div class="media squircle" style="aspect-ratio:314/285;" data-om-id="f9393c25:213">
-          <video class="expl-video" src="videos/toggle.mp4" poster="videos/poster-toggle.jpg" preload="none" loop muted playsinline data-om-id="f9393c25:214"></video>
+          <video preload="none" class="expl-video" data-src="videos/toggle.mp4" poster="images/poster-toggle.jpg" autoplay loop muted playsinline data-om-id="f9393c25:214"></video>
         </div>
         <p class="expl-label" data-om-id="f9393c25:215">Floating Toggle</p>
         <p class="expl-why" data-om-id="f9393c25:216">Easily integreated, touch-friendly camera switching pinned to the side of any camera app UI.</p>
       </div>
       <div class="expl-cell" data-om-id="f9393c25:217">
         <div class="media squircle" style="aspect-ratio:314/285;" data-om-id="f9393c25:218">
-          <video class="expl-video" src="videos/widget.mp4" poster="videos/poster-widget.jpg" preload="none" loop muted playsinline data-om-id="f9393c25:219"></video>
+          <video preload="none" class="expl-video" data-src="videos/widget.mp4" poster="images/poster-widget.jpg" autoplay loop muted playsinline data-om-id="f9393c25:219"></video>
         </div>
         <p class="expl-label" data-om-id="f9393c25:220">Gesture-based widget</p>
         <p class="expl-why" data-om-id="f9393c25:221">Bystander privacy with a required gesture to activate meant adding user education to guide.</p>
       </div>
       <div class="expl-cell" data-om-id="f9393c25:222">
         <div class="media squircle" style="aspect-ratio:314/285;" data-om-id="f9393c25:223">
-          <video class="expl-video" src="videos/meta-widget.mp4" poster="videos/poster-meta-widget.jpg" preload="none" loop muted playsinline data-om-id="f9393c25:224"></video>
+          <video preload="none" class="expl-video" data-src="videos/meta-widget.mp4" poster="images/poster-meta-widget.jpg" autoplay loop muted playsinline data-om-id="f9393c25:224"></video>
         </div>
         <p class="expl-label" data-om-id="f9393c25:225">Meta-branded with theming</p>
         <p class="expl-why" data-om-id="f9393c25:226">Keeping the required gesture, but settling into a neutral, system-styled treatment that could be themed.</p>
@@ -887,7 +910,7 @@
     <div class="footer anim-4" data-om-id="4ba0b514:235"><span data-om-id="4ba0b514:236">Ray-Ban Meta</span><span data-om-id="4ba0b514:237">Zachary Halvorson</span></div>
   </section><section class="slide" data-label="Artifact · POV calling" data-om-id="4ba0b514:143" data-screen-label="12 Artifact · POV calling" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="6">
     <div class="rail" data-om-id="4ba0b514:144">
-      <p class="kicker anim" data-om-id="4ba0b514:145">Craft artifact · 02</p>
+      <p class="kicker anim" data-om-id="4ba0b514:145">Craft artifact</p>
       <span class="pageno" data-om-id="4ba0b514:146">12 / 20</span>
     </div>
     <div class="spacer-sm" data-om-id="4ba0b514:147"></div>
@@ -896,7 +919,7 @@
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div class="phone" style="width:308px;">
             <div class="screen">
-              <video src="images/calling-messenger.mp4" poster="images/poster-calling-messenger.jpg" preload="none" loop muted playsinline></video>
+              <video preload="none" data-src="images/calling-messenger.mp4" poster="images/poster-calling-messenger.jpg" autoplay loop muted playsinline></video>
             </div>
           </div>
           <div class="foa-app" style="margin-top:26px; gap:13px;">
@@ -907,7 +930,7 @@
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div class="phone" style="width:308px;">
             <div class="screen">
-              <video src="images/calling-whatsapp.mp4" poster="images/poster-calling-whatsapp.jpg" preload="none" loop muted playsinline></video>
+              <video preload="none" data-src="images/calling-whatsapp.mp4" poster="images/poster-calling-whatsapp.jpg" autoplay loop muted playsinline></video>
             </div>
           </div>
           <div class="foa-app" style="margin-top:26px; gap:13px;">
@@ -941,7 +964,7 @@
       </div>
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="4ba0b514:179">
         <div class="media" style="aspect-ratio:1984/1814; overflow:hidden;" data-om-id="4ba0b514:180">
-          <video src="images/edge-cases.mp4" poster="images/poster-edge-cases.jpg" preload="none" loop muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+          <video preload="none" data-src="images/edge-cases.mp4" poster="images/poster-edge-cases.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
         </div>
         <p class="slot-cap" data-om-id="4ba0b514:182">Interactive matrix of fail modes</p>
       </div>
@@ -967,7 +990,7 @@
         <div style="position:relative; display:inline-block;">
           <div class="media" style="width:812px; height:670px;"><image-slot id="proto-figma" shape="rect" fit="contain" src="images/figma-prototyping-kit.png" placeholder="Third Camera Library"></image-slot></div>
           <div style="position:absolute; right:-48px; bottom:96px; width:304px; aspect-ratio:1430/1270; border-radius:16px; overflow:hidden; background:#000; box-shadow:0 24px 48px -14px rgba(20,28,42,0.5);">
-            <video src="images/error-flow.mp4" poster="images/poster-error-flow.jpg" preload="none" loop muted playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+            <video preload="none" data-src="images/error-flow.mp4" poster="images/poster-error-flow.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
           </div>
         </div>
         <p class="slot-cap" style="margin-top:28px;">Third Camera Library · shared prototyping kit</p>
@@ -988,7 +1011,7 @@
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;" data-om-id="4ba0b514:193">
         <div class="phone" style="width:300px;" data-om-id="4ba0b514:194">
           <div class="screen" data-om-id="4ba0b514:195">
-            <video src="images/talent-show.mp4" poster="images/poster-talent-show.jpg" preload="none" loop muted playsinline></video>
+            <video preload="none" data-src="images/talent-show.mp4" poster="images/poster-talent-show.jpg" autoplay loop muted playsinline></video>
           </div>
         </div>
         <p class="slot-cap" style="margin-top:24px;" data-om-id="4ba0b514:197">Making dogfooding fun</p>
@@ -1029,7 +1052,7 @@
   <!-- 9c · ATTRIBUTION — views into buyers -->
   <section class="slide" data-label="Attribution" data-screen-label="17 Attribution" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="10">
     <div class="rail">
-      <p class="kicker anim">Craft artifact · 03</p>
+      <p class="kicker anim">Craft artifact · 02</p>
       <span class="pageno">17 / 20</span>
     </div>
     <div class="spacer-sm"></div>
@@ -1037,7 +1060,7 @@
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
         <div class="phone" style="width:300px;">
           <div class="screen">
-            <video src="images/attribution.mp4" poster="images/poster-attribution.jpg" preload="none" loop muted playsinline></video>
+            <video preload="none" data-src="images/attribution.mp4" poster="images/poster-attribution.jpg" autoplay loop muted playsinline></video>
           </div>
         </div>
         <p class="slot-cap" style="margin-top:24px;">Tap-to-buy on a live stream</p>
@@ -1171,5 +1194,26 @@
   </svg>
 </template>
 
+<script id="lazy-video-loader">
+(function(){
+  function vids(s){ return s ? s.querySelectorAll('video[data-src]') : []; }
+  function playSafe(v){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); }
+  function activate(s){ vids(s).forEach(function(v){
+    if(v.dataset.vloaded){ playSafe(v); return; }
+    v.dataset.vloaded='1';
+    fetch(v.getAttribute('data-src')).then(function(r){ return r.blob(); }).then(function(b){
+      v.src = URL.createObjectURL(b); playSafe(v);
+    }).catch(function(){ v.dataset.vloaded=''; });
+  }); }
+  function deactivate(s){ vids(s).forEach(function(v){ try{ v.pause(); }catch(e){} }); }
+  function init(){
+    var stage=document.querySelector('deck-stage');
+    if(!stage){ return setTimeout(init,50); }
+    stage.addEventListener('slidechange', function(e){ deactivate(e.detail.previousSlide); activate(e.detail.slide); });
+    activate(stage.querySelector('[data-deck-active]') || document.querySelector('section.slide'));
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
 </body>
 </html>
