@@ -17,6 +17,13 @@
 //     rail thumbnails (the rail falls back to the poster when it can't grab a
 //     live frame).
 //
+// It also strips the in-browser JSX edit-mode toolchain a raw export ships
+// (React + Babel-standalone from a CDN, plus the deck-tweaks / tweaks-panel
+// authoring panel). That panel only mounts inside the design editor; at view
+// time it just re-applies the theme/font already baked into the export's
+// <html>, so for visitors it's pure dead weight — and the site's only
+// third-party-CDN dependency. See stripEditorScripts.
+//
 // The playback half is automatic for every deck (handled by the shell), so the
 // ONLY per-export step is running this script. Re-run it after every re-export.
 //
@@ -125,6 +132,39 @@ function rewriteFontLinks(html) {
   return { html: out, count };
 }
 
+// Strip the in-browser JSX edit-mode toolchain from a published export. A raw
+// export ships a "Tweaks" authoring panel (deck-tweaks.jsx / tweaks-panel.jsx)
+// plus the React, ReactDOM, and Babel-standalone CDN scripts that transform and
+// run it in the browser. The panel only mounts inside the design editor (it
+// listens for __activate_edit_mode) and at view time merely re-applies the
+// theme/font defaults already on the export's <html>, so it's dead weight for
+// visitors — and the only third-party-CDN dependency on the site. Drop the
+// <script type="text/babel"> JSX tags and the React/Babel loaders that exist
+// solely to serve them; the deck's own player (deck-stage.js / image-slot.js)
+// is vanilla and untouched.
+//
+// Matches only *empty-bodied* <script ...></script> tags (every target is one),
+// so it can never span the content of a bundler-style export, whose React/Babel
+// refs live as escaped strings inside a __bundler/* manifest — those have a body
+// and are left alone, matching the "bundles are already local" stance below.
+function stripEditorScripts(html) {
+  const isEditorLoader = (open) =>
+    /\bsrc\s*=\s*["'][^"']*(react(-dom)?[@.]|@babel\/standalone|babel(\.min)?\.js)/i.test(open);
+  let count = 0;
+  const out = html.replace(
+    /[ \t]*<script\b([^>]*)>\s*<\/script>[ \t]*\r?\n?/gi,
+    (whole, attrs) => {
+      const open = "<script" + attrs + ">";
+      if (/\btype\s*=\s*["']?text\/babel/i.test(open) || isEditorLoader(open)) {
+        count++;
+        return "";
+      }
+      return whole;
+    }
+  );
+  return { html: out, count };
+}
+
 function ffmpegPoster(videoAbs, posterAbs) {
   execFileSync(
     "ffmpeg",
@@ -141,6 +181,10 @@ function processDeck(indexPath) {
   // Render-blocking webfont CSS → async (independent of whether there's video).
   const fonts = rewriteFontLinks(html);
   html = fonts.html;
+
+  // Drop the editor-only React/Babel/tweaks-panel scripts (view-time dead weight).
+  const editors = stripEditorScripts(html);
+  html = editors.html;
 
   let rewritten = 0, postersMade = 0, skipped = 0;
   const seen = new Set();
@@ -178,10 +222,11 @@ function processDeck(indexPath) {
     }
   }
 
-  if (rewritten || postersMade || fonts.count) {
+  if (rewritten || postersMade || fonts.count || editors.count) {
     writeFileSync(indexPath, html);
     const bits = [`${rewritten} tag(s) rewritten`, `${postersMade} poster(s) generated`];
     if (fonts.count) bits.push(`${fonts.count} font link(s) made async`);
+    if (editors.count) bits.push(`${editors.count} editor script(s) stripped`);
     console.log(`✓ ${slug}: ${bits.join(", ")}${skipped ? `, ${skipped} skipped` : ""}`);
   } else {
     console.log(`· ${slug}: already optimized${skipped ? ` (${skipped} non-file src skipped)` : ""}`);
