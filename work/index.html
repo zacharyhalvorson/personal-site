@@ -834,7 +834,13 @@
           // reveal (no blank-then-flash if body bg lands a tick earlier).
           var themedRoot = ds && ds.shadowRoot &&
             ds.shadowRoot.getElementById("work-rail-style");
-          themed = !!(ds && slide && themedRoot && slide.getBoundingClientRect().width > 0 &&
+          // Also wait for the navigator to have built its thumbnails, so the
+          // first reveal fades the slide AND the rail in together instead of
+          // flashing the navigator in a beat after the slide.
+          var railReady = ds && ds.shadowRoot &&
+            ds.shadowRoot.querySelectorAll(".rail .thumb").length > 0;
+          themed = !!(ds && slide && themedRoot && railReady &&
+            slide.getBoundingClientRect().width > 0 &&
             getComputedStyle(doc.body).backgroundColor === base);
         } catch (e) { /* mid-rebuild; treat as not-yet-themed */ }
         streak = themed ? streak + 1 : 0;
@@ -938,7 +944,7 @@
               ds.classList.add("rail-anim");
               setupRail(frame, ds);
             }
-            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); setupKeyNav(frame, ds); }
+            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); setupKeyNav(frame, ds); preheatImages(frame, ds); }
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
@@ -961,6 +967,22 @@
         var doc = frame.contentDocument;
         var videos = [].slice.call(doc.querySelectorAll("video"));
         if (!videos.length) return;
+        // Kill the brief black flash a clip shows between its poster clearing
+        // (the moment it has metadata) and its first decoded frame: paint the
+        // poster as the video's own background and warm it, so that gap shows
+        // the still rather than the deck's black video background. The frames
+        // paint over this once playback starts, so it's invisible thereafter.
+        videos.forEach(function (v) {
+          if (!v.getAttribute("poster")) return;
+          var poster = v.poster; // resolved absolute URL
+          v.style.backgroundImage = 'url("' + poster + '")';
+          v.style.backgroundSize = "cover";
+          v.style.backgroundPosition = "center";
+          v.style.backgroundRepeat = "no-repeat";
+          v.style.backgroundColor = "transparent";
+          var pre = new Image();
+          pre.src = poster; // cache it so the background is ready on first show
+        });
         function sync() {
           // During print the deck briefly marks *every* slide active; don't
           // mass-fetch then — only drive playback when exactly one is current.
@@ -982,6 +1004,30 @@
         });
         sync();
       } catch (e) { /* cross-origin / not ready — videos rest on posters */ }
+    }
+
+    // Decode this deck's slide images ahead of time during idle so navigating to
+    // a slide paints instantly — no decode hitch on first show. The images are
+    // already fetched eagerly by their <image-slot>; this just makes them
+    // decode-ready before the visitor arrives. Runs once per loaded deck.
+    function preheatImages(frame, ds) {
+      if (ds.dataset.imgPreheat) return;
+      ds.dataset.imgPreheat = "1";
+      var run = function () {
+        try {
+          var doc = frame.contentDocument;
+          if (!doc) return;
+          var imgs = [];
+          doc.querySelectorAll("image-slot").forEach(function (s) {
+            var im = s.shadowRoot && s.shadowRoot.querySelector("img[part=image]");
+            if (im && im.getAttribute("src")) imgs.push(im);
+          });
+          doc.querySelectorAll("img[src]").forEach(function (im) { imgs.push(im); });
+          imgs.forEach(function (im) { if (im.decode) im.decode().catch(function () {}); });
+        } catch (e) { /* mid-rebuild or cross-origin — skip */ }
+      };
+      if (window.requestIdleCallback) window.requestIdleCallback(run, { timeout: 3000 });
+      else setTimeout(run, 1200);
     }
 
     // The deck's own keymap covers Left/Right, PageUp/Down, Space and Home/End,

@@ -39,7 +39,7 @@
 // ---------------------------------------------------------------------------
 
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import { dirname, join, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -49,12 +49,18 @@ const args = process.argv.slice(2);
 let force = false;
 let ss = "0"; // poster timestamp; frame 0 matches playback start (no jump)
 let all = false;
+let noImages = false; // skip the image (downscale + WebP) pass
+let maxEdge = 1600;   // cap an image's longest side at this many px
+let imgQuality = 80;  // cwebp quality for the image pass
 const targets = [];
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === "--force") force = true;
   else if (a === "--all") all = true;
   else if (a === "--ss") ss = String(args[++i]);
+  else if (a === "--no-images") noImages = true;
+  else if (a === "--max-edge") maxEdge = parseInt(args[++i], 10) || maxEdge;
+  else if (a === "--img-quality") imgQuality = parseInt(args[++i], 10) || imgQuality;
   else if (a.startsWith("--")) fail(`Unknown flag: ${a}`);
   else targets.push(a);
 }
@@ -173,6 +179,97 @@ function ffmpegPoster(videoAbs, posterAbs) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Image pass: downscale oversized slide images and re-encode them to WebP.
+//
+// A raw export ships slide images at full capture resolution as PNG/JPEG — the
+// Ray-Ban Meta deck alone carries ~20 MB across them — and every slide is in the
+// DOM at once, so the browser pulls all of it eagerly on first load, leaving a
+// slide you reach early still waiting on the big ones behind it. WebP at a sane
+// max edge cuts that ~6-20x with no visible loss at slide size, and (being
+// alpha-capable) it stands in for both opaque and transparent PNGs. We rewrite
+// the deck's references to the .webp and drop the originals.
+//
+// Needs `cwebp` (libwebp) to encode and `ffprobe` (ships with ffmpeg) to read
+// dimensions. If cwebp is absent the whole pass is skipped — the deck still
+// works, just heavier. Video posters (poster-*.jpg, owned by the video pass) and
+// SVGs are left alone, and any image that doesn't actually get smaller as WebP
+// (tiny icons, already-tight art) keeps its original.
+let cwebpChecked = false, cwebpOK = false;
+function haveCwebp() {
+  if (!cwebpChecked) {
+    cwebpChecked = true;
+    try { execFileSync("cwebp", ["-version"], { stdio: "ignore" }); cwebpOK = true; }
+    catch { cwebpOK = false; }
+  }
+  return cwebpOK;
+}
+
+function imageDims(abs) {
+  try {
+    const out = execFileSync(
+      "ffprobe",
+      ["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", abs],
+      { encoding: "utf8" }
+    );
+    const [w, h] = out.trim().split(",").map((n) => parseInt(n, 10));
+    return w && h ? { w, h } : null;
+  } catch { return null; }
+}
+
+function encodeWebp(srcAbs, outAbs, dims) {
+  const a = ["-quiet", "-q", String(imgQuality), "-m", "6"];
+  // Cap the longest side at maxEdge (cwebp -resize keeps aspect; 0 = auto).
+  // Only ever downscale — never enlarge a smaller source.
+  if (dims) {
+    if (dims.w >= dims.h && dims.w > maxEdge) a.push("-resize", String(maxEdge), "0");
+    else if (dims.h > dims.w && dims.h > maxEdge) a.push("-resize", "0", String(maxEdge));
+  }
+  execFileSync("cwebp", [...a, srcAbs, "-o", outAbs], { stdio: "ignore" });
+}
+
+// Find the deck's referenced raster images, convert each to a downscaled WebP,
+// and — when that's actually smaller — rewrite every reference to it and delete
+// the original. Returns the updated html plus a tally. Idempotent: a re-run sees
+// only .webp references and finds nothing to do.
+function optimizeImages(html, deckDir) {
+  if (noImages) return { html, converted: 0, saved: 0, skipped: 0, unavailable: false };
+  if (!haveCwebp()) return { html, converted: 0, saved: 0, skipped: 0, unavailable: true };
+
+  const refs = new Set();
+  const re = /(?:src|href|poster|data-src)\s*=\s*"((?:images|videos)\/[^"]+\.(?:png|jpe?g))"/gi;
+  let m;
+  while ((m = re.exec(html))) refs.add(m[1]);
+
+  let converted = 0, saved = 0, skipped = 0;
+  for (const rel of refs) {
+    if (/(^|\/)poster-[^/]*$/i.test(rel)) continue; // video posters belong to the video pass
+    const srcAbs = join(deckDir, rel);
+    if (!existsSync(srcAbs)) continue;
+    const outRel = rel.replace(/\.(png|jpe?g)$/i, ".webp");
+    const outAbs = join(deckDir, outRel);
+    const origSize = statSync(srcAbs).size;
+    try {
+      encodeWebp(srcAbs, outAbs, imageDims(srcAbs));
+    } catch (e) {
+      fail(`cwebp failed on ${rel} (is cwebp installed and on PATH?)\n${e.message}`);
+    }
+    const newSize = existsSync(outAbs) ? statSync(outAbs).size : Infinity;
+    // Keep the WebP only when it's a clear win; otherwise discard it and leave
+    // the original (covers tiny icons that bloat as WebP).
+    if (newSize < origSize * 0.9) {
+      html = html.split(rel).join(outRel);
+      try { unlinkSync(srcAbs); } catch {}
+      saved += origSize - newSize;
+      converted++;
+    } else {
+      try { unlinkSync(outAbs); } catch {}
+      skipped++;
+    }
+  }
+  return { html, converted, saved, skipped, unavailable: false };
+}
+
 function processDeck(indexPath) {
   const deckDir = dirname(indexPath);
   const slug = basename(deckDir);
@@ -222,14 +319,21 @@ function processDeck(indexPath) {
     }
   }
 
-  if (rewritten || postersMade || fonts.count || editors.count) {
+  // Downscale + WebP the slide images, rewriting references to match.
+  const images = optimizeImages(html, deckDir);
+  html = images.html;
+
+  if (rewritten || postersMade || fonts.count || editors.count || images.converted) {
     writeFileSync(indexPath, html);
     const bits = [`${rewritten} tag(s) rewritten`, `${postersMade} poster(s) generated`];
     if (fonts.count) bits.push(`${fonts.count} font link(s) made async`);
     if (editors.count) bits.push(`${editors.count} editor script(s) stripped`);
+    if (images.converted) bits.push(`${images.converted} image(s) → webp (−${(images.saved / 1048576).toFixed(1)}MB)`);
+    if (images.unavailable) bits.push("images skipped (no cwebp)");
     console.log(`✓ ${slug}: ${bits.join(", ")}${skipped ? `, ${skipped} skipped` : ""}`);
   } else {
-    console.log(`· ${slug}: already optimized${skipped ? ` (${skipped} non-file src skipped)` : ""}`);
+    const note = images.unavailable ? " (cwebp not found — image pass skipped)" : "";
+    console.log(`· ${slug}: already optimized${skipped ? ` (${skipped} non-file src skipped)` : ""}${note}`);
   }
 }
 
