@@ -544,6 +544,10 @@
       // stays crisp). `--fill-scale` is computed in JS from the deck width.
       "deck-stage.rail-off .slide{transform:scale(var(--fill-scale,1)) !important;" +
       "transform-origin:center !important}" +
+      // In fullscreen the deck fits the canvas to the full screen itself, so the
+      // rail-off fill-scale (computed for the embedded width) would over-scale
+      // the slide and overflow. Drop it while data-fs is set.
+      "deck-stage[data-fs] .slide{transform:none !important}" +
       "@media (prefers-color-scheme:dark){" +
       "html,body{background:#1c1b19 !important}" +
       "deck-stage{background:#1c1b19 !important}" +
@@ -610,6 +614,15 @@
       "visibility:hidden !important;pointer-events:none !important;" +
       "transition:transform 360ms " + EASE + ",visibility 0s linear 360ms !important}" +
       ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
+      // Fullscreen: the deck collapses its rail to a hover-peek strip and its
+      // _fit() reclaims the full width (_railWidth() returns 0 while data-fs is
+      // set), so the reserved rail column has to step aside or the slide sits
+      // offset on the black presentation canvas. Keyed on the deck's own
+      // data-fs attribute, which it sets for both standard and webkit
+      // fullscreen. Snap (no transition) so it doesn't race the browser's
+      // fullscreen zoom while _fit re-scales the canvas.
+      ":host([data-fs]) .stage{left:0 !important;width:100% !important;" +
+      "transition:none !important}" +
       "@media (prefers-color-scheme:dark){" +
       ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}" +
       ".rail:hover::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.30) !important}" +
@@ -692,6 +705,13 @@
         frame.id = "frame-" + c.slug;
         frame.title = c.label + " case study";
         frame.setAttribute("loading", "lazy");
+        // The deck's navigator has a fullscreen toggle that calls
+        // requestFullscreen() on an element *inside* the iframe; the Fullscreen
+        // API gates that behind the frame's permission, so without this it's
+        // flaky (works only in browsers lenient about same-origin frames). Set
+        // both the modern allow= and the legacy attribute for coverage.
+        frame.setAttribute("allow", "fullscreen");
+        frame.setAttribute("allowfullscreen", "");
         frame.dataset.src = c.src; // lazy: real src set on first selection
         stage.appendChild(frame);
         frames[c.slug] = frame;
