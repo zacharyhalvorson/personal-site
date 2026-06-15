@@ -734,6 +734,11 @@
         history.replaceState(null, "", "#" + slug);
       }
       document.title = labelFor(slug) + " — Zachary Halvorson";
+      // The export only receives keyboard nav while its iframe is the focused
+      // frame. Hand focus to the live deck on load and on every case switch so
+      // arrow / Page / Space / Home-End work immediately — without this the
+      // shell keeps focus and keys do nothing until you click into the slide.
+      try { frames[slug].focus({ preventScroll: true }); } catch (e) {}
     }
 
     // Load an export iframe once; call onReady when it has rendered (or right
@@ -1084,6 +1089,37 @@
     });
     window.addEventListener("pointerdown", function () {
       document.body.classList.remove("-kbd");
+    });
+
+    // activate() hands focus to the deck, but focus can drift back to the
+    // shell chrome (clicking the home or sidebar button, the dropdown). When
+    // it has, forward the export's navigation keys to the active case so they
+    // keep working without re-clicking the slide. Re-dispatch into the iframe
+    // so the first press counts, then hand focus over for subsequent keys.
+    var DECK_NAV_KEYS = {
+      ArrowLeft: 1, ArrowRight: 1, PageUp: 1, PageDown: 1,
+      Home: 1, End: 1, " ": 1, Spacebar: 1
+    };
+    window.addEventListener("keydown", function (e) {
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!DECK_NAV_KEYS[e.key]) return;
+      var ae = document.activeElement;
+      if (ae) {
+        var tag = ae.tagName;
+        // Leave focused controls alone: the case dropdown, gate input, links.
+        if (ae === selectEl || ae.isContentEditable ||
+            tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||
+            tag === "BUTTON" || tag === "A") return;
+      }
+      var frame = active && frames[active];
+      if (!frame || !frame.contentWindow || ae === frame) return;
+      try {
+        frame.contentWindow.dispatchEvent(
+          new KeyboardEvent("keydown", { key: e.key, code: e.code })
+        );
+        frame.focus({ preventScroll: true });
+        e.preventDefault();
+      } catch (err) {}
     });
 
     function defaultSlug() {
