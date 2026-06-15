@@ -28,7 +28,7 @@ ships an in-browser **edit-mode toolchain** (React + Babel-standalone from a CDN
 that transform the `deck-tweaks` / `tweaks-panel` authoring panel live) that no
 visitor needs. Two pieces fix this:
 
-- **`optimize-deck.mjs`** (run per export) does three things to each deck:
+- **`optimize-deck.mjs`** (run per export) does four things to each deck:
   - rewrites every `<video>` to `preload="none"` with no `autoplay`, and gives
     each clip a **poster** still (a frame extracted with `ffmpeg`). The poster
     is what shows on the slide and in the navigator rail thumbnail before/while
@@ -45,17 +45,32 @@ visitor needs. Two pieces fix this:
     deck's own player (`deck-stage.js` / `image-slot.js`) is vanilla and is left
     untouched. Bundler-style exports inline these behind a manifest and are
     detected and skipped, same as their media.
+  - **downscales + re-encodes oversized slide images to WebP** — a raw export
+    ships slide art at full capture resolution (the Ray-Ban Meta deck alone
+    carried ~20 MB of PNG/JPEG), and since every slide is in the DOM at once the
+    browser pulls all of it eagerly on first load, so a slide you reach early can
+    still be waiting on the big ones. Each referenced image is capped at a
+    1600px longest edge and re-encoded to WebP (`cwebp`, alpha preserved), the
+    references are rewritten to the `.webp`, and the original is dropped —
+    typically a 6–20× cut with no visible loss at slide size. Images that don't
+    actually get smaller (tiny icons) keep their original; video posters and
+    remote/bundled images are left alone.
 - **The reader shell** (`work/index.html`, automatic for every deck) plays only
-  the **on-screen slide's** videos and pauses the rest. So a clip's bytes are
-  pulled only when its slide is actually shown, then stay buffered for instant
-  revisits.
+  the **on-screen slide's** videos and pauses the rest (so a clip's bytes are
+  pulled only when its slide is shown, then stay buffered for instant revisits),
+  preloads each clip's poster behind the video to kill the poster→first-frame
+  flash, and decodes the deck's slide images during idle so navigating to a
+  slide paints instantly.
 
 The shell half needs no per-deck work — only step 2 above is per-export.
 
 ### Requirements / notes
 
-- `optimize-deck.mjs` needs **`ffmpeg`** on your `PATH` (only when it has to
-  generate a poster). No npm dependencies.
+- `optimize-deck.mjs` needs **`ffmpeg`** on your `PATH` (to generate posters and
+  read image dimensions) and **`cwebp`** (libwebp) for the image pass. No npm
+  dependencies. If `cwebp` is missing the image pass is skipped (the deck still
+  works, just heavier); pass `--no-images` to skip it explicitly, or tune it with
+  `--max-edge <px>` / `--img-quality <0-100>`.
 - Posters are written next to each video as `poster-<name>.jpg` and reused on
   later runs. Pass `--force` to regenerate them, or `--ss <seconds>` to grab the
   poster frame at a different timestamp (default `0`, which matches the start of
