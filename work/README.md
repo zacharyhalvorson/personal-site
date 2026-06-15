@@ -23,10 +23,12 @@ design** and dropped in at `work/<slug>/`.
 
 A raw export ships every slide `<video>` with `autoplay` and no `preload`, and
 every slide is in the DOM at once — so the browser eagerly downloads **all** the
-clips on first load (tens of MB), most for slides nobody scrolls to. Two pieces
-fix this:
+clips on first load (tens of MB), most for slides nobody scrolls to. It also
+ships an in-browser **edit-mode toolchain** (React + Babel-standalone from a CDN
+that transform the `deck-tweaks` / `tweaks-panel` authoring panel live) that no
+visitor needs. Two pieces fix this:
 
-- **`optimize-deck.mjs`** (run per export) does two things to each deck:
+- **`optimize-deck.mjs`** (run per export) does three things to each deck:
   - rewrites every `<video>` to `preload="none"` with no `autoplay`, and gives
     each clip a **poster** still (a frame extracted with `ffmpeg`). The poster
     is what shows on the slide and in the navigator rail thumbnail before/while
@@ -35,6 +37,14 @@ fix this:
     links it render-blocking, which stalls the first paint on a round-trip to
     `fonts.googleapis.com`). The deck defaults to the system font stack with
     `font-display: swap`, so the webfont can swap in lazily.
+  - **strips the edit-mode toolchain** — the `<script type="text/babel">` JSX
+    tags plus the React/ReactDOM/Babel-standalone CDN scripts that exist only to
+    run them. That panel only mounts inside the design editor; at view time it
+    just re-applies the theme/font already baked into the export's `<html>`, so
+    it's pure dead weight — and the site's only third-party-CDN dependency. The
+    deck's own player (`deck-stage.js` / `image-slot.js`) is vanilla and is left
+    untouched. Bundler-style exports inline these behind a manifest and are
+    detected and skipped, same as their media.
 - **The reader shell** (`work/index.html`, automatic for every deck) plays only
   the **on-screen slide's** videos and pauses the rest. So a clip's bytes are
   pulled only when its slide is actually shown, then stay buffered for instant

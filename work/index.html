@@ -544,6 +544,10 @@
       // stays crisp). `--fill-scale` is computed in JS from the deck width.
       "deck-stage.rail-off .slide{transform:scale(var(--fill-scale,1)) !important;" +
       "transform-origin:center !important}" +
+      // In fullscreen the deck fits the canvas to the full screen itself, so the
+      // rail-off fill-scale (computed for the embedded width) would over-scale
+      // the slide and overflow. Drop it while data-fs is set.
+      "deck-stage[data-fs] .slide{transform:none !important}" +
       "@media (prefers-color-scheme:dark){" +
       "html,body{background:#1c1b19 !important}" +
       "deck-stage{background:#1c1b19 !important}" +
@@ -610,6 +614,15 @@
       "visibility:hidden !important;pointer-events:none !important;" +
       "transition:transform 360ms " + EASE + ",visibility 0s linear 360ms !important}" +
       ":host(.rail-off) .stage{left:0 !important;width:100% !important}" +
+      // Fullscreen: the deck collapses its rail to a hover-peek strip and its
+      // _fit() reclaims the full width (_railWidth() returns 0 while data-fs is
+      // set), so the reserved rail column has to step aside or the slide sits
+      // offset on the black presentation canvas. Keyed on the deck's own
+      // data-fs attribute, which it sets for both standard and webkit
+      // fullscreen. Snap (no transition) so it doesn't race the browser's
+      // fullscreen zoom while _fit re-scales the canvas.
+      ":host([data-fs]) .stage{left:0 !important;width:100% !important;" +
+      "transition:none !important}" +
       "@media (prefers-color-scheme:dark){" +
       ".rail{background:rgba(0,0,0,0.28) !important;box-shadow:0 6px 22px rgba(0,0,0,0.45) !important}" +
       ".rail:hover::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.30) !important}" +
@@ -692,6 +705,13 @@
         frame.id = "frame-" + c.slug;
         frame.title = c.label + " case study";
         frame.setAttribute("loading", "lazy");
+        // The deck's navigator has a fullscreen toggle that calls
+        // requestFullscreen() on an element *inside* the iframe; the Fullscreen
+        // API gates that behind the frame's permission, so without this it's
+        // flaky (works only in browsers lenient about same-origin frames). Set
+        // both the modern allow= and the legacy attribute for coverage.
+        frame.setAttribute("allow", "fullscreen");
+        frame.setAttribute("allowfullscreen", "");
         frame.dataset.src = c.src; // lazy: real src set on first selection
         stage.appendChild(frame);
         frames[c.slug] = frame;
@@ -734,6 +754,11 @@
         history.replaceState(null, "", "#" + slug);
       }
       document.title = labelFor(slug) + " — Zachary Halvorson";
+      // The export only receives keyboard nav while its iframe is the focused
+      // frame. Hand focus to the live deck on load and on every case switch so
+      // arrow / Page / Space / Home-End work immediately — without this the
+      // shell keeps focus and keys do nothing until you click into the slide.
+      try { frames[slug].focus({ preventScroll: true }); } catch (e) {}
     }
 
     // Load an export iframe once; call onReady when it has rendered (or right
@@ -913,7 +938,7 @@
               ds.classList.add("rail-anim");
               setupRail(frame, ds);
             }
-            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); }
+            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); setupKeyNav(frame, ds); }
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
@@ -957,6 +982,29 @@
         });
         sync();
       } catch (e) { /* cross-origin / not ready — videos rest on posters */ }
+    }
+
+    // The deck's own keymap covers Left/Right, PageUp/Down, Space and Home/End,
+    // but not the arrow Up/Down keys people also reach for. Teach each export
+    // those from the shell (the deck is regenerated on every re-export, so this
+    // can't live in it): translate Down→next, Up→prev by re-dispatching the
+    // keys the deck already handles. Listens on the deck's own window, so it
+    // fires both for a real press while the deck has focus AND for the shell
+    // forwarder's synthetic press when focus is on the chrome — one path, both.
+    function setupKeyNav(frame, ds) {
+      if (ds.dataset.keyNav) return;
+      ds.dataset.keyNav = "1";
+      try {
+        var win = frame.contentWindow;
+        win.addEventListener("keydown", function (e) {
+          if (e.metaKey || e.ctrlKey || e.altKey) return;
+          var to = e.key === "ArrowDown" ? "ArrowRight"
+                 : e.key === "ArrowUp" ? "ArrowLeft" : null;
+          if (!to) return;
+          e.preventDefault();
+          win.dispatchEvent(new win.KeyboardEvent("keydown", { key: to }));
+        });
+      } catch (e) { /* cross-origin / not ready — Up/Down simply do nothing */ }
     }
 
     // The fill scale grows the slide to fill the width freed by hiding the
@@ -1084,6 +1132,37 @@
     });
     window.addEventListener("pointerdown", function () {
       document.body.classList.remove("-kbd");
+    });
+
+    // activate() hands focus to the deck, but focus can drift back to the
+    // shell chrome (clicking the home or sidebar button, the dropdown). When
+    // it has, forward the export's navigation keys to the active case so they
+    // keep working without re-clicking the slide. Re-dispatch into the iframe
+    // so the first press counts, then hand focus over for subsequent keys.
+    var DECK_NAV_KEYS = {
+      ArrowLeft: 1, ArrowRight: 1, ArrowUp: 1, ArrowDown: 1, PageUp: 1,
+      PageDown: 1, Home: 1, End: 1, " ": 1, Spacebar: 1
+    };
+    window.addEventListener("keydown", function (e) {
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!DECK_NAV_KEYS[e.key]) return;
+      var ae = document.activeElement;
+      if (ae) {
+        var tag = ae.tagName;
+        // Leave focused controls alone: the case dropdown, gate input, links.
+        if (ae === selectEl || ae.isContentEditable ||
+            tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||
+            tag === "BUTTON" || tag === "A") return;
+      }
+      var frame = active && frames[active];
+      if (!frame || !frame.contentWindow || ae === frame) return;
+      try {
+        frame.contentWindow.dispatchEvent(
+          new KeyboardEvent("keydown", { key: e.key, code: e.code })
+        );
+        frame.focus({ preventScroll: true });
+        e.preventDefault();
+      } catch (err) {}
     });
 
     function defaultSlug() {
