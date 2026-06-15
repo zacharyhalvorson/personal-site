@@ -41,6 +41,34 @@
   // pick it up explicitly. `popstate` only fires on history navigation, never
   // on plain anchor-link clicks — those still get the CSS smooth-scroll.
   window.addEventListener('popstate', anchorScroll);
+  // Smooth in-page scroll that survives mandatory scroll-snap. With
+  // `scroll-snap-type: y mandatory` + `scroll-snap-stop: always` still active,
+  // a programmatic smooth scroll that crosses several chapters gets snagged on
+  // an intermediate snap point and settles there — that's the "land in a random
+  // spot" symptom when jumping from a deep project back to Intro. Drop snap for
+  // the duration of the animated scroll (CSS: html.is-navigating) and restore
+  // it once the scroll settles, so the scroll travels straight to the target;
+  // the target is itself a snap point, so re-enabling snap on arrival is a
+  // no-op. `scrollend` is the precise signal; a timeout backstops browsers
+  // that don't fire it (and the case where the page was already at the target,
+  // so no scroll — hence no scrollend — ever happens).
+  var navReleaseTimer = null;
+  function releaseNavSnap() {
+    clearTimeout(navReleaseTimer);
+    navReleaseTimer = null;
+    window.removeEventListener('scrollend', releaseNavSnap);
+    document.documentElement.classList.remove('is-navigating');
+  }
+  function navScroll(target) {
+    document.documentElement.classList.add('is-navigating');
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Adding the same named listener twice is a no-op, so rapid clicks don't
+    // stack handlers; the timer is reset each call so it can't fire mid-scroll.
+    window.addEventListener('scrollend', releaseNavSnap);
+    clearTimeout(navReleaseTimer);
+    navReleaseTimer = setTimeout(releaseNavSnap, 1200);
+  }
+
   // In-page hash links (Work ↓, rail nav, skip link). The native anchor-click
   // scroll lands instantly on this site — `scroll-snap-type: y mandatory`
   // short-circuits the CSS `scroll-behavior: smooth` animation — so hijack
@@ -59,7 +87,11 @@
     if (!target) return;
     e.preventDefault();
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    if (reduce) {
+      target.scrollIntoView({ behavior: 'auto', block: 'start' });
+    } else {
+      navScroll(target);
+    }
     // Update URL without firing popstate (which would jump instantly via
     // anchorScroll). pushState records the entry so back/forward still work.
     if (location.hash !== hash) history.pushState(null, '', hash);
