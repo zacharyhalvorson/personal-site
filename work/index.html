@@ -918,7 +918,7 @@
               ds.classList.add("rail-anim");
               setupRail(frame, ds);
             }
-            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); }
+            if (ds) { applyRailToDeck(ds); setupVideoDefer(frame, ds); setupKeyNav(frame, ds); }
           }
         } catch (e) { /* not ready yet */ }
         if (tries > 50) clearInterval(iv); // ~5s covers unpack + first paint
@@ -962,6 +962,29 @@
         });
         sync();
       } catch (e) { /* cross-origin / not ready — videos rest on posters */ }
+    }
+
+    // The deck's own keymap covers Left/Right, PageUp/Down, Space and Home/End,
+    // but not the arrow Up/Down keys people also reach for. Teach each export
+    // those from the shell (the deck is regenerated on every re-export, so this
+    // can't live in it): translate Down→next, Up→prev by re-dispatching the
+    // keys the deck already handles. Listens on the deck's own window, so it
+    // fires both for a real press while the deck has focus AND for the shell
+    // forwarder's synthetic press when focus is on the chrome — one path, both.
+    function setupKeyNav(frame, ds) {
+      if (ds.dataset.keyNav) return;
+      ds.dataset.keyNav = "1";
+      try {
+        var win = frame.contentWindow;
+        win.addEventListener("keydown", function (e) {
+          if (e.metaKey || e.ctrlKey || e.altKey) return;
+          var to = e.key === "ArrowDown" ? "ArrowRight"
+                 : e.key === "ArrowUp" ? "ArrowLeft" : null;
+          if (!to) return;
+          e.preventDefault();
+          win.dispatchEvent(new win.KeyboardEvent("keydown", { key: to }));
+        });
+      } catch (e) { /* cross-origin / not ready — Up/Down simply do nothing */ }
     }
 
     // The fill scale grows the slide to fill the width freed by hiding the
@@ -1097,8 +1120,8 @@
     // keep working without re-clicking the slide. Re-dispatch into the iframe
     // so the first press counts, then hand focus over for subsequent keys.
     var DECK_NAV_KEYS = {
-      ArrowLeft: 1, ArrowRight: 1, PageUp: 1, PageDown: 1,
-      Home: 1, End: 1, " ": 1, Spacebar: 1
+      ArrowLeft: 1, ArrowRight: 1, ArrowUp: 1, ArrowDown: 1, PageUp: 1,
+      PageDown: 1, Home: 1, End: 1, " ": 1, Spacebar: 1
     };
     window.addEventListener("keydown", function (e) {
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
