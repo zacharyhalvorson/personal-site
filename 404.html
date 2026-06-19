@@ -74,6 +74,12 @@
         display: block;
         z-index: 0;
         touch-action: none;
+        /* the canvas is the drag-to-play surface: a hold-and-drag on it must not
+           begin a text selection (or pop the iOS callout). the floating 404 copy
+           keeps its default selectability. */
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
       }
 
       /* 404 language floats above; the animation lives below it. */
@@ -499,8 +505,11 @@
           fillInk(bodyF, bt, 11, PAL.body, lw);
           shadeCrescent(bodyF, -22 + lift);
           rimArc(0, -22 + lift, 19, 16, -2.5, -1.2, lw + 0.3);
-          cuccoWing(-13, -23 + lift, bt, lwIn, true, wingAng);
-          cuccoWing(13, -23 + lift, bt, lwIn, false, wingAng);
+          // at rest the wings fold down snug against the flanks instead of
+          // splaying straight out to the sides; keep the lively angle when active
+          var foldFront = (walking || airborne || scratching || hen.flap > 0) ? wingAng : 0.5;
+          cuccoWing(-11, -22 + lift, bt, lwIn, true, foldFront);
+          cuccoWing(11, -22 + lift, bt, lwIn, false, foldFront);
           neckHead(0, -38 + lift + bob + actDip, "front", bt, lw, lwIn, blinking, -28 + lift);
         }
         ctx.restore();
@@ -651,22 +660,30 @@
         if (mode === "front") drawEye(ox + 3.4, oy - 1, blinking, lwIn);
       }
 
-      // a big round bead eye crossed by one heavy half-lid: the Cucco deadpan
+      // a big round bead eye with a bright catchlight and a soft arched lid:
+      // wide-eyed and friendly rather than hooded/deadpan
       function drawEye(ex, ey, blinking, lw) {
         ctx.strokeStyle = PAL.ink; ctx.lineCap = "round";
         if (blinking) {
-          ctx.lineWidth = lw * 1.4;
-          ctx.beginPath(); ctx.moveTo(ex - 1.8, ey); ctx.lineTo(ex + 1.8, ey); ctx.stroke();
+          // a happy blink: a shallow downward smile of a closed eye
+          ctx.lineWidth = lw * 1.3;
+          ctx.beginPath();
+          ctx.moveTo(ex - 1.9, ey - 0.3);
+          ctx.quadraticCurveTo(ex, ey + 0.9, ex + 1.9, ey - 0.3);
+          ctx.stroke();
           return;
         }
+        // a big round bead
         ctx.fillStyle = PAL.ink;
-        ctx.beginPath(); ctx.arc(ex, ey, 2.0, 0, Math.PI * 2); ctx.fill();
-        // small low catchlight so the eye still reads dark + deadpan
+        ctx.beginPath(); ctx.arc(ex, ey + 0.2, 2.3, 0, Math.PI * 2); ctx.fill();
+        // a bright high catchlight high in the eye reads lively + sweet
         ctx.fillStyle = PAL.rim;
-        ctx.beginPath(); ctx.arc(ex - 0.5, ey + 0.3, 0.5, 0, Math.PI * 2); ctx.fill();
-        // heavy upper lid clipping the top third
-        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 1.5;
-        ctx.beginPath(); ctx.moveTo(ex - 2.3, ey - 1.0); ctx.lineTo(ex + 2.3, ey - 0.7); ctx.stroke();
+        ctx.beginPath(); ctx.arc(ex - 0.7, ey - 0.6, 0.95, 0, Math.PI * 2); ctx.fill();
+        // a soft lid arching gently OVER the top (a friendly brow, not a hood)
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 0.9;
+        ctx.beginPath();
+        ctx.arc(ex, ey + 1.0, 2.7, Math.PI * 1.22, Math.PI * 1.78);
+        ctx.stroke();
       }
 
       // a big floppy rounded red comb (used by neckHead for side/front and the
@@ -794,6 +811,11 @@
         }
         // the chicken is just another y-sorted actor
         items.push({ t: "hen", wx: hen.x, wy: hen.y, s: 1, v: 0 });
+        // grasshoppers are ground critters: sort them in by depth too, so one
+        // behind the hen is occluded by her rather than painted on top
+        for (var hi = 0; hi < hoppers.length; hi++) {
+          items.push({ t: "hopper", wx: hoppers[hi].x, wy: hoppers[hi].y, ref: hoppers[hi] });
+        }
         items.sort(byDepth);
       }
       function byDepth(a, b) { return a.wy - b.wy; }
@@ -850,6 +872,7 @@
         var px = sx(it.wx), py = sy(it.wy), d = depth(py);
         switch (it.t) {
           case "hen": drawHen(); break;
+          case "hopper": drawHopper(it.ref); break;
           case "grass": grassTuft(px, py, d, it.wx, it.wy, it.v); break;
           case "grasspatch": grasspatch(px, py, d, it.wx, it.wy, it.v); break;
           case "clover": clover(px, py, d, it.v); break;
@@ -1205,24 +1228,24 @@
         }
       }
 
-      function drawHoppers() {
-        for (var i = 0; i < hoppers.length; i++) {
-          var h = hoppers[i], hx = sx(h.x), gy = sy(h.y), by = gy - h.z;
-          // shadow shrinks as it leaps
-          ctx.fillStyle = PAL.contact;
-          ctx.beginPath(); ctx.ellipse(hx, gy, Math.max(0.6, 2.6 - h.z * 0.05), 1.2, 0, 0, Math.PI * 2); ctx.fill();
-          ctx.save();
-          ctx.translate(hx, by);
-          if (Math.cos(h.dir) < 0) ctx.scale(-1, 1);
-          if (h.z > 0.5) ctx.rotate(-0.32); // nose-up mid-leap
-          ctx.fillStyle = fog(PAL.grassShade, gy);
-          ctx.beginPath(); ctx.ellipse(0, 0, 3.4, 1.8, 0, 0, Math.PI * 2); ctx.fill();   // abdomen
-          ctx.beginPath(); ctx.arc(3.2, -0.6, 1.5, 0, Math.PI * 2); ctx.fill();           // head
-          ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.9; ctx.lineCap = "round";
-          ctx.beginPath(); ctx.moveTo(-1, 1); ctx.lineTo(-3.2, -2.6); ctx.lineTo(-4.8, 1.6); ctx.stroke(); // hind leg
-          ctx.beginPath(); ctx.moveTo(4.2, -1.4); ctx.lineTo(6.4, -3.2); ctx.stroke();    // antenna
-          ctx.restore();
-        }
+      // one grasshopper; drawn from the y-sorted item list so it occludes (and is
+      // occluded by) the hen and scenery by depth instead of always on top
+      function drawHopper(h) {
+        var hx = sx(h.x), gy = sy(h.y), by = gy - h.z;
+        // shadow shrinks as it leaps
+        ctx.fillStyle = PAL.contact;
+        ctx.beginPath(); ctx.ellipse(hx, gy, Math.max(0.6, 2.6 - h.z * 0.05), 1.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.save();
+        ctx.translate(hx, by);
+        if (Math.cos(h.dir) < 0) ctx.scale(-1, 1);
+        if (h.z > 0.5) ctx.rotate(-0.32); // nose-up mid-leap
+        ctx.fillStyle = fog(PAL.grassShade, gy);
+        ctx.beginPath(); ctx.ellipse(0, 0, 3.4, 1.8, 0, 0, Math.PI * 2); ctx.fill();   // abdomen
+        ctx.beginPath(); ctx.arc(3.2, -0.6, 1.5, 0, Math.PI * 2); ctx.fill();           // head
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.9; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(-1, 1); ctx.lineTo(-3.2, -2.6); ctx.lineTo(-4.8, 1.6); ctx.stroke(); // hind leg
+        ctx.beginPath(); ctx.moveTo(4.2, -1.4); ctx.lineTo(6.4, -3.2); ctx.stroke();    // antenna
+        ctx.restore();
       }
 
       function drawMotes() {
@@ -1357,7 +1380,6 @@
         drawBeetles();         // on the ground; nearer grass draws over them
         for (var i = 0; i < items.length; i++) drawItem(items[i]);
         drawDust(lastDt);
-        drawHoppers();
         drawButterflies();
         drawBees();
         drawMotes();
@@ -1605,7 +1627,7 @@
       window.addEventListener("keydown", function (e) { setKey(e, true); }, { passive: false });
       window.addEventListener("keyup", function (e) { setKey(e, false); });
 
-      // touch / pointer: hold to walk toward the finger (keeps the "no UI" feel)
+      // touch / pointer: walk toward the finger (keeps the "no UI" feel)
       function pointTo(e) {
         var t = e.touches ? e.touches[0] : e;
         // un-squash the screen delta into world space, THEN normalize once, so a
@@ -1617,10 +1639,82 @@
         touchDir = { x: wx / m, y: wy / m };
         hideHint();
       }
-      canvas.addEventListener("pointerdown", function (e) { pointTo(e); });
-      canvas.addEventListener("pointermove", function (e) { if (e.pressure > 0 || e.buttons) pointTo(e); });
-      window.addEventListener("pointerup", function () { touchDir = null; });
-      window.addEventListener("pointercancel", function () { touchDir = null; });
+
+      // is the press landing on the hen? the world is drawn inside a ZOOM about
+      // the anchor, so map her feet through that same zoom, then test a forgiving
+      // circle nudged up over the body (she stands above her feet)
+      function onHen(e) {
+        var s = depth(sy(hen.y));                  // her draw scale from depth
+        var px = sx(hen.x), py = sy(hen.y) - hen.z * s; // feet, lifted by the hop
+        var dx = px - W * 0.5, dy = py - anchorY;
+        var hx = W * 0.5 + dx * ZOOM, hy = anchorY + dy * ZOOM - 16 * s * ZOOM;
+        var r = 42 * s * ZOOM;
+        return Math.hypot(e.clientX - hx, e.clientY - hy) <= r;
+      }
+
+      // touch is multi-finger: one finger steers (walk toward it), while taps and
+      // holds — from a second finger, or landing on the hen — fire the hop/flap
+      // actions. so you can direct and flap at once. mirrors the space / F keys.
+      var HOLD_MS = 170, TAP_SLOP = 12, pointers = {};
+      function anyFlapping() {
+        for (var id in pointers) if (pointers[id].flapping) return true;
+        return false;
+      }
+      function anyDirecting() {
+        for (var id in pointers) if (pointers[id].directing) return true;
+        return false;
+      }
+      function startFlap(p) {
+        if (reduceMQ.matches || p.flapping) return;
+        p.flapping = true; keys.f = true;
+        if (hen.flap <= 0) hen.flap = 0.55;
+        hen.idle = 0; hideHint();
+      }
+      function hop() {
+        if (!reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
+          hen.vz = JUMP_V; hen.idle = 0; hideHint();
+        }
+      }
+      canvas.addEventListener("pointerdown", function (e) {
+        var p = { x: e.clientX, y: e.clientY, action: false, directing: false, flapping: false, hold: 0 };
+        // a press on the hen, or any extra finger while one already steers, is an
+        // action (tap = hop, hold = flap); the first loose finger steers instead
+        if (onHen(e) || anyDirecting()) {
+          p.action = true;
+          p.hold = setTimeout(function () { startFlap(p); }, HOLD_MS);
+        } else {
+          p.directing = true;
+          pointTo(e);
+        }
+        pointers[e.pointerId] = p;
+        hideHint();
+      });
+      canvas.addEventListener("pointermove", function (e) {
+        var p = pointers[e.pointerId];
+        if (!p || !(e.pressure > 0 || e.buttons)) return;
+        if (p.action && !p.directing) {
+          // not steering yet: a drag past the slop begins it. if the hold already
+          // fired we keep flapping and now steer too (fly + direct); if it hasn't,
+          // cancel it so a drag stays a plain walk, never a surprise flap
+          if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > TAP_SLOP) {
+            clearTimeout(p.hold); p.directing = true; pointTo(e);
+          }
+          return;
+        }
+        pointTo(e); // a steering finger (loose, or an action finger now dragging)
+      });
+      function liftPointer(e) {
+        var p = pointers[e.pointerId];
+        if (!p) return;
+        clearTimeout(p.hold);
+        // a clean tap (an action finger that never steered or flapped) hops
+        if (p.action && !p.directing && !p.flapping) hop();
+        delete pointers[e.pointerId];
+        keys.f = anyFlapping();               // another finger may still be flapping
+        if (!anyDirecting()) touchDir = null;  // nobody left steering -> stop walking
+      }
+      window.addEventListener("pointerup", liftPointer);
+      window.addEventListener("pointercancel", liftPointer);
 
       // =======================================================================
       //  WIRING: resize, scheme, motion, visibility
@@ -1656,7 +1750,7 @@
       // instruction for a control that does nothing) and name the real control
       var hintEl = document.getElementById("hint");
       if (hintEl && !reduceMQ.matches) {
-        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk";
+        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk · tap to hop · hold to flap";
         hintEl.classList.add("-on");
       }
       // hide the hint on its own after a while even if no one moves
