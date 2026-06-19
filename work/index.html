@@ -116,6 +116,14 @@
       outline-offset: 2px;
       border-radius: 3px;
     }
+    /* The deck iframe shouldn't carry the chrome's focus ring. Exiting the
+       deck's fullscreen restores focus to the frame with :focus-visible set,
+       and its offset outline bleeds up across the top bar as a stray blue
+       line. The deck shows its own focus once focus enters its content, so
+       only ring the frame itself while navigating the shell by keyboard
+       (matching the case picker), and inset it so it never reaches the bar. */
+    .frame:focus-visible { outline: none; border-radius: 0; }
+    body.-kbd .frame:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
 
     /* ---------- app shell ---------- */
 
