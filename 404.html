@@ -150,6 +150,59 @@
       }
       .hint.-on { opacity: 0.7; }
 
+      /* a little corner button that reveals the keyboard controls. A native
+         <details> so it toggles with no JS; hidden on touch (no keyboard). */
+      .keys {
+        position: fixed;
+        right: clamp(0.75rem, 2.5vw, 1.6rem);
+        bottom: clamp(0.75rem, 2.5vw, 1.6rem);
+        z-index: 3;
+        font-size: 0.82rem;
+      }
+      .keys summary {
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.32rem 0.7rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--base) 72%, transparent);
+        -webkit-backdrop-filter: blur(7px);
+        backdrop-filter: blur(7px);
+        border: 1px solid color-mix(in srgb, var(--text-soft) 28%, transparent);
+        color: var(--text-soft);
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(20, 16, 8, 0.25);
+        transition: color 120ms ease;
+      }
+      .keys summary::-webkit-details-marker { display: none; }
+      .keys summary::after { content: " ⌨"; }
+      .keys summary:hover { color: var(--text-default); }
+      .keys summary:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+      .keys[open] summary { color: var(--text-default); }
+      .keys_list {
+        position: absolute;
+        right: 0;
+        bottom: 2.4rem;
+        margin: 0;
+        padding: 0.6rem 0.85rem;
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 0.32rem 0.8rem;
+        width: max-content;
+        background: color-mix(in srgb, var(--base) 84%, transparent);
+        -webkit-backdrop-filter: blur(9px);
+        backdrop-filter: blur(9px);
+        border: 1px solid color-mix(in srgb, var(--text-soft) 24%, transparent);
+        border-radius: 0.7rem;
+        box-shadow: 0 9px 24px rgba(20, 16, 8, 0.3);
+        color: var(--text-soft);
+        line-height: 1.35;
+      }
+      .keys_list dt { font-weight: 600; color: var(--text-default); white-space: nowrap; }
+      .keys_list dd { margin: 0; }
+      @media (pointer: coarse) { .keys { display: none; } } /* no keyboard on touch */
+      @media (prefers-reduced-motion: reduce) { .keys summary { transition: none; } }
+
       .sr-only {
         position: absolute;
         width: 1px; height: 1px;
@@ -165,7 +218,7 @@
 
       /* The site is also a printable resume; a 404 should print as plain text. */
       @media print {
-        #meadow, .hint { display: none; }
+        #meadow, .hint, .keys { display: none; }
         .copy { position: static; padding-top: 3rem; }
         .copy h1, .copy .sub { color: #2a2a2a; text-shadow: none; }
       }
@@ -182,6 +235,16 @@
       </div>
 
       <p class="hint" id="hint">arrow keys to walk · space to hop</p>
+
+      <details class="keys">
+        <summary aria-label="Keyboard controls">keys</summary>
+        <dl class="keys_list">
+          <dt>Arrows</dt><dd>walk</dd>
+          <dt>Space</dt><dd>hop</dd>
+          <dt>Shift</dt><dd>scratch / peck</dd>
+          <dt>F</dt><dd>flap (hold to hover)</dd>
+        </dl>
+      </details>
 
       <p class="sr-only">A decorative animated meadow with a chicken you can walk around using the arrow keys. This is a 404 page; the "head back home" link returns to the home page.</p>
     </main>
@@ -298,6 +361,7 @@
       // un-squashed screen pixels - tilted ground + upright objects = the
       // storybook Zelda angle.
       var GROUND_SQUASH = 0.62;
+      var ZOOM = 1.32; // scene zoom: the hen + meadow read a bit bigger
       var cam = { x: 0, y: 0, tx: 0, ty: 0 };
       function sx(wx) { return W * 0.5 + (wx - cam.x); }
       function sy(wy) { return anchorY + (wy - cam.y) * GROUND_SQUASH; }
@@ -1338,6 +1402,11 @@
 
         collectScene();        // build the y-sorted items + the ground decals
 
+        // zoom the whole world in about the anchor so the hen + meadow read
+        // bigger (the backdrop, grain and intro overlay stay full-screen)
+        ctx.save();
+        ctx.translate(W * 0.5, anchorY); ctx.scale(ZOOM, ZOOM); ctx.translate(-W * 0.5, -anchorY);
+
         drawDecals();          // bare-earth patches lie flat on the ground
         // passing bird-shadow gliding across the meadow
         if (birdShadow >= 0) {
@@ -1354,6 +1423,8 @@
         drawButterflies();
         drawBees();
         drawMotes();
+
+        ctx.restore();         // end world zoom
 
         // paper grain over everything for tooth
         if (grain) {
