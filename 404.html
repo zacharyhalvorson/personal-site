@@ -63,6 +63,11 @@
         position: fixed;
         inset: 0;
         display: block;
+        /* the whole viewport is a drag-to-play surface, so a hold-and-drag must
+           not start selecting the floating 404 type (or pop the iOS callout) */
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
       }
 
       /* The meadow fills the whole viewport behind the floating type. */
