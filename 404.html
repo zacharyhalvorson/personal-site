@@ -161,10 +161,13 @@
       }
       .keys summary {
         list-style: none;
-        display: inline-flex;
-        align-items: center;
-        padding: 0.32rem 0.7rem;
-        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        width: 2.3rem;
+        height: 2.3rem;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        line-height: 1;
         background: color-mix(in srgb, var(--base) 72%, transparent);
         -webkit-backdrop-filter: blur(7px);
         backdrop-filter: blur(7px);
@@ -175,7 +178,6 @@
         transition: color 120ms ease;
       }
       .keys summary::-webkit-details-marker { display: none; }
-      .keys summary::after { content: " ⌨"; }
       .keys summary:hover { color: var(--text-default); }
       .keys summary:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
       .keys[open] summary { color: var(--text-default); }
@@ -237,7 +239,7 @@
       <p class="hint" id="hint">arrow keys to walk · space to hop</p>
 
       <details class="keys">
-        <summary aria-label="Keyboard controls">keys</summary>
+        <summary aria-label="Keyboard controls" title="Keyboard controls">⌘</summary>
         <dl class="keys_list">
           <dt>Arrows</dt><dd>walk</dd>
           <dt>Space</dt><dd>hop</dd>
