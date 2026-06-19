@@ -173,11 +173,19 @@
       text-decoration: none;
     }
     .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
-    .back svg, .rail-toggle svg, .fullscreen-toggle svg { width: 18px; height: 18px; }
+    .back svg, .rail-toggle svg { width: 18px; height: 18px; }
+    /* The maximize glyph is sparser than the navigator's solid square, so it
+       reads bigger and lighter at a matched box. Nudge it down a touch and
+       thicken the stroke so the two icons carry equal weight. */
+    .fullscreen-toggle svg { width: 16px; height: 16px; stroke-width: 2.4; }
     /* Cross-swap the maximize/minimize glyph with the fullscreen state. */
     .fullscreen-toggle .ic-collapse { display: none; }
     .fullscreen-toggle[aria-pressed="true"] .ic-expand { display: none; }
     .fullscreen-toggle[aria-pressed="true"] .ic-collapse { display: block; }
+    /* The persistent fullscreen control is desktop-only; on phones the deck's
+       own fullscreen toggle covers it and the top bar gets tight. 640px
+       matches MOBILE_BP. */
+    @media (max-width: 640px) { .fullscreen-toggle { display: none; } }
 
     /* A single minimal dropdown, centered in the bar — quieter than a tab
        strip inside a browser that already has tabs. The native <select>
