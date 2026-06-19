@@ -1605,7 +1605,7 @@
       window.addEventListener("keydown", function (e) { setKey(e, true); }, { passive: false });
       window.addEventListener("keyup", function (e) { setKey(e, false); });
 
-      // touch / pointer: hold to walk toward the finger (keeps the "no UI" feel)
+      // touch / pointer: walk toward the finger (keeps the "no UI" feel)
       function pointTo(e) {
         var t = e.touches ? e.touches[0] : e;
         // un-squash the screen delta into world space, THEN normalize once, so a
@@ -1617,10 +1617,67 @@
         touchDir = { x: wx / m, y: wy / m };
         hideHint();
       }
-      canvas.addEventListener("pointerdown", function (e) { pointTo(e); });
-      canvas.addEventListener("pointermove", function (e) { if (e.pressure > 0 || e.buttons) pointTo(e); });
-      window.addEventListener("pointerup", function () { touchDir = null; });
-      window.addEventListener("pointercancel", function () { touchDir = null; });
+
+      // is the press landing on the hen? the world is drawn inside a ZOOM about
+      // the anchor, so map her feet through that same zoom, then test a forgiving
+      // circle nudged up over the body (she stands above her feet)
+      function onHen(e) {
+        var s = depth(sy(hen.y));                  // her draw scale from depth
+        var px = sx(hen.x), py = sy(hen.y) - hen.z * s; // feet, lifted by the hop
+        var dx = px - W * 0.5, dy = py - anchorY;
+        var hx = W * 0.5 + dx * ZOOM, hy = anchorY + dy * ZOOM - 16 * s * ZOOM;
+        var r = 42 * s * ZOOM;
+        return Math.hypot(e.clientX - hx, e.clientY - hy) <= r;
+      }
+
+      // tap the hen = hop, press-and-hold = flap; dragging (on the meadow or off
+      // the hen) walks toward the finger. mirrors the space / F keys for touch.
+      var HOLD_MS = 170, TAP_SLOP = 12, press = null, holdTimer = 0;
+      var holdStartX = 0, holdStartY = 0;
+      function beginFlap() {
+        if (reduceMQ.matches) return;
+        keys.f = true;
+        if (hen.flap <= 0) hen.flap = 0.55;
+        hen.idle = 0; hideHint();
+      }
+      function endPress() {
+        clearTimeout(holdTimer);
+        if (press === "hen") {
+          // a clean tap on the hen: hop, same gate as the space bar
+          if (!reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
+            hen.vz = JUMP_V; hen.idle = 0; hideHint();
+          }
+        } else if (press === "flap") {
+          keys.f = false; // let go: drop out of the hover, wings settle
+        }
+        press = null; touchDir = null;
+      }
+      canvas.addEventListener("pointerdown", function (e) {
+        if (onHen(e)) {
+          press = "hen";
+          holdStartX = e.clientX; holdStartY = e.clientY;
+          holdTimer = setTimeout(function () {
+            if (press === "hen") { press = "flap"; beginFlap(); }
+          }, HOLD_MS);
+          hideHint();
+        } else {
+          press = "walk"; pointTo(e);
+        }
+      });
+      canvas.addEventListener("pointermove", function (e) {
+        if (!press || !(e.pressure > 0 || e.buttons)) return;
+        if (press === "hen") {
+          // dragged off the hen before the hold fired -> treat it as a walk
+          if (Math.hypot(e.clientX - holdStartX, e.clientY - holdStartY) > TAP_SLOP) {
+            clearTimeout(holdTimer); press = "walk"; pointTo(e);
+          }
+          return;
+        }
+        if (press === "flap") return; // stay aloft until release
+        pointTo(e);
+      });
+      window.addEventListener("pointerup", endPress);
+      window.addEventListener("pointercancel", endPress);
 
       // =======================================================================
       //  WIRING: resize, scheme, motion, visibility
@@ -1656,7 +1713,7 @@
       // instruction for a control that does nothing) and name the real control
       var hintEl = document.getElementById("hint");
       if (hintEl && !reduceMQ.matches) {
-        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk";
+        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk · tap to hop · hold to flap";
         hintEl.classList.add("-on");
       }
       // hide the hint on its own after a while even if no one moves
