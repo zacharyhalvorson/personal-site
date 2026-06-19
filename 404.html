@@ -63,11 +63,6 @@
         position: fixed;
         inset: 0;
         display: block;
-        /* the whole viewport is a drag-to-play surface, so a hold-and-drag must
-           not start selecting the floating 404 type (or pop the iOS callout) */
-        -webkit-user-select: none;
-        user-select: none;
-        -webkit-touch-callout: none;
       }
 
       /* The meadow fills the whole viewport behind the floating type. */
@@ -79,6 +74,12 @@
         display: block;
         z-index: 0;
         touch-action: none;
+        /* the canvas is the drag-to-play surface: a hold-and-drag on it must not
+           begin a text selection (or pop the iOS callout). the floating 404 copy
+           keeps its default selectability. */
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
       }
 
       /* 404 language floats above; the animation lives below it. */
@@ -504,8 +505,11 @@
           fillInk(bodyF, bt, 11, PAL.body, lw);
           shadeCrescent(bodyF, -22 + lift);
           rimArc(0, -22 + lift, 19, 16, -2.5, -1.2, lw + 0.3);
-          cuccoWing(-13, -23 + lift, bt, lwIn, true, wingAng);
-          cuccoWing(13, -23 + lift, bt, lwIn, false, wingAng);
+          // at rest the wings fold down snug against the flanks instead of
+          // splaying straight out to the sides; keep the lively angle when active
+          var foldFront = (walking || airborne || scratching || hen.flap > 0) ? wingAng : 0.5;
+          cuccoWing(-11, -22 + lift, bt, lwIn, true, foldFront);
+          cuccoWing(11, -22 + lift, bt, lwIn, false, foldFront);
           neckHead(0, -38 + lift + bob + actDip, "front", bt, lw, lwIn, blinking, -28 + lift);
         }
         ctx.restore();
@@ -656,22 +660,30 @@
         if (mode === "front") drawEye(ox + 3.4, oy - 1, blinking, lwIn);
       }
 
-      // a big round bead eye crossed by one heavy half-lid: the Cucco deadpan
+      // a big round bead eye with a bright catchlight and a soft arched lid:
+      // wide-eyed and friendly rather than hooded/deadpan
       function drawEye(ex, ey, blinking, lw) {
         ctx.strokeStyle = PAL.ink; ctx.lineCap = "round";
         if (blinking) {
-          ctx.lineWidth = lw * 1.4;
-          ctx.beginPath(); ctx.moveTo(ex - 1.8, ey); ctx.lineTo(ex + 1.8, ey); ctx.stroke();
+          // a happy blink: a shallow downward smile of a closed eye
+          ctx.lineWidth = lw * 1.3;
+          ctx.beginPath();
+          ctx.moveTo(ex - 1.9, ey - 0.3);
+          ctx.quadraticCurveTo(ex, ey + 0.9, ex + 1.9, ey - 0.3);
+          ctx.stroke();
           return;
         }
+        // a big round bead
         ctx.fillStyle = PAL.ink;
-        ctx.beginPath(); ctx.arc(ex, ey, 2.0, 0, Math.PI * 2); ctx.fill();
-        // small low catchlight so the eye still reads dark + deadpan
+        ctx.beginPath(); ctx.arc(ex, ey + 0.2, 2.3, 0, Math.PI * 2); ctx.fill();
+        // a bright high catchlight high in the eye reads lively + sweet
         ctx.fillStyle = PAL.rim;
-        ctx.beginPath(); ctx.arc(ex - 0.5, ey + 0.3, 0.5, 0, Math.PI * 2); ctx.fill();
-        // heavy upper lid clipping the top third
-        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 1.5;
-        ctx.beginPath(); ctx.moveTo(ex - 2.3, ey - 1.0); ctx.lineTo(ex + 2.3, ey - 0.7); ctx.stroke();
+        ctx.beginPath(); ctx.arc(ex - 0.7, ey - 0.6, 0.95, 0, Math.PI * 2); ctx.fill();
+        // a soft lid arching gently OVER the top (a friendly brow, not a hood)
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 0.9;
+        ctx.beginPath();
+        ctx.arc(ex, ey + 1.0, 2.7, Math.PI * 1.22, Math.PI * 1.78);
+        ctx.stroke();
       }
 
       // a big floppy rounded red comb (used by neckHead for side/front and the
