@@ -222,8 +222,9 @@
         rock: "#bcae97", rockShade: "#9a8c74",
         trunk: "#9c7d57",
         body: "#f4eee2", bodyShade: "#dccfb8", comb: "#d2654f", beak: "#e3a44e",
-        combShade: "#a8442f", saddle: "#c9795e", teal: "#46b3a4", tealShade: "#2f8b80",
-        bill: "#b9b29f", billShade: "#8f8978", legShade: "#b97a2e",
+        combShade: "#a8442f", saddle: "#c9795e", saddleShade: "#a85f48",
+        teal: "#46b3a4", tealShade: "#2f8b80", lilac: "#b7a7d6", lilacShade: "#8f7fb0",
+        bill: "#f3b53e", billShade: "#d4922a", legShade: "#b97a2e",
         ink: "#3a3026", rim: "#fff5e0",
         contact: "rgba(74,84,55,0.22)",
         pond: "#9fc1c0", pondRim: "#7fa6a4",
@@ -242,8 +243,9 @@
         rock: "#5a5446", rockShade: "#403a2e",
         trunk: "#5b4836",
         body: "#dad2c0", bodyShade: "#a89e8a", comb: "#b3584a", beak: "#c18c44",
-        combShade: "#8a3a2a", saddle: "#9c5e48", teal: "#4ea99c", tealShade: "#2f7d73",
-        bill: "#9a9486", billShade: "#6f6a5e", legShade: "#95612a",
+        combShade: "#8a3a2a", saddle: "#9c5e48", saddleShade: "#7a4836",
+        teal: "#4ea99c", tealShade: "#2f7d73", lilac: "#8a7da8", lilacShade: "#695d84",
+        bill: "#d99e38", billShade: "#a87526", legShade: "#95612a",
         ink: "#171510", rim: "#ffcf87",
         contact: "rgba(8,12,6,0.34)",
         pond: "#3a5256", pondRim: "#2c4044",
@@ -256,8 +258,9 @@
       var W = 0, H = 0, dpr = 1, anchorY = 0;
       function resize() {
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        W = window.innerWidth;
-        H = window.innerHeight;
+        // guard against 0 (hidden/minimized window): keeps depth()/fog() out of NaN
+        W = window.innerWidth || 1;
+        H = window.innerHeight || 1;
         canvas.width = Math.round(W * dpr);
         canvas.height = Math.round(H * dpr);
         canvas.style.width = W + "px";
@@ -396,7 +399,7 @@
       ];
 
       function drawHen() {
-        var s = (depth(sy(hen.y))) * 1.16; // base scale from depth
+        var s = (depth(sy(hen.y))) * 1.0; // base scale from depth
         var px = sx(hen.x), py = sy(hen.y);
         var airborne = hen.z > 0.5;
         var walking = hen.speed > 4 && !airborne;
@@ -409,6 +412,9 @@
         // a peck only reads as a real chicken peck in profile, so turn sideways
         // for it and tip the whole body forward at the hips (head down, tail up)
         var face = (pecking && hen.face !== "side") ? "side" : hen.face;
+        // when we force a side profile for the peck, pick a definite facing so a
+        // stale hen.flip from an old walk can't mirror the head the wrong way
+        var flip = (pecking && hen.face !== "side") ? false : hen.flip;
         var poseIdx = walking ? (Math.floor(hen.legPhase) % 4) : 1;
         var P = POSE[poseIdx];
         var passing = (poseIdx % 2) === 1; // mid-stride, body at its highest
@@ -432,7 +438,7 @@
         ctx.translate(px, py - hen.z * s);          // lift the whole bird by the hop
         ctx.scale(s, s);
         ctx.scale(1 + lp * 0.16, 1 - lp * 0.18);    // squash on touchdown
-        if (face === "side" && hen.flip) ctx.scale(-1, 1);
+        if (face === "side" && flip) ctx.scale(-1, 1);
         ctx.rotate(P.lean * (face === "side" ? 1 : 0.4));
         // peck: pitch forward around the hips - swings the head down and tail up
         if (pecking) { ctx.translate(0, -12); ctx.rotate(peckT * 0.62); ctx.translate(0, 12); }
@@ -444,7 +450,6 @@
         // pitch above), so the beak meets the dirt
         var actDip = peckT * 18;
         var scratchKick = scratching ? Math.sin(sp * Math.PI * 3) * 5 : 0;
-        var neckBaseY = -28 + lift; // shoulder anchor for the stretchy neck
         // wings: out for the hop, quick flap when idle-flapping, flick while walking
         var wingAng;
         if (hen.flap > 0) wingAng = Math.sin((1 - hen.flap / 0.55) * Math.PI * 4) * 0.62; // beating wings
@@ -458,66 +463,64 @@
         var bob = walking ? (passing ? -1.7 : 0.7) : hen.headBob;
 
         if (face === "up") {
-          // ---- away pose: the tall fanned tail is the star, no face --------
+          // ---- away pose: the colorful fanned tail is the star, no face ----
           drawLeg(-6, legSwing === null ? P.swing : legSwing, lw, legFy);
           drawLeg(6, legSwing === null ? -P.swing : legSwing, lw, legFy);
-          var body = ring(0, -19 + lift, 18, 16, 14, 0.2);
+          var body = ring(0, -22 + lift, 18, 15, 14, 0.2);
           fillInk(body, bt, 11, PAL.body, lw);
-          saddleWash(body, 0, -24 + lift);
-          shadeCrescent(body, -4, 4, PAL.bodyShade);
-          rimArc(0, -19 + lift, 18, 16, -2.4, -1.0, lw + 0.3);
-          var head = ring(0, -33 + lift + bob, 8, 8, 10, 0);
+          shadeCrescent(body, -22 + lift);
+          rimArc(0, -22 + lift, 18, 15, -2.4, -1.0, lw + 0.3);
+          var head = ring(0, -37 + lift + bob, 7.5, 7.5, 10, 0);
           fillInk(head, bt, 22, PAL.body, lwIn);
-          combRidge(0, -40 + lift + bob, lwIn);     // thin top ridge only
-          tail(0, -22 + lift, 1.5, bt, lw, tailWag, "back");
+          floppyComb(0, -42 + lift + bob, lwIn, "back");
+          tail(0, -26 + lift, 1.45, bt, lw, tailWag, "back");
         } else if (face === "side") {
-          // ---- profile pose: stubby legs under a towering tail -------------
-          drawLeg(-3, legSwing === null ? -P.swing : legSwing, lw, legFy); // far leg
-          tail(-12, -20 + lift, 1.35, bt, lw, tailWag, "side");
-          var bodyS = ring(0, -19 + lift, 19, 16, 14, 0.24);
+          // ---- profile: head up on a neck, plump body, colorful wing + tail
+          drawLeg(-2, legSwing === null ? -P.swing : legSwing, lw, legFy); // far leg
+          tail(-15, -23 + lift, 1.05, bt, lw, tailWag, "side");
+          var bodyS = henBodySide(-22 + lift);
           fillInk(bodyS, bt, 11, PAL.body, lw);
-          saddleWash(bodyS, -4, -24 + lift);
-          shadeCrescent(bodyS, -5, 5, PAL.bodyShade);
-          rimArc(0, -19 + lift, 19, 16, -2.6, -0.8, lw + 0.3);
-          wing(3, -18 + lift, bt, lwIn, false, wingAng);
-          neckHead(10, -32 + lift + bob - (poseIdx === 0 ? 1 : 0) + actDip, "side", bt, lw, lwIn, blinking, neckBaseY);
-          drawLeg(4, legSwing === null ? P.swing : legSwing, lw, legFy, -scratchKick); // near leg rakes back
+          shadeCrescent(bodyS, -22 + lift);
+          rimArc(2, -22 + lift, 17, 14, -2.6, -0.9, lw + 0.3);
+          cuccoWing(0, -23 + lift, bt, lwIn, false, wingAng);
+          neckHead(13, -40 + lift + bob - (poseIdx === 0 ? 1 : 0) + actDip, "side", bt, lw, lwIn, blinking, -27 + lift);
+          drawLeg(5, legSwing === null ? P.swing : legSwing, lw, legFy, -scratchKick); // near leg rakes back
         } else {
           // ---- toward pose (hero front) -----------------------------------
-          tail(0, -18 + lift, 1.0, bt, lw, tailWag, "front"); // low fan peeks behind
+          tail(0, -21 + lift, 1.0, bt, lw, tailWag, "front"); // low fan peeks behind
           drawLeg(-7, legSwing === null ? P.swing : legSwing, lw, legFy);
           drawLeg(7, legSwing === null ? -P.swing : legSwing, lw, legFy, -scratchKick);
-          var bodyF = ring(0, -19 + lift, 20, 17, 16, 0.26);
+          var bodyF = ring(0, -22 + lift, 19, 16, 16, 0.26);
           fillInk(bodyF, bt, 11, PAL.body, lw);
-          saddleWash(bodyF, 0, -25 + lift);
-          shadeCrescent(bodyF, -5, 5, PAL.bodyShade);
-          rimArc(0, -19 + lift, 20, 17, -2.5, -1.2, lw + 0.3);
-          wing(-12, -17 + lift, bt, lwIn, true, wingAng);
-          wing(12, -17 + lift, bt, lwIn, false, wingAng);
-          neckHead(0, -34 + lift + bob + actDip, "front", bt, lw, lwIn, blinking, neckBaseY);
+          shadeCrescent(bodyF, -22 + lift);
+          rimArc(0, -22 + lift, 19, 16, -2.5, -1.2, lw + 0.3);
+          cuccoWing(-13, -23 + lift, bt, lwIn, true, wingAng);
+          cuccoWing(13, -23 + lift, bt, lwIn, false, wingAng);
+          neckHead(0, -38 + lift + bob + actDip, "front", bt, lw, lwIn, blinking, -28 + lift);
         }
         ctx.restore();
       }
 
-      // short, chunky bantam leg: a stubby shank with 3 toes, scale ticks + claws
+      // a yellow chicken leg: a visible shank with 3 toes, scale ticks + claws
       function drawLeg(ox, swing, lw, fy, fx) {
-        var fpx = ox + swing * 3 + (fx || 0), fpy = (fy || 0);
-        ctx.strokeStyle = PAL.beak; ctx.lineWidth = 2.8; ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(ox, -6); ctx.lineTo(fpx, fpy); ctx.stroke();
+        var fpx = ox + swing * 3 + (fx || 0), fpy = (fy || 0), hip = -11;
+        ctx.strokeStyle = PAL.beak; ctx.lineWidth = 2.4; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(ox, hip); ctx.lineTo(fpx, fpy); ctx.stroke();
         // 3 forward toes in a darker ochre under-shade
-        ctx.strokeStyle = PAL.legShade; ctx.lineWidth = 1.9;
+        ctx.strokeStyle = PAL.legShade; ctx.lineWidth = 1.7;
         ctx.beginPath();
         ctx.moveTo(fpx, fpy); ctx.lineTo(fpx - 3.6, fpy + 2.6);
         ctx.moveTo(fpx, fpy); ctx.lineTo(fpx, fpy + 3.3);
         ctx.moveTo(fpx, fpy); ctx.lineTo(fpx + 3.6, fpy + 2.6);
         ctx.stroke();
-        // ink claw tips + one scale tick on the shank
-        ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.85;
+        // ink claw tips + scale ticks down the shank
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.8;
         ctx.beginPath();
         ctx.moveTo(fpx - 3.6, fpy + 2.6); ctx.lineTo(fpx - 4.4, fpy + 3.5);
         ctx.moveTo(fpx, fpy + 3.3); ctx.lineTo(fpx, fpy + 4.3);
         ctx.moveTo(fpx + 3.6, fpy + 2.6); ctx.lineTo(fpx + 4.4, fpy + 3.5);
-        ctx.moveTo(ox - 1.3, -3.2); ctx.lineTo(ox + 1.3, -3.2);
+        ctx.moveTo(ox - 1.2, hip + 4); ctx.lineTo(ox + 1.2, hip + 4);
+        ctx.moveTo(ox - 1.1, hip + 7); ctx.lineTo(ox + 1.1, hip + 7);
         ctx.stroke();
       }
 
@@ -537,56 +540,68 @@
         ctx.save();
         ctx.translate(ox, oy);
         ctx.rotate(wag || 0);
-        var cr = PAL.body, crS = PAL.bodyShade, tq = PAL.teal, tqS = PAL.tealShade, ter = PAL.saddle;
+        var cr = PAL.body, crS = PAL.bodyShade, tq = PAL.teal, tqS = PAL.tealShade,
+            ter = PAL.saddle, terS = PAL.saddleShade, lc = PAL.lilac, lcS = PAL.lilacShade;
         if (mode === "front") {
           // a low foreshortened fan peeking up behind both shoulders
-          blade(-9 * sc, -15 * sc, 3.8, cr, crS, bt, 60, lw);
-          blade(9 * sc, -15 * sc, 3.8, cr, crS, bt, 61, lw);
-          blade(-4 * sc, -19 * sc, 3.8, tq, tqS, bt, 62, lw);
-          blade(4 * sc, -19 * sc, 3.8, tq, tqS, bt, 63, lw);
-          blade(0, -21 * sc, 4, cr, crS, bt, 64, lw);
+          blade(-9 * sc, -15 * sc, 4, cr, crS, bt, 60, lw);
+          blade(9 * sc, -15 * sc, 4, cr, crS, bt, 61, lw);
+          blade(-4 * sc, -19 * sc, 4, lc, lcS, bt, 62, lw);
+          blade(4 * sc, -19 * sc, 4, tq, tqS, bt, 63, lw);
+          blade(0, -21 * sc, 4.4, cr, crS, bt, 64, lw);
         } else if (mode === "back") {
-          // wide dominant fan (away view): turquoise + terra-cotta lead
-          blade(-13 * sc, -18 * sc, 3.2, cr, crS, bt, 80, lw);
-          blade(13 * sc, -18 * sc, 3.2, cr, crS, bt, 81, lw);
-          blade(-6 * sc, -25 * sc, 3.4, ter, crS, bt, 82, lw);
-          blade(6 * sc, -25 * sc, 3.4, tq, tqS, bt, 83, lw);
-          blade(0, -28 * sc, 3.6, tq, tqS, bt, 84, lw);
+          // wide dominant fan (away view): the colorful feathers lead
+          blade(-13 * sc, -18 * sc, 3.6, cr, crS, bt, 80, lw);
+          blade(13 * sc, -18 * sc, 3.6, ter, terS, bt, 81, lw);
+          blade(-6 * sc, -25 * sc, 4, lc, lcS, bt, 82, lw);
+          blade(6 * sc, -25 * sc, 4, tq, tqS, bt, 83, lw);
+          blade(0, -28 * sc, 4.2, cr, crS, bt, 84, lw);
         } else {
-          // side profile sweep up and back (back = -x when facing right)
-          blade(3 * sc, -19 * sc, 3, cr, crS, bt, 70, lw);      // front blade
-          blade(-3 * sc, -25 * sc, 3.4, cr, crS, bt, 71, lw);   // central tall
-          blade(-9 * sc, -23 * sc, 3.2, tq, tqS, bt, 72, lw);   // turquoise
-          blade(-14 * sc, -18 * sc, 3, ter, crS, bt, 73, lw);   // terra-cotta accent
-          blade(-18 * sc, -11 * sc, 2.6, cr, crS, bt, 74, lw);  // rearmost short
+          // side profile sweep up and back (back = -x when facing right): a
+          // cohesive fan of broad feathers, cream front to colorful rear
+          blade(4 * sc, -18 * sc, 3.8, cr, crS, bt, 70, lw);     // front blade
+          blade(-2 * sc, -23 * sc, 4.4, cr, crS, bt, 71, lw);    // central tall cream
+          blade(-8 * sc, -23 * sc, 4.2, tq, tqS, bt, 72, lw);    // teal
+          blade(-13 * sc, -20 * sc, 4, lc, lcS, bt, 73, lw);     // lavender
+          blade(-17 * sc, -14 * sc, 3.6, ter, terS, bt, 74, lw); // terra-cotta rear
         }
         ctx.restore();
       }
 
-      // a folded covert wing that pivots at the shoulder so it can flick/flap by
-      // `ang`; longer with a scalloped trailing edge, a terra-cotta top wash and
-      // a turquoise tip dab
-      function wing(ox, oy, bt, lw, far, ang) {
+      // the signature colorful Cucco wing folded on the flank: a cream covert
+      // over three stacked feather bands (teal, lavender, terra-cotta) with
+      // white feather tips. Pivots at the shoulder so it can flick/flap by `ang`.
+      function cuccoWing(ox, oy, bt, lwIn, far, ang) {
         var sgn = far ? -1 : 1;
         ctx.save();
-        ctx.translate(ox, oy - 3);
+        ctx.translate(ox, oy);
         ctx.rotate((ang || 0) * sgn);
-        var w = [
-          [0, -5], [sgn * 8, -2], [sgn * 9, 4], [sgn * 7, 7], [sgn * 5, 5], [sgn * 3, 9], [sgn * 1.5, 6], [0, 8]
-        ];
-        fillInk(w, bt, 41, far ? PAL.bodyShade : PAL.body, lw);
-        // terra-cotta saddle catching the wing's top edge
-        ctx.strokeStyle = PAL.saddle; ctx.lineWidth = lw * 1.5; ctx.lineCap = "round"; ctx.globalAlpha = 0.6;
-        ctx.beginPath(); ctx.moveTo(0, -4); ctx.lineTo(sgn * 7, -1.5); ctx.stroke(); ctx.globalAlpha = 1;
-        // two short ink barb ticks
-        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 0.8;
+        var wpts = [[0, -7], [sgn * 9, -5], [sgn * 14, -1], [sgn * 14, 4], [sgn * 10, 8], [sgn * 5, 6], [sgn * 2, 9], [0, 6]];
+        fillInk(wpts, bt, 41, far ? PAL.bodyShade : PAL.body, lwIn);
+        // clip to the wing and lay in the colour bands
+        ctx.save();
         ctx.beginPath();
-        ctx.moveTo(sgn * 2, 1); ctx.lineTo(sgn * 6, 3);
-        ctx.moveTo(sgn * 2, 4); ctx.lineTo(sgn * 5.5, 5.5);
+        for (var i = 0; i < wpts.length; i++) { var p = wpts[i]; i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+        ctx.closePath(); ctx.clip();
+        var bw = sgn * 17, bx = sgn < 0 ? -1 : -1;
+        ctx.fillStyle = far ? PAL.tealShade : PAL.teal;     ctx.fillRect(bx, -3.5, bw, 3.4);
+        ctx.fillStyle = far ? PAL.lilacShade : PAL.lilac;   ctx.fillRect(bx, -0.1, bw, 3.4);
+        ctx.fillStyle = far ? PAL.saddleShade : PAL.saddle; ctx.fillRect(bx, 3.3, bw, 4.5);
+        // white feather tips along the lower trailing edge
+        ctx.strokeStyle = PAL.rim; ctx.lineWidth = lwIn * 1.3; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(sgn * 4, 8); ctx.lineTo(sgn * 7, 6.2);
+        ctx.moveTo(sgn * 8, 7); ctx.lineTo(sgn * 11, 4.5);
         ctx.stroke();
-        // turquoise covert tip dab
-        ctx.fillStyle = far ? PAL.tealShade : PAL.teal;
-        ctx.beginPath(); ctx.arc(sgn * 8.4, 4, 1.4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        // a soft ink line between feather rows + the cream covert edge on top
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lwIn * 0.6; ctx.globalAlpha = 0.4;
+        ctx.beginPath();
+        ctx.moveTo(sgn * 1, -0.1); ctx.lineTo(sgn * 12, 0.4);
+        ctx.moveTo(sgn * 1, 3.3); ctx.lineTo(sgn * 11, 3.8);
+        ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.strokeStyle = PAL.rim; ctx.lineWidth = lwIn * 1.4; ctx.lineCap = "round"; ctx.globalAlpha = 0.7;
+        ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(sgn * 11, -3.8); ctx.stroke(); ctx.globalAlpha = 1;
         ctx.restore();
       }
 
@@ -601,17 +616,11 @@
         ctx.stroke();
         ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 0.7;
         // head
-        var head = ring(ox, oy, 8.5, 8, 11, 0);
+        var head = ring(ox, oy, 8, 7.5, 11, 0);
         fillInk(head, bt, 52, PAL.body, lwIn);
-        // comb: ONE oversized saw-tooth crest (the Cucco tell), tallest at front
-        var combPts = mode === "side"
-          ? [[ox - 6, oy - 5], [ox - 4, oy - 10], [ox - 1.5, oy - 7], [ox + 1, oy - 12], [ox + 3, oy - 8], [ox + 5, oy - 13.5], [ox + 6.5, oy - 8], [ox + 5, oy - 4.5]]
-          : [[ox - 4.2, oy - 6], [ox - 2.6, oy - 11.5], [ox - 1, oy - 7.5], [ox + 0.5, oy - 13], [ox + 2, oy - 7.5], [ox + 3.6, oy - 11.5], [ox + 4.2, oy - 6]];
-        function traceComb() { ctx.beginPath(); for (var i = 0; i < combPts.length; i++) { var p = combPts[i]; i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); } ctx.closePath(); }
-        traceComb(); ctx.fillStyle = PAL.comb; ctx.fill();
-        ctx.save(); traceComb(); ctx.clip(); ctx.fillStyle = PAL.combShade; ctx.globalAlpha = 0.5; ctx.fillRect(ox - 8, oy - 7.5, 16, 4.5); ctx.globalAlpha = 1; ctx.restore();
-        traceComb(); ctx.lineWidth = lwIn; ctx.strokeStyle = PAL.ink; ctx.lineJoin = "round"; ctx.stroke();
-        // beak: short grey-horn two-mandible bill, slightly down
+        // a big floppy rounded red comb (the Cucco crest)
+        floppyComb(ox, oy, lwIn, mode);
+        // beak: short yellow two-mandible bill, slightly down
         var bx = mode === "side" ? ox + 7 : ox;
         var by = mode === "side" ? oy + 2 : oy + 5;
         ctx.fillStyle = PAL.bill; ctx.strokeStyle = PAL.ink;
@@ -635,12 +644,12 @@
         // eye(s) with the deadpan lid
         drawEye(mode === "side" ? ox + 4 : ox - 3.4, oy - 1, blinking, lwIn);
         if (mode === "front") drawEye(ox + 3.4, oy - 1, blinking, lwIn);
-        // turquoise cheek dab(s) - the other Cucco tell
+        // teal cheek / throat patch - the other Cucco tell
         ctx.fillStyle = PAL.teal;
-        if (mode === "side") { ctx.beginPath(); ctx.ellipse(ox + 2.5, oy + 2.6, 1.7, 1.2, 0, 0, Math.PI * 2); ctx.fill(); }
+        if (mode === "side") { ctx.beginPath(); ctx.ellipse(ox + 1.5, oy + 2.8, 2.6, 1.8, -0.2, 0, Math.PI * 2); ctx.fill(); }
         else {
-          ctx.beginPath(); ctx.ellipse(ox - 5.6, oy + 1.6, 1.6, 1.2, 0, 0, Math.PI * 2); ctx.fill();
-          ctx.beginPath(); ctx.ellipse(ox + 5.6, oy + 1.6, 1.6, 1.2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(ox - 5.4, oy + 1.8, 2.0, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(ox + 5.4, oy + 1.8, 2.0, 1.5, 0, 0, Math.PI * 2); ctx.fill();
         }
       }
 
@@ -662,29 +671,49 @@
         ctx.beginPath(); ctx.moveTo(ex - 2.3, ey - 1.0); ctx.lineTo(ex + 2.3, ey - 0.7); ctx.stroke();
       }
 
-      // a soft terra-cotta saddle wash over the upper back, clipped to the body,
-      // so the comb red reads as plumage rather than an isolated hat
-      function saddleWash(bodyPts, cx, cy) {
-        ctx.save();
-        ctx.beginPath();
-        for (var i = 0; i < bodyPts.length; i++) { var p = bodyPts[i]; i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
-        ctx.closePath(); ctx.clip();
-        ctx.globalAlpha = 0.5; ctx.fillStyle = PAL.saddle;
-        ctx.beginPath(); ctx.ellipse(cx, cy, 13, 8, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.globalAlpha = 1; ctx.restore();
+      // a big floppy rounded red comb (used by neckHead for side/front and the
+      // away pose for a small top crest)
+      function floppyComb(cx, cy, lwIn, mode) {
+        function trace() {
+          ctx.beginPath();
+          if (mode === "side") { // a rounded crest flopping forward (facing +x)
+            ctx.moveTo(cx - 5, cy - 4);
+            ctx.bezierCurveTo(cx - 7, cy - 12, cx - 1, cy - 15, cx + 2, cy - 11);
+            ctx.bezierCurveTo(cx + 4, cy - 16, cx + 9, cy - 14, cx + 9, cy - 8);
+            ctx.bezierCurveTo(cx + 11, cy - 11, cx + 13, cy - 6.5, cx + 9.5, cy - 4);
+            ctx.bezierCurveTo(cx + 6, cy - 6, cx + 1, cy - 5, cx - 1, cy - 6);
+            ctx.closePath();
+          } else if (mode === "back") {
+            ctx.moveTo(cx - 4, cy + 2);
+            ctx.bezierCurveTo(cx - 5, cy - 5, cx - 1, cy - 6, cx, cy - 2);
+            ctx.bezierCurveTo(cx + 1, cy - 6, cx + 5, cy - 5, cx + 4, cy + 2);
+            ctx.closePath();
+          } else { // front: a centered floppy comb of rounded lobes
+            ctx.moveTo(cx - 5.5, cy - 4);
+            ctx.bezierCurveTo(cx - 7, cy - 13, cx - 2.5, cy - 14, cx - 2, cy - 9.5);
+            ctx.bezierCurveTo(cx - 1, cy - 15, cx + 1, cy - 15, cx + 2, cy - 9.5);
+            ctx.bezierCurveTo(cx + 2.5, cy - 14, cx + 7, cy - 13, cx + 5.5, cy - 4);
+            ctx.closePath();
+          }
+        }
+        trace(); ctx.fillStyle = PAL.comb; ctx.fill();
+        ctx.save(); trace(); ctx.clip(); ctx.fillStyle = PAL.combShade; ctx.globalAlpha = 0.4; ctx.fillRect(cx - 9, cy - 7, 18, 4.5); ctx.globalAlpha = 1; ctx.restore();
+        trace(); ctx.lineWidth = lwIn; ctx.strokeStyle = PAL.ink; ctx.lineJoin = "round"; ctx.stroke();
       }
 
-      // a thin saw-tooth comb ridge for the away (back) view
-      function combRidge(cx, cy, lwIn) {
-        ctx.fillStyle = PAL.comb; ctx.strokeStyle = PAL.ink; ctx.lineWidth = lwIn; ctx.lineJoin = "round";
-        ctx.beginPath();
-        ctx.moveTo(cx - 4, cy + 3); ctx.lineTo(cx - 2, cy); ctx.lineTo(cx, cy + 2.5);
-        ctx.lineTo(cx + 2, cy - 0.5); ctx.lineTo(cx + 4, cy + 3);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
+      // the plump deep-chested side body: a custom teardrop, breast forward,
+      // belly low, back rising to a high tail base (cy is the body centre)
+      function henBodySide(cy) {
+        return [
+          [10, cy - 12], [-2, cy - 13], [-12, cy - 9], [-17, cy - 2],
+          [-15, cy + 7], [-8, cy + 13], [2, cy + 14], [11, cy + 12],
+          [17, cy + 4], [18, cy - 5], [14, cy - 11]
+        ];
       }
 
-      function shadeCrescent(bodyPts, ox, oy, color) {
-        // one flat shadow tone on the lower-back, clipped to the body
+      // clean cel form shadow: the lower / under portion of the body in one flat
+      // tone, with a smooth curved terminator (no odd diagonal split)
+      function shadeCrescent(bodyPts, cy) {
         ctx.save();
         ctx.beginPath();
         for (var i = 0; i < bodyPts.length; i++) {
@@ -692,9 +721,11 @@
           if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
         }
         ctx.closePath(); ctx.clip();
-        ctx.fillStyle = color;
+        ctx.fillStyle = PAL.bodyShade;
+        // a wide ellipse sitting low so its top edge cuts a clean curve just
+        // below the body centre, shading the belly; lit area is the upper-right
         ctx.beginPath();
-        ctx.ellipse(ox - 6, oy - 18, 16, 17, 0, 0, Math.PI * 2);
+        ctx.ellipse(-3, cy + 17, 26, 15, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
@@ -1027,6 +1058,7 @@
       var butterflies = [], motes = [], dust = [], prints = [], bees = [], beetles = [], hoppers = [];
       function spawnCritters() {
         butterflies.length = 0; motes.length = 0; bees.length = 0; beetles.length = 0; hoppers.length = 0;
+        dust.length = 0; prints.length = 0;
         var r = mulberry32(0x8a9b);
         for (var i = 0; i < 3; i++) {
           butterflies.push({
@@ -1392,7 +1424,7 @@
           if (hen.flap <= 0.06) hen.flap = 0.55;            // keep the wings beating
           var hoverZ = 19 + Math.sin(time * 8) * 3;         // bob in place
           hen.vz += (hoverZ - hen.z) * 70 * dt;             // flap lift toward hover height
-          hen.vz *= Math.max(0, 1 - 7 * dt);                // damping so it settles
+          hen.vz *= 1 / (1 + 7 * dt);                       // damping (stable at any dt)
           hen.z += hen.vz * dt;
         } else if (hen.z > 0 || hen.vz !== 0) {
           hen.vz -= GRAV * dt;                              // gravity: hop / fall after release
@@ -1510,7 +1542,7 @@
         var k = e.key;
         // action keys (press only): hop = space, scratch/peck = shift
         if (k === " " || k === "Spacebar" || k === "Space") {
-          e.preventDefault();
+          if (down) e.preventDefault();   // only on keydown (keyup is passive)
           if (down && !e.repeat && !reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
             hen.vz = JUMP_V; hen.idle = 0; hideHint();
           }
@@ -1537,7 +1569,7 @@
         else if (k === "ArrowRight" || k === "Right") keys.right = down;
         else hit = false;
         if (hit) {
-          e.preventDefault();
+          if (down) e.preventDefault();   // only on keydown (keyup is passive)
           if (reduceMQ.matches && down) {
             // discrete nudge, no animation
             var sxn = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
@@ -1555,12 +1587,13 @@
       // touch / pointer: hold to walk toward the finger (keeps the "no UI" feel)
       function pointTo(e) {
         var t = e.touches ? e.touches[0] : e;
-        var ang = { x: t.clientX - sx(hen.x), y: (t.clientY - sy(hen.y)) };
-        var m = Math.hypot(ang.x, ang.y);
-        if (m < 14) { touchDir = null; return; }
-        touchDir = { x: ang.x / m, y: (ang.y / m) / GROUND_SQUASH };
-        var mm = Math.hypot(touchDir.x, touchDir.y);
-        touchDir.x /= mm; touchDir.y /= mm;
+        // un-squash the screen delta into world space, THEN normalize once, so a
+        // diagonal touch walks true to the finger
+        var wx = t.clientX - sx(hen.x);
+        var wy = (t.clientY - sy(hen.y)) / GROUND_SQUASH;
+        var m = Math.hypot(wx, wy);
+        if (m < 12) { touchDir = null; return; }
+        touchDir = { x: wx / m, y: wy / m };
         hideHint();
       }
       canvas.addEventListener("pointerdown", function (e) { pointTo(e); });
