@@ -146,8 +146,9 @@
     }
 
     /* Toolbar icon buttons, pinned to the bar edges so they don't offset
-       the centered dropdown: home on the left, rail toggle on the right. */
-    .back, .rail-toggle {
+       the centered dropdown: home on the left, fullscreen + rail toggle on
+       the right (fullscreen sits just inboard of the navigator toggle). */
+    .back, .rail-toggle, .fullscreen-toggle {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -165,13 +166,18 @@
     }
     .back { left: 0.6rem; }
     .rail-toggle { right: 0.6rem; }
-    .back:hover, .rail-toggle:hover {
+    .fullscreen-toggle { right: 3rem; }
+    .back:hover, .rail-toggle:hover, .fullscreen-toggle:hover {
       color: var(--text-default);
       background: var(--press);
       text-decoration: none;
     }
     .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
-    .back svg, .rail-toggle svg { width: 18px; height: 18px; }
+    .back svg, .rail-toggle svg, .fullscreen-toggle svg { width: 18px; height: 18px; }
+    /* Cross-swap the maximize/minimize glyph with the fullscreen state. */
+    .fullscreen-toggle .ic-collapse { display: none; }
+    .fullscreen-toggle[aria-pressed="true"] .ic-expand { display: none; }
+    .fullscreen-toggle[aria-pressed="true"] .ic-collapse { display: block; }
 
     /* A single minimal dropdown, centered in the bar — quieter than a tab
        strip inside a browser that already has tabs. The native <select>
@@ -482,6 +488,20 @@
           <path d="M6 9l6 6 6-6"></path>
         </svg>
       </div>
+      <button class="fullscreen-toggle" id="fullscreen-toggle" type="button" aria-pressed="false" aria-label="Toggle fullscreen" title="Toggle fullscreen" hidden>
+        <svg class="ic-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+          <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+          <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+          <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+        </svg>
+        <svg class="ic-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 3v3a2 2 0 0 1-2 2H3"></path>
+          <path d="M21 8h-3a2 2 0 0 1-2-2V3"></path>
+          <path d="M3 16h3a2 2 0 0 1 2 2v3"></path>
+          <path d="M16 21v-3a2 2 0 0 1 2-2h3"></path>
+        </svg>
+      </button>
       <button class="rail-toggle" id="rail-toggle" type="button" aria-pressed="true" aria-label="Toggle slide navigator">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -1153,6 +1173,41 @@
     railToggle.setAttribute("aria-pressed", String(!railHidden));
 
     railToggle.addEventListener("click", function () { setRailHidden(!railHidden); });
+
+    // Persistent fullscreen toggle in the top row. (The deck ships its own
+    // fullscreen control, but only inside its auto-hiding bottom nav.) This
+    // fullscreens the whole reader so the chrome, and this button, stay
+    // reachable to toggle back out; the active deck refits to the larger
+    // canvas on the resize. Revealed only where the Fullscreen API is usable,
+    // otherwise it stays hidden rather than presenting a dead control.
+    var fsToggle = document.getElementById("fullscreen-toggle");
+    if (fsToggle && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
+      fsToggle.hidden = false;
+      var fsRoot = document.documentElement;
+      // True only when WE put the reader in fullscreen. The deck's own control
+      // fullscreens an element inside the iframe, which surfaces here as the
+      // <iframe> being document.fullscreenElement; matching on our own root
+      // keeps the two controls from flipping each other's pressed state.
+      var fsActive = function () {
+        return (document.fullscreenElement || document.webkitFullscreenElement) === fsRoot;
+      };
+      var syncFs = function () {
+        fsToggle.setAttribute("aria-pressed", fsActive() ? "true" : "false");
+      };
+      fsToggle.addEventListener("click", function () {
+        try {
+          var p = fsActive()
+            ? (document.exitFullscreen || document.webkitExitFullscreen).call(document)
+            : (fsRoot.requestFullscreen || fsRoot.webkitRequestFullscreen).call(fsRoot);
+          // The request/exit promise rejects asynchronously when the gesture
+          // is untrusted or blocked by policy; swallow it like the sync guard.
+          if (p && p.catch) p.catch(function () {});
+        } catch (e) { /* fullscreen unavailable, ignore */ }
+      });
+      document.addEventListener("fullscreenchange", syncFs);
+      document.addEventListener("webkitfullscreenchange", syncFs);
+      syncFs();
+    }
 
     // Keep layout accurate as the viewport changes. Crossing the phone
     // breakpoint resets the navigator to that mode's default (the two modes
