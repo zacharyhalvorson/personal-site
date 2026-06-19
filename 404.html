@@ -1,0 +1,1686 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>404 · Zachary Halvorson</title>
+    <meta name="description" content="Page not found. Wander a meadow as a chicken, then head back home.">
+    <meta name="robots" content="noindex">
+
+    <meta name="theme-color" content="#c7d4b6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#3c4642" media="(prefers-color-scheme: dark)">
+
+    <!-- Social preview: a portrait of the meadow's chicken. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="404 · Page not found">
+    <meta property="og:description" content="This path wandered off into the tall grass. Wander a while as a chicken, then head back home.">
+    <meta property="og:image" content="https://zacharyhalvorson.com/embed-404.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="A little hand-drawn chicken standing in a meadow.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="404 · Page not found">
+    <meta name="twitter:description" content="This path wandered off into the tall grass.">
+    <meta name="twitter:image" content="https://zacharyhalvorson.com/embed-404.png">
+
+    <style>
+      /* ---------- tokens (harmonized with the main site) ---------- */
+      :root {
+        --text-default: #2a2a2a;
+        --text-soft: #4a4a44;
+        --base: #fafaf7;
+        --highlight: #fff3d6;
+        --link: #0066cc;
+        --link-hover: #003f80;
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text-default: #f4f1ea;
+          --text-soft: #d8d3c8;
+          --base: #1c1b19;
+          --highlight: #4a3a16;
+          --link: #8fccff;
+          --link-hover: #c2e2ff;
+        }
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: var(--base);
+        color: var(--text-default);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .lost {
+        position: fixed;
+        inset: 0;
+        display: block;
+      }
+
+      /* The meadow fills the whole viewport behind the floating type. */
+      #meadow {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 0;
+        touch-action: none;
+      }
+
+      /* 404 language floats above; the animation lives below it. */
+      .copy {
+        position: fixed;
+        top: clamp(1.5rem, 6vh, 4.5rem);
+        left: 0;
+        right: 0;
+        z-index: 2;
+        text-align: center;
+        padding: 0 1.25rem;
+        pointer-events: none; /* let drags pass through to the meadow */
+      }
+
+      /* System type from the main site. The fill is a hair translucent, and a
+         strong downward drop shadow makes the words read as a layer hovering
+         above the meadow and casting onto it. No panels. Subline narrow + balanced. */
+      .copy h1 {
+        margin: 0;
+        font-size: clamp(4.5rem, 17vw, 9.5rem);
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        line-height: 0.94;
+        color: color-mix(in srgb, var(--text-default) 66%, transparent);
+        text-shadow:
+          0 2px 0 rgba(255, 255, 255, 0.22),
+          0 9px 12px rgba(18, 14, 6, 0.45),
+          0 20px 30px rgba(18, 14, 6, 0.38);
+      }
+
+      .copy .sub {
+        max-width: 23rem;            /* narrower so the two lines balance */
+        margin: 0.7rem auto 0;
+        font-size: clamp(0.95rem, 2.4vw, 1.075rem);
+        line-height: 1.5;
+        text-wrap: balance;
+        color: color-mix(in srgb, var(--text-default) 78%, transparent);
+        text-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.2),
+          0 5px 8px rgba(18, 14, 6, 0.42),
+          0 12px 20px rgba(18, 14, 6, 0.3);
+      }
+
+      /* inline link inside the sentence; no underline, just the link color */
+      .copy .home {
+        pointer-events: auto;
+        color: var(--link);
+        text-decoration: none;
+        transition: color 120ms ease;
+      }
+      .copy .home:hover { color: var(--link-hover); }
+      .copy .home:focus-visible {
+        outline: 2px solid var(--link);
+        outline-offset: 4px;
+        border-radius: 3px;
+      }
+
+      /* a quiet, self-erasing nudge toward the controls */
+      .hint {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: clamp(1.1rem, 4vh, 2.5rem);
+        z-index: 2;
+        margin: 0;
+        text-align: center;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+        color: var(--text-default);
+        opacity: 0;            /* hidden until JS confirms the controls work */
+        pointer-events: none;
+        /* a stronger base-color halo so it stays legible over the busy meadow */
+        text-shadow: 0 1px 2px var(--base), 0 0 5px var(--base), 0 0 9px var(--base), 0 0 13px var(--base);
+        transition: opacity 600ms ease;
+      }
+      .hint.-on { opacity: 0.95; }
+
+      .sr-only {
+        position: absolute;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0 0 0 0);
+        white-space: nowrap; border: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hint { display: none; }
+        .copy .home, .copy .home:hover { transition: none; }
+      }
+
+      /* The site is also a printable resume; a 404 should print as plain text. */
+      @media print {
+        #meadow, .hint { display: none; }
+        .copy { position: static; padding-top: 3rem; }
+        .copy h1, .copy .sub { color: #2a2a2a; text-shadow: none; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="lost">
+      <canvas id="meadow" aria-hidden="true" role="presentation"></canvas>
+
+      <div class="copy">
+        <h1>404</h1>
+        <p class="sub">This path wandered off into the tall grass. Wander a while, or <a class="home" href="https://www.zacharyhalvorson.com">head back home</a>.</p>
+      </div>
+
+      <p class="hint" id="hint">space to hop · shift to scratch · f to flap</p>
+
+      <p class="sr-only">A decorative animated meadow with a chicken you can walk around using the arrow keys. This is a 404 page; the "head back home" link returns to the home page.</p>
+    </main>
+
+    <script>
+    /* =========================================================================
+       A tiny hand-inked meadow you walk around as a chicken. One file, no assets,
+       no libraries. Everything is drawn procedurally on a <canvas>. The cel look
+       lives in the line: warm sepia ink that "boils" on twos over flat fills,
+       a steppy walk cycle over a smoothly scrolling painted world.
+       Progressive enhancement: with JS off (or canvas unsupported, or reduced
+       motion) the page is still a legible 404 with a working link home.
+    ========================================================================= */
+    (function () {
+      "use strict";
+
+      var canvas = document.getElementById("meadow");
+      if (!canvas || !canvas.getContext) return;
+      var ctx = canvas.getContext("2d", { alpha: false });
+      if (!ctx) return;
+
+      var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+      var darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
+
+      // ---- palette ----------------------------------------------------------
+      // Two flat color sets: a warm afternoon meadow, and a dusk version for
+      // dark mode. One ink, one shadow tone and one rim per surface - that
+      // restraint is the whole cel-shading model.
+      var LIGHT = {
+        base: "#fafaf7",
+        haze: "#c7d4b6",
+        groundFar: "#b6c79a", groundNear: "#a4be7c",
+        grass: "#88a85f", grassShade: "#6c8a4e", grassRim: "#d3dd92",
+        grassVars: ["#88a85f", "#9bba66", "#7a9c4d", "#94ab53", "#6f9456"], // per-tuft green variation
+        dirt: "#c9b189", dirtShade: "#a8915f",
+        patch: "#ddcaa3", patchShade: "#c6b083", // lighter tan bare earth
+        flowerWarm: "#ecbe52", flowerCool: "#8aa6d6", flowerPale: "#f3eee0",
+        bush: "#7e9a55", bushShade: "#5f7c41",
+        rock: "#bcae97", rockShade: "#9a8c74",
+        trunk: "#9c7d57",
+        body: "#f4eee2", bodyShade: "#dccfb8", comb: "#d2654f", beak: "#e3a44e",
+        combShade: "#a8442f", saddle: "#c9795e", saddleShade: "#a85f48",
+        teal: "#8fa6c8", tealShade: "#637aa0", lilac: "#b7a7d6", lilacShade: "#8f7fb0",
+        bill: "#f3b53e", billShade: "#d4922a", legShade: "#b97a2e",
+        ink: "#3a3026", rim: "#fff5e0",
+        contact: "rgba(74,84,55,0.22)",
+        pond: "#9fc1c0", pondRim: "#7fa6a4",
+        dust: "#e7ddc6", butterfly: "#f4e7a8", butterfly2: "#f0c75b",
+        mote: "#fffaf0", firefly: false
+      };
+      var DARK = {
+        base: "#1c1b19",
+        haze: "#3c4642",
+        groundFar: "#36422f", groundNear: "#2c3a2a",
+        grass: "#52663f", grassShade: "#384a2b", grassRim: "#86997a",
+        grassVars: ["#52663f", "#5e7345", "#475d36", "#586d3f", "#42583a"], // per-tuft green variation
+        dirt: "#6a5a43", dirtShade: "#4d402c",
+        patch: "#7c6a4d", patchShade: "#5a4a34", // lighter tan bare earth (dusk)
+        flowerWarm: "#c79a52", flowerCool: "#6d83b8", flowerPale: "#d3cdbe",
+        bush: "#44542f", bushShade: "#2f3d22",
+        rock: "#5a5446", rockShade: "#403a2e",
+        trunk: "#5b4836",
+        body: "#dad2c0", bodyShade: "#a89e8a", comb: "#b3584a", beak: "#c18c44",
+        combShade: "#8a3a2a", saddle: "#9c5e48", saddleShade: "#7a4836",
+        teal: "#6d83b8", tealShade: "#4c5d88", lilac: "#8a7da8", lilacShade: "#695d84",
+        bill: "#d99e38", billShade: "#a87526", legShade: "#95612a",
+        ink: "#171510", rim: "#ffcf87",
+        contact: "rgba(8,12,6,0.34)",
+        pond: "#3a5256", pondRim: "#2c4044",
+        dust: "#3a4030", butterfly: "#ffe6a0", butterfly2: "#ffd070",
+        mote: "#ffe9b0", firefly: true
+      };
+      var PAL = darkMQ.matches ? DARK : LIGHT;
+
+      // ---- canvas sizing ----------------------------------------------------
+      var W = 0, H = 0, dpr = 1, anchorY = 0;
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // guard against 0 (hidden/minimized window): keeps depth()/fog() out of NaN
+        W = window.innerWidth || 1;
+        H = window.innerHeight || 1;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        canvas.style.width = W + "px";
+        canvas.style.height = H + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        anchorY = Math.round(H * 0.62); // where the camera target sits on screen
+        buildBackdrop();
+      }
+
+      // ---- math: prng, hashing, easing -------------------------------------
+      function mulberry32(a) {
+        return function () {
+          a |= 0; a = (a + 0x6d2b79f5) | 0;
+          var t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      function cellSeed(cx, cy) {
+        var h = (Math.imul(cx, 374761393) + Math.imul(cy, 668265263) + 0x404c0c) | 0;
+        h = Math.imul(h ^ (h >>> 13), 1274126177);
+        return (h ^ (h >>> 16)) >>> 0;
+      }
+      function fract(n) { return n - Math.floor(n); }
+      // deterministic [-0.5,0.5) wobble for the boiling line
+      function jit(i, seed, tick) {
+        return fract(Math.sin(i * 12.9898 + seed * 0.137 + tick * 78.233) * 43758.5453) - 0.5;
+      }
+
+      // ---- the world: 3/4 oblique projection -------------------------------
+      // Flat top-down plane (wx, wy); wy grows toward the viewer (south). x is
+      // 1:1, y is squashed so the ground recedes. Objects stand upright in
+      // un-squashed screen pixels - tilted ground + upright objects = the
+      // storybook Zelda angle.
+      var GROUND_SQUASH = 0.62;
+      var ZOOM = 1.32; // scene zoom: the hen + meadow read a bit bigger
+      var cam = { x: 0, y: 0, tx: 0, ty: 0 };
+      function sx(wx) { return W * 0.5 + (wx - cam.x); }
+      function sy(wy) { return anchorY + (wy - cam.y) * GROUND_SQUASH; }
+      // the whole viewport is ground now: top of screen = far, bottom = near.
+      // near-bottom objects a touch larger, distant ones smaller.
+      function depth(screenY) {
+        var t = screenY / H;
+        t = t < 0 ? 0 : t > 1 ? 1 : t;
+        return 0.6 + t * 0.55;
+      }
+
+      // ---- color helpers (atmospheric fog toward the haze band) -------------
+      var rgbCache = {}, fogCache = {};
+      function rgb(hex) {
+        if (rgbCache[hex]) return rgbCache[hex];
+        var v = parseInt(hex.slice(1), 16);
+        return (rgbCache[hex] = [(v >> 16) & 255, (v >> 8) & 255, v & 255]);
+      }
+      function fog(hex, screenY) {
+        // lerp toward the hazy distance as objects recede up the screen
+        var t = 1 - screenY / H;
+        t = t < 0 ? 0 : t > 1 ? 1 : t;
+        t *= 0.5;
+        if (t < 0.02) return hex;
+        // cache by color + a coarse depth band so we reuse strings across the
+        // hundreds of foliage draws per frame (cleared on palette change)
+        var key = hex + ((t * 32) | 0);
+        var hit = fogCache[key];
+        if (hit) return hit;
+        var a = rgb(hex), b = rgb(PAL.haze);
+        return (fogCache[key] = "rgb(" +
+          ((a[0] + (b[0] - a[0]) * t) | 0) + "," +
+          ((a[1] + (b[1] - a[1]) * t) | 0) + "," +
+          ((a[2] + (b[2] - a[2]) * t) | 0) + ")");
+      }
+
+      // ---- the boiling ink line --------------------------------------------
+      // Stroke (and optionally fill) a polyline whose vertices jitter between a
+      // few held states keyed to a tick that only advances on twos/threes - so
+      // the outline visibly snaps rather than drifts. That snap is the cel read.
+      function inkPath(pts, tick, seed, close) {
+        ctx.beginPath();
+        for (var i = 0; i < pts.length; i++) {
+          var jx = jit(i, seed, tick) * 1.5;
+          var jy = jit(i + 101, seed, tick) * 1.5;
+          var x = pts[i][0] + jx, y = pts[i][1] + jy;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        if (close) ctx.closePath();
+      }
+      function fillInk(pts, tick, seed, fillStyle, lineW, inkStyle) {
+        inkPath(pts, tick, seed, true);
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+        if (lineW > 0) {
+          ctx.lineJoin = "round"; ctx.lineCap = "round";
+          ctx.lineWidth = lineW;
+          ctx.strokeStyle = inkStyle || PAL.ink;
+          ctx.stroke();
+        }
+      }
+
+      // build an egg/ellipse point ring (widest a touch low when bias>0)
+      function ring(cx, cy, rx, ry, n, bias) {
+        var p = [];
+        for (var i = 0; i < n; i++) {
+          var a = (i / n) * Math.PI * 2 - Math.PI / 2;
+          var yy = Math.sin(a);
+          var widen = 1 + (bias || 0) * yy; // wider toward the bottom
+          p.push([cx + Math.cos(a) * rx * widen, cy + yy * ry]);
+        }
+        return p;
+      }
+
+      // =======================================================================
+      //  THE CHICKEN
+      // =======================================================================
+      var hen = {
+        x: 0, y: 0,            // world position (feet)
+        vx: 0, vy: 0,
+        speed: 0,
+        face: "down",         // down | up | side
+        flip: false,          // mirror for left vs right
+        legPhase: 0,          // advances with distance -> stepped pose
+        idle: 0,              // seconds since last input
+        blink: 0, nextBlink: 3,
+        peck: 0, nextPeck: 5,
+        flap: 0, nextFlap: 4,
+        z: 0, vz: 0,          // hop height + vertical velocity (space bar)
+        scratch: 0, scratchPuff: 0, // ground scratch/peck (shift key)
+        land: 0,              // brief squash after a hop lands
+        drop: 0,              // held aloft before the entrance drop
+        ate: false,           // guard so one peck eats at most one critter
+        headBob: 0
+      };
+
+      var POSE = [
+        { swing: 1, lift: 0, lean: -0.07 },  // contact
+        { swing: 0, lift: -3.0, lean: 0 },   // passing (hop up)
+        { swing: -1, lift: 0, lean: 0.07 },  // contact mirror
+        { swing: 0, lift: -3.0, lean: 0 }    // passing
+      ];
+
+      function drawHen() {
+        var s = (depth(sy(hen.y))) * 1.0; // base scale from depth
+        var px = sx(hen.x), py = sy(hen.y);
+        var airborne = hen.z > 0.5;
+        var walking = hen.speed > 4 && !airborne;
+        var scratching = hen.scratch > 0;
+        // peck strength (idle auto-peck OR shift scratch), 0..1 peaking mid-action
+        var sp = scratching ? 1 - hen.scratch / SCRATCH_DUR : 0;
+        var peckT = hen.peck > 0 ? Math.sin((1 - hen.peck / 0.34) * Math.PI) : 0;
+        if (scratching) peckT = Math.max(peckT, Math.sin(Math.min(sp, 1) * Math.PI));
+        var pecking = peckT > 0.002;
+        // a peck only reads as a real chicken peck in profile, so turn sideways
+        // for it and tip the whole body forward at the hips (head down, tail up)
+        var face = (pecking && hen.face !== "side") ? "side" : hen.face;
+        // when we force a side profile for the peck, pick a definite facing so a
+        // stale hen.flip from an old walk can't mirror the head the wrong way
+        var flip = (pecking && hen.face !== "side") ? false : hen.flip;
+        var poseIdx = walking ? (Math.floor(hen.legPhase) % 4) : 1;
+        var P = POSE[poseIdx];
+        var passing = (poseIdx % 2) === 1; // mid-stride, body at its highest
+        var bt = charBoil; // boiling tick for the character (on twos)
+
+        // contact shadow - flat, squashed; shrinks + fades as she leaps
+        var shrink = 1 / (1 + hen.z * 0.02);
+        var shW = 15 * s * (1 + P.lift * 0.03) * shrink;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0.4, 1 - hen.z * 0.018);
+        ctx.fillStyle = PAL.contact;
+        ctx.beginPath();
+        ctx.ellipse(px + 2 * s, py + 1.5, shW, 5 * s * shrink, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // landing squash
+        var lp = hen.land > 0 ? hen.land / 0.13 : 0;
+
+        ctx.save();
+        ctx.translate(px, py - hen.z * s);          // lift the whole bird by the hop
+        ctx.scale(s, s);
+        ctx.scale(1 + lp * 0.16, 1 - lp * 0.18);    // squash on touchdown
+        if (face === "side" && flip) ctx.scale(-1, 1);
+        ctx.rotate(P.lean * (face === "side" ? 1 : 0.4));
+        // peck: pitch forward around the hips - swings the head down and tail up
+        if (pecking) { ctx.translate(0, -12); ctx.rotate(peckT * 0.62); ctx.translate(0, 12); }
+
+        var lw = 1.6 / s, lwIn = 1.1 / s; // constant px regardless of scale
+        var lift = P.lift;
+        var blinking = hen.blink > 0;
+        // the neck reaches the rest of the way to the ground (on top of the body
+        // pitch above), so the beak meets the dirt
+        var actDip = peckT * 18;
+        var scratchKick = scratching ? Math.sin(sp * Math.PI * 3) * 5 : 0;
+        // wings: out for the hop, quick flap when idle-flapping, flick while walking
+        var wingAng;
+        if (hen.flap > 0) wingAng = Math.sin((1 - hen.flap / 0.55) * Math.PI * 4) * 0.62; // beating wings
+        else if (airborne) wingAng = 0.5;
+        else if (walking) wingAng = passing ? 0.17 : 0.02;
+        else if (scratching) wingAng = 0.12;
+        else wingAng = 0;
+        // legs: tucked + angled back in the air
+        var legFy = airborne ? -4 : 0, legSwing = airborne ? -0.5 : null;
+        var tailWag = airborne ? -0.12 : walking ? (passing ? -0.17 : 0.06) : Math.sin(time * 2.4) * 0.05;
+        var bob = walking ? (passing ? -1.7 : 0.7) : hen.headBob;
+
+        if (face === "up") {
+          // ---- away pose: the colorful fanned tail is the star, no face ----
+          drawLeg(-6, legSwing === null ? P.swing : legSwing, lw, legFy);
+          drawLeg(6, legSwing === null ? -P.swing : legSwing, lw, legFy);
+          var body = ring(0, -22 + lift, 18, 15, 14, 0.2);
+          fillInk(body, bt, 11, PAL.body, lw);
+          shadeCrescent(body, -22 + lift);
+          rimArc(0, -22 + lift, 18, 15, -2.4, -1.0, lw + 0.3);
+          var head = ring(0, -37 + lift + bob, 7.5, 7.5, 10, 0);
+          fillInk(head, bt, 22, PAL.body, lwIn);
+          floppyComb(0, -42 + lift + bob, lwIn, "back");
+          tail(0, -26 + lift, 1.45, bt, lw, tailWag, "back");
+        } else if (face === "side") {
+          // ---- profile: head up on a neck, plump body, colorful wing + tail
+          drawLeg(-2, legSwing === null ? -P.swing : legSwing, lw, legFy); // far leg
+          tail(-15, -23 + lift, 1.05, bt, lw, tailWag, "side");
+          var bodyS = henBodySide(-22 + lift);
+          fillInk(bodyS, bt, 11, PAL.body, lw);
+          shadeCrescent(bodyS, -22 + lift);
+          rimArc(2, -22 + lift, 17, 14, -2.6, -0.9, lw + 0.3);
+          cuccoWing(0, -23 + lift, bt, lwIn, false, wingAng);
+          neckHead(13, -40 + lift + bob - (poseIdx === 0 ? 1 : 0) + actDip, "side", bt, lw, lwIn, blinking, -27 + lift);
+          drawLeg(5, legSwing === null ? P.swing : legSwing, lw, legFy, -scratchKick); // near leg rakes back
+        } else {
+          // ---- toward pose (hero front) -----------------------------------
+          tail(0, -21 + lift, 1.0, bt, lw, tailWag, "front"); // low fan peeks behind
+          drawLeg(-7, legSwing === null ? P.swing : legSwing, lw, legFy);
+          drawLeg(7, legSwing === null ? -P.swing : legSwing, lw, legFy, -scratchKick);
+          var bodyF = ring(0, -22 + lift, 19, 16, 16, 0.26);
+          fillInk(bodyF, bt, 11, PAL.body, lw);
+          shadeCrescent(bodyF, -22 + lift);
+          rimArc(0, -22 + lift, 19, 16, -2.5, -1.2, lw + 0.3);
+          cuccoWing(-13, -23 + lift, bt, lwIn, true, wingAng);
+          cuccoWing(13, -23 + lift, bt, lwIn, false, wingAng);
+          neckHead(0, -38 + lift + bob + actDip, "front", bt, lw, lwIn, blinking, -28 + lift);
+        }
+        ctx.restore();
+      }
+
+      // a yellow chicken leg: a visible shank with 3 toes, scale ticks + claws
+      function drawLeg(ox, swing, lw, fy, fx) {
+        var fpx = ox + swing * 3 + (fx || 0), fpy = (fy || 0), hip = -11;
+        ctx.strokeStyle = PAL.beak; ctx.lineWidth = 2.4; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(ox, hip); ctx.lineTo(fpx, fpy); ctx.stroke();
+        // 3 forward toes in a darker ochre under-shade
+        ctx.strokeStyle = PAL.legShade; ctx.lineWidth = 1.7;
+        ctx.beginPath();
+        ctx.moveTo(fpx, fpy); ctx.lineTo(fpx - 3.6, fpy + 2.6);
+        ctx.moveTo(fpx, fpy); ctx.lineTo(fpx, fpy + 3.3);
+        ctx.moveTo(fpx, fpy); ctx.lineTo(fpx + 3.6, fpy + 2.6);
+        ctx.stroke();
+        // ink claw tips + scale ticks down the shank
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(fpx - 3.6, fpy + 2.6); ctx.lineTo(fpx - 4.4, fpy + 3.5);
+        ctx.moveTo(fpx, fpy + 3.3); ctx.lineTo(fpx, fpy + 4.3);
+        ctx.moveTo(fpx + 3.6, fpy + 2.6); ctx.lineTo(fpx + 4.4, fpy + 3.5);
+        ctx.moveTo(ox - 1.2, hip + 4); ctx.lineTo(ox + 1.2, hip + 4);
+        ctx.moveTo(ox - 1.1, hip + 7); ctx.lineTo(ox + 1.1, hip + 7);
+        ctx.stroke();
+      }
+
+      // one pointed sickle feather, a lancet from base (0,0) toward (tx,ty)
+      function blade(tx, ty, wdt, fill, sh, bt, seed, lw) {
+        var len = Math.hypot(tx, ty) || 1;
+        var nx = -ty / len * wdt, ny = tx / len * wdt;
+        var mx = tx * 0.45, my = ty * 0.45;
+        var pts = [[-nx, -ny], [mx - nx * 0.6, my - ny * 0.6], [tx, ty], [mx + nx * 0.6, my + ny * 0.6], [nx, ny]];
+        fillInk(pts, bt, seed, fill, lw);
+        ctx.strokeStyle = sh; ctx.lineWidth = lw * 0.9; ctx.globalAlpha = 0.6; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(tx * 0.9, ty * 0.9); ctx.stroke(); ctx.globalAlpha = 1;
+      }
+      // the signature Cucco tail: a tall upright fan of sickle blades whose tips
+      // clear the head, the topmost washed turquoise
+      function tail(ox, oy, sc, bt, lw, wag, mode) {
+        ctx.save();
+        ctx.translate(ox, oy);
+        ctx.rotate(wag || 0);
+        var cr = PAL.body, crS = PAL.bodyShade, tq = PAL.teal, tqS = PAL.tealShade,
+            ter = PAL.saddle, terS = PAL.saddleShade, lc = PAL.lilac, lcS = PAL.lilacShade;
+        if (mode === "front") {
+          // a low foreshortened fan peeking up behind both shoulders
+          blade(-9 * sc, -15 * sc, 4, cr, crS, bt, 60, lw);
+          blade(9 * sc, -15 * sc, 4, cr, crS, bt, 61, lw);
+          blade(-4 * sc, -19 * sc, 4, lc, lcS, bt, 62, lw);
+          blade(4 * sc, -19 * sc, 4, tq, tqS, bt, 63, lw);
+          blade(0, -21 * sc, 4.4, cr, crS, bt, 64, lw);
+        } else if (mode === "back") {
+          // wide dominant fan (away view): the colorful feathers lead
+          blade(-13 * sc, -18 * sc, 3.6, cr, crS, bt, 80, lw);
+          blade(13 * sc, -18 * sc, 3.6, ter, terS, bt, 81, lw);
+          blade(-6 * sc, -25 * sc, 4, lc, lcS, bt, 82, lw);
+          blade(6 * sc, -25 * sc, 4, tq, tqS, bt, 83, lw);
+          blade(0, -28 * sc, 4.2, cr, crS, bt, 84, lw);
+        } else {
+          // side profile sweep up and back (back = -x when facing right): a
+          // cohesive fan of broad feathers, cream front to colorful rear
+          blade(4 * sc, -18 * sc, 3.8, cr, crS, bt, 70, lw);     // front blade
+          blade(-2 * sc, -23 * sc, 4.4, cr, crS, bt, 71, lw);    // central tall cream
+          blade(-8 * sc, -23 * sc, 4.2, tq, tqS, bt, 72, lw);    // teal
+          blade(-13 * sc, -20 * sc, 4, lc, lcS, bt, 73, lw);     // lavender
+          blade(-17 * sc, -14 * sc, 3.6, ter, terS, bt, 74, lw); // terra-cotta rear
+        }
+        ctx.restore();
+      }
+
+      // the signature colorful Cucco wing folded on the flank: a cream covert
+      // over three stacked feather bands (teal, lavender, terra-cotta) with
+      // white feather tips. Pivots at the shoulder so it can flick/flap by `ang`.
+      function cuccoWing(ox, oy, bt, lwIn, far, ang) {
+        var sgn = far ? -1 : 1;
+        ctx.save();
+        ctx.translate(ox, oy);
+        ctx.rotate((ang || 0) * sgn);
+        var wpts = [[0, -7], [sgn * 9, -5], [sgn * 14, -1], [sgn * 14, 4], [sgn * 10, 8], [sgn * 5, 6], [sgn * 2, 9], [0, 6]];
+        fillInk(wpts, bt, 41, far ? PAL.bodyShade : PAL.body, lwIn);
+        // clip to the wing and lay in the colour bands
+        ctx.save();
+        ctx.beginPath();
+        for (var i = 0; i < wpts.length; i++) { var p = wpts[i]; i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+        ctx.closePath(); ctx.clip();
+        var bw = sgn * 17, bx = sgn < 0 ? -1 : -1;
+        ctx.fillStyle = far ? PAL.tealShade : PAL.teal;     ctx.fillRect(bx, -3.5, bw, 3.4);
+        ctx.fillStyle = far ? PAL.lilacShade : PAL.lilac;   ctx.fillRect(bx, -0.1, bw, 3.4);
+        ctx.fillStyle = far ? PAL.saddleShade : PAL.saddle; ctx.fillRect(bx, 3.3, bw, 4.5);
+        // white feather tips along the lower trailing edge
+        ctx.strokeStyle = PAL.rim; ctx.lineWidth = lwIn * 1.3; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(sgn * 4, 8); ctx.lineTo(sgn * 7, 6.2);
+        ctx.moveTo(sgn * 8, 7); ctx.lineTo(sgn * 11, 4.5);
+        ctx.stroke();
+        ctx.restore();
+        // a soft ink line between feather rows + the cream covert edge on top
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lwIn * 0.6; ctx.globalAlpha = 0.4;
+        ctx.beginPath();
+        ctx.moveTo(sgn * 1, -0.1); ctx.lineTo(sgn * 12, 0.4);
+        ctx.moveTo(sgn * 1, 3.3); ctx.lineTo(sgn * 11, 3.8);
+        ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.strokeStyle = PAL.rim; ctx.lineWidth = lwIn * 1.4; ctx.lineCap = "round"; ctx.globalAlpha = 0.7;
+        ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(sgn * 11, -3.8); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function neckHead(ox, oy, mode, bt, lw, lwIn, blinking, neckBaseY) {
+        // neck: a stretchy connector from the shoulder up to the head, so a deep
+        // peck reads as the neck reaching all the way down to the ground
+        var nbx = mode === "side" ? 5 : 0;
+        ctx.strokeStyle = PAL.body; ctx.lineWidth = 8.5; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(nbx, neckBaseY);
+        ctx.quadraticCurveTo((nbx + ox) / 2, (neckBaseY + oy) / 2, ox, oy + 5);
+        ctx.stroke();
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 0.7;
+        // head
+        var head = ring(ox, oy, 8, 7.5, 11, 0);
+        fillInk(head, bt, 52, PAL.body, lwIn);
+        // a big floppy rounded red comb (the Cucco crest)
+        floppyComb(ox, oy, lwIn, mode);
+        // beak: short yellow two-mandible bill, slightly down
+        var bx = mode === "side" ? ox + 7 : ox;
+        var by = mode === "side" ? oy + 2 : oy + 5;
+        ctx.fillStyle = PAL.bill; ctx.strokeStyle = PAL.ink;
+        if (mode === "side") {
+          ctx.beginPath();
+          ctx.moveTo(bx - 2, by - 2.6); ctx.lineTo(bx + 5.5, by + 0.6); ctx.lineTo(bx - 2, by + 2.6);
+          ctx.closePath(); ctx.lineWidth = lwIn; ctx.fill(); ctx.stroke();
+          ctx.strokeStyle = PAL.billShade; ctx.lineWidth = lwIn * 0.8;
+          ctx.beginPath(); ctx.moveTo(bx - 1, by + 0.4); ctx.lineTo(bx + 4.5, by + 0.4); ctx.stroke();
+          ctx.fillStyle = PAL.comb;
+          ctx.beginPath(); ctx.ellipse(bx - 1, by + 3.6, 1.4, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(bx - 2.8, by - 1.3); ctx.lineTo(bx + 2.8, by - 1.3);
+          ctx.lineTo(bx + 1.2, by + 3.6); ctx.lineTo(bx - 1.2, by + 3.6);
+          ctx.closePath(); ctx.lineWidth = lwIn; ctx.fill(); ctx.stroke();
+          ctx.strokeStyle = PAL.billShade; ctx.lineWidth = lwIn * 0.7;
+          ctx.beginPath(); ctx.moveTo(bx - 2.2, by + 0.6); ctx.lineTo(bx + 2.2, by + 0.6); ctx.stroke();
+          // no hanging front wattle (it read as a tongue); the comb carries the red
+        }
+        // eye(s) with the deadpan lid
+        drawEye(mode === "side" ? ox + 4 : ox - 3.4, oy - 1, blinking, lwIn);
+        if (mode === "front") drawEye(ox + 3.4, oy - 1, blinking, lwIn);
+      }
+
+      // a big round bead eye crossed by one heavy half-lid: the Cucco deadpan
+      function drawEye(ex, ey, blinking, lw) {
+        ctx.strokeStyle = PAL.ink; ctx.lineCap = "round";
+        if (blinking) {
+          ctx.lineWidth = lw * 1.4;
+          ctx.beginPath(); ctx.moveTo(ex - 1.8, ey); ctx.lineTo(ex + 1.8, ey); ctx.stroke();
+          return;
+        }
+        ctx.fillStyle = PAL.ink;
+        ctx.beginPath(); ctx.arc(ex, ey, 2.0, 0, Math.PI * 2); ctx.fill();
+        // small low catchlight so the eye still reads dark + deadpan
+        ctx.fillStyle = PAL.rim;
+        ctx.beginPath(); ctx.arc(ex - 0.5, ey + 0.3, 0.5, 0, Math.PI * 2); ctx.fill();
+        // heavy upper lid clipping the top third
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = lw * 1.5;
+        ctx.beginPath(); ctx.moveTo(ex - 2.3, ey - 1.0); ctx.lineTo(ex + 2.3, ey - 0.7); ctx.stroke();
+      }
+
+      // a big floppy rounded red comb (used by neckHead for side/front and the
+      // away pose for a small top crest)
+      function floppyComb(cx, cy, lwIn, mode) {
+        function trace() {
+          ctx.beginPath();
+          if (mode === "side") { // a rounded crest flopping forward (facing +x)
+            ctx.moveTo(cx - 5, cy - 4);
+            ctx.bezierCurveTo(cx - 7, cy - 12, cx - 1, cy - 15, cx + 2, cy - 11);
+            ctx.bezierCurveTo(cx + 4, cy - 16, cx + 9, cy - 14, cx + 9, cy - 8);
+            ctx.bezierCurveTo(cx + 11, cy - 11, cx + 13, cy - 6.5, cx + 9.5, cy - 4);
+            ctx.bezierCurveTo(cx + 6, cy - 6, cx + 1, cy - 5, cx - 1, cy - 6);
+            ctx.closePath();
+          } else if (mode === "back") {
+            ctx.moveTo(cx - 4, cy + 2);
+            ctx.bezierCurveTo(cx - 5, cy - 5, cx - 1, cy - 6, cx, cy - 2);
+            ctx.bezierCurveTo(cx + 1, cy - 6, cx + 5, cy - 5, cx + 4, cy + 2);
+            ctx.closePath();
+          } else { // front: a centered floppy comb of rounded lobes
+            ctx.moveTo(cx - 5.5, cy - 4);
+            ctx.bezierCurveTo(cx - 7, cy - 13, cx - 2.5, cy - 14, cx - 2, cy - 9.5);
+            ctx.bezierCurveTo(cx - 1, cy - 15, cx + 1, cy - 15, cx + 2, cy - 9.5);
+            ctx.bezierCurveTo(cx + 2.5, cy - 14, cx + 7, cy - 13, cx + 5.5, cy - 4);
+            ctx.closePath();
+          }
+        }
+        trace(); ctx.fillStyle = PAL.comb; ctx.fill();
+        ctx.save(); trace(); ctx.clip(); ctx.fillStyle = PAL.combShade; ctx.globalAlpha = 0.4; ctx.fillRect(cx - 9, cy - 7, 18, 4.5); ctx.globalAlpha = 1; ctx.restore();
+        trace(); ctx.lineWidth = lwIn; ctx.strokeStyle = PAL.ink; ctx.lineJoin = "round"; ctx.stroke();
+      }
+
+      // the plump deep-chested side body: a custom teardrop, breast forward,
+      // belly low, back rising to a high tail base (cy is the body centre)
+      function henBodySide(cy) {
+        return [
+          [10, cy - 12], [-2, cy - 13], [-12, cy - 9], [-17, cy - 2],
+          [-15, cy + 7], [-8, cy + 13], [2, cy + 14], [11, cy + 12],
+          [17, cy + 4], [18, cy - 5], [14, cy - 11]
+        ];
+      }
+
+      // clean cel form shadow: the lower / under portion of the body in one flat
+      // tone, with a smooth curved terminator (no odd diagonal split)
+      function shadeCrescent(bodyPts, cy) {
+        ctx.save();
+        ctx.beginPath();
+        for (var i = 0; i < bodyPts.length; i++) {
+          var p = bodyPts[i];
+          if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+        }
+        ctx.closePath(); ctx.clip();
+        ctx.fillStyle = PAL.bodyShade;
+        // a wide ellipse sitting low so its top edge cuts a clean curve just
+        // below the body centre, shading the belly; lit area is the upper-right
+        ctx.beginPath();
+        ctx.ellipse(-3, cy + 17, 26, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function rimArc(cx, cy, rx, ry, a0, a1, lw) {
+        ctx.strokeStyle = PAL.rim; ctx.lineWidth = lw; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx - 1, ry - 1, 0, a0, a1);
+        ctx.stroke();
+      }
+
+      // =======================================================================
+      //  SCENE: per-cell generative meadow
+      // =======================================================================
+      var CELL = 140;
+      // a fixed meandering dirt path: wy as a function of wx
+      function pathY(wx) { return 220 + Math.sin(wx * 0.0042) * 160 + Math.sin(wx * 0.0123 + 1.3) * 60; }
+      function nearPath(wx, wy) { return Math.abs(wy - pathY(wx)) < 34; }
+
+      // gather visible scene items into a y-sortable list each frame
+      var items = [], decals = [];
+      function collectScene() {
+        items.length = 0; decals.length = 0;
+        var marginX = 80, topPad = 220;
+        var leftW = cam.x - W * 0.5 - marginX;
+        var rightW = cam.x + W * 0.5 + marginX;
+        // world-y range visible on screen (invert the projection)
+        var topW = cam.y + (0 - anchorY - topPad) / GROUND_SQUASH;
+        var botW = cam.y + (H - anchorY + 40) / GROUND_SQUASH;
+        var c0x = Math.floor(leftW / CELL), c1x = Math.floor(rightW / CELL);
+        var c0y = Math.floor(topW / CELL), c1y = Math.floor(botW / CELL);
+
+        for (var cy = c0y; cy <= c1y; cy++) {
+          for (var cx = c0x; cx <= c1x; cx++) {
+            var rnd = mulberry32(cellSeed(cx, cy));
+            // an occasional bare-earth patch (a flat ground decal under everything)
+            if (rnd() < 0.09) decals.push({ wx: cx * CELL + rnd() * CELL, wy: cy * CELL + rnd() * CELL, v: rnd() });
+            var count = (rnd() * 4.5) | 0; // 0..4 scatter items
+            for (var k = 0; k < count; k++) {
+              var wx = cx * CELL + rnd() * CELL;
+              var wy = cy * CELL + rnd() * CELL;
+              var onPath = nearPath(wx, wy);
+              var roll = rnd();
+              var type, sz = 0.8 + rnd() * 0.5, v = rnd();
+              if (onPath) {
+                // keep the path walkable: mostly pebbles, sparse grass
+                if (roll < 0.5) continue;
+                type = roll < 0.78 ? "rock" : "clover";
+              } else if (roll < 0.20) type = "grass";
+              else if (roll < 0.42) type = "grasspatch";
+              else if (roll < 0.54) type = "clover";
+              else if (roll < 0.66) type = "flower";
+              else if (roll < 0.75) type = "bush";
+              else if (roll < 0.86) type = "rock";
+              else if (roll < 0.885) type = "stump"; // fewer, bigger stumps
+              else type = "grasspatch";
+              if (type === "grass") {
+                // lone grass spawns as a tight tussock so the meadow clumps up
+                // instead of reading as evenly-spaced single blades
+                var clump = 3 + (rnd() * 2 | 0); // 3-4 tufts
+                for (var gc = 0; gc < clump; gc++)
+                  items.push({ t: "grass", wx: wx + (rnd() - 0.5) * 30, wy: wy + (rnd() - 0.5) * 22, s: sz, v: rnd() });
+              } else {
+                items.push({ t: type, wx: wx, wy: wy, s: sz, v: v });
+              }
+            }
+          }
+        }
+        // the chicken is just another y-sorted actor
+        items.push({ t: "hen", wx: hen.x, wy: hen.y, s: 1, v: 0 });
+        items.sort(byDepth);
+      }
+      function byDepth(a, b) { return a.wy - b.wy; }
+
+      // wind: a single traveling wave sweeps the whole field
+      function windAt(wx, wy) {
+        return Math.sin(windPhase + wx * 0.012 + wy * 0.02) * 3.4 +
+               Math.sin(windPhase * 0.6 + wx * 0.03) * 1.4;
+      }
+      // grass bends away from the chicken when she is close
+      function partAt(wx, wy) {
+        var dx = wx - hen.x, dy = (wy - hen.y) * 0.6;
+        var d2 = dx * dx + dy * dy;
+        if (d2 > 1700) return 0;
+        var d = Math.sqrt(d2);
+        return (dx < 0 ? -1 : 1) * (1 - d / 41) * 10;
+      }
+
+      // bare-earth patches: flat, squashed, no outline (they ARE the ground)
+      function drawDecals() {
+        for (var i = 0; i < decals.length; i++) {
+          var dec = decals[i];
+          dirtPatch(sx(dec.wx), sy(dec.wy), depth(sy(dec.wy)), dec.v);
+        }
+      }
+      function dirtPatch(px, py, d, v) {
+        var col = fog(PAL.patch, py), sh = fog(PAL.patchShade, py);
+        var r = (74 + v * 76) * d;
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        var n = 9, i;
+        for (i = 0; i <= n; i++) {
+          var a = (i / n) * Math.PI * 2;
+          var rr = r * (0.68 + fract(Math.sin(a * 3.3 + v * 40) * 8.13) * 0.5);
+          var x = px + Math.cos(a) * rr, y = py + Math.sin(a) * rr * 0.42; // squashed
+          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.closePath(); ctx.fill();
+        // a little darker mottling
+        ctx.fillStyle = sh; ctx.globalAlpha = 0.4;
+        ctx.beginPath(); ctx.ellipse(px - r * 0.25, py + r * 0.05, r * 0.4, r * 0.17, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+        // a few soil specks / pebbles
+        ctx.fillStyle = sh;
+        for (i = 0; i < 4; i++) {
+          var pa = i * 1.9 + v * 10, pr = r * (0.2 + 0.5 * fract(Math.sin(pa * 5) * 3.1));
+          ctx.beginPath();
+          ctx.ellipse(px + Math.cos(pa) * pr, py + Math.sin(pa) * pr * 0.42, 1.5 * d, 1.0 * d, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function drawItem(it) {
+        var px = sx(it.wx), py = sy(it.wy), d = depth(py);
+        switch (it.t) {
+          case "hen": drawHen(); break;
+          case "grass": grassTuft(px, py, d, it.wx, it.wy, it.v); break;
+          case "grasspatch": grasspatch(px, py, d, it.wx, it.wy, it.v); break;
+          case "clover": clover(px, py, d, it.v); break;
+          case "flower": flower(px, py, d, it.wx, it.wy, it.v); break;
+          case "bush": bush(px, py, d, it.v, py); break;
+          case "rock": rock(px, py, d, it.v, py); break;
+          case "stump": stump(px, py, d, it.v, py); break;
+        }
+      }
+
+      // one fan of blades; `tallMul` stretches them into tall grass
+      function grassBladeFan(px, py, d, wx, wy, v, n, tallMul) {
+        var sway = windAt(wx, wy) + partAt(wx, wy);
+        // pick one of a few greens per tuft so the meadow isn't a flat lawn
+        var gv = PAL.grassVars[((v * 100) | 0) % PAL.grassVars.length];
+        var col = fog(gv, py), sh = fog(PAL.grassShade, py), rm = fog(PAL.grassRim, py);
+        var tm = tallMul || 1;
+        for (var i = 0; i < n; i++) {
+          var spread = (i / (n - 1) - 0.5) * 16 * d;
+          var len = (24 + ((i * 7 + (v * 100 | 0)) % 14)) * d * tm; // taller blades
+          var tipx = px + spread + sway * (len / 26);
+          var tipy = py - len;
+          ctx.strokeStyle = (i % 3 === 0) ? sh : col;
+          ctx.lineWidth = 2.1 * d; ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(px + spread * 0.3, py);
+          ctx.quadraticCurveTo(px + spread * 0.8 + sway * 0.4, py - len * 0.5, tipx, tipy);
+          ctx.stroke();
+          // sun-tipped tip
+          ctx.strokeStyle = rm; ctx.lineWidth = 1.3 * d;
+          ctx.beginPath();
+          ctx.moveTo(px + spread * 0.8 + sway * 0.4, py - len * 0.62);
+          ctx.lineTo(tipx, tipy);
+          ctx.stroke();
+        }
+      }
+
+      function grassTuft(px, py, d, wx, wy, v) {
+        grassBladeFan(px, py, d, wx, wy, v, 4 + ((v * 4) | 0), 1);
+      }
+
+      // a wide, dense clump - a few overlapping fans, the centre tall - and the
+      // occasional bloom poking out, so the meadow reads as patches not a lawn
+      function grasspatch(px, py, d, wx, wy, v) {
+        var subs = 3 + ((v * 2) | 0); // 3-4 sub-tufts
+        var mid = (subs / 2) | 0;
+        for (var s = 0; s < subs; s++) {
+          var t = subs > 1 ? (s / (subs - 1) - 0.5) : 0;
+          var ox = t * 26 * d;
+          var tall = s === mid ? 1.65 : 1.05 + (s % 2) * 0.28;
+          grassBladeFan(px + ox, py - Math.abs(t) * 3 * d,
+                        d * (0.85 + ((s + (v * 7 | 0)) % 3) * 0.12),
+                        wx + s * 31, wy, v + s * 0.3, 5 + ((v * 50 + s) % 4 | 0), tall);
+        }
+        if (v > 0.55) flower(px + (v - 0.5) * 20 * d, py - 1, d * 0.85, wx + 9, wy, v);
+      }
+
+      function clover(px, py, d, v) {
+        var sway = (v - 0.5) * 4;
+        ctx.fillStyle = fog(PAL.grassShade, py);
+        for (var i = 0; i < 3; i++) {
+          var a = (i / 3) * Math.PI * 2 + v * 6;
+          ctx.beginPath();
+          ctx.ellipse(px + Math.cos(a) * 3 * d + sway, py - 4 * d + Math.sin(a) * 3 * d, 2.2 * d, 2.6 * d, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function flower(px, py, d, wx, wy, v) {
+        var sway = windAt(wx, wy) * 0.8 + partAt(wx, wy) * 0.8;
+        var stemTopY = py - 16 * d;
+        var topx = px + sway;
+        ctx.strokeStyle = fog(PAL.grassShade, py); ctx.lineWidth = 1.6 * d; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.quadraticCurveTo(px + sway * 0.5, py - 8 * d, topx, stemTopY); ctx.stroke();
+        var petal = v < 0.4 ? PAL.flowerWarm : v < 0.72 ? PAL.flowerCool : PAL.flowerPale;
+        petal = fog(petal, py);
+        var lobes = 5;
+        ctx.fillStyle = petal;
+        for (var i = 0; i < lobes; i++) {
+          var a = (i / lobes) * Math.PI * 2 + v;
+          ctx.beginPath();
+          ctx.ellipse(topx + Math.cos(a) * 3.2 * d, stemTopY + Math.sin(a) * 3.2 * d, 2.4 * d, 2.4 * d, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = PAL.ink;
+        ctx.beginPath(); ctx.arc(topx, stemTopY, 1.5 * d, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // a full compound shrub: a shaded silhouette mass, a cluster of lit leafy
+      // clumps, rim-lit fluff on top, and a couple of woody stems at the base
+      function bush(px, py, d, v, depthY) {
+        var col = fog(PAL.bush, depthY), sh = fog(PAL.bushShade, depthY), rm = fog(PAL.grassRim, depthY);
+        var r = (22 + v * 13) * d; // bigger: ~22-35 base radius
+        groundShadow(px, py, r * 1.05, r * 0.32);
+        // woody stems peeking at the base
+        ctx.strokeStyle = fog(PAL.trunk, depthY); ctx.lineWidth = 2 * d; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(px - r * 0.16, py); ctx.lineTo(px - r * 0.08, py - r * 0.55);
+        ctx.moveTo(px + r * 0.14, py); ctx.lineTo(px + r * 0.06, py - r * 0.5);
+        ctx.stroke();
+        // overall shaded silhouette
+        ctx.fillStyle = sh;
+        blob(px, py - r * 0.72, r, v + 1, 8);
+        // lit clumps clustered toward the upper-left sun side
+        ctx.fillStyle = col;
+        var lumps = 4 + ((v * 3) | 0); // 4-6
+        for (var i = 0; i < lumps; i++) {
+          var t = lumps > 1 ? i / (lumps - 1) : 0.5;
+          var lx = px + (t - 0.5) * r * 1.05;
+          var ly = py - r * (0.66 + fract(Math.sin(i * 3.3 + v * 21) * 6.1) * 0.5);
+          var lr = r * (0.44 + fract(Math.sin(i * 5.1 + v * 9) * 4.7) * 0.26);
+          blob(lx - r * 0.08, ly, lr, i + v + 3, 5);
+        }
+        // central crown to tie it together
+        blob(px - r * 0.06, py - r * 0.96, r * 0.6, v + 9, 6);
+        // rim-lit fluff catching the sun on top
+        ctx.fillStyle = rm; ctx.globalAlpha = 0.5;
+        blob(px - r * 0.1, py - r * 1.16, r * 0.28, v + 5, 5);
+        blob(px + r * 0.3, py - r * 0.9, r * 0.16, v + 7, 4);
+        ctx.globalAlpha = 1;
+      }
+
+      function blob(cx, cy, r, seed, lobes) {
+        ctx.beginPath();
+        for (var i = 0; i <= lobes; i++) {
+          var a = (i / lobes) * Math.PI * 2;
+          var rr = r * (0.82 + fract(Math.sin(a * 3 + seed) * 9.1) * 0.32);
+          var x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr * 0.8;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath(); ctx.fill();
+      }
+
+      function drawOneRock(px, py, d, v, depthY) {
+        groundShadow(px, py, 9 * d, 3 * d);
+        var col = fog(PAL.rock, depthY), sh = fog(PAL.rockShade, depthY);
+        var r = 7 * d;
+        var pts = [];
+        for (var i = 0; i < 6; i++) {
+          var a = (i / 6) * Math.PI * 2;
+          var rr = r * (0.8 + fract(Math.sin(a * 4 + v * 20) * 7.3) * 0.4);
+          pts.push([px + Math.cos(a) * rr, py - r * 0.5 + Math.sin(a) * rr * 0.7]);
+        }
+        fillInk(pts, foliBoil, (v * 90) | 0, col, 1.2);
+        ctx.save(); ctx.beginPath();
+        for (var j = 0; j < pts.length; j++) { var p = pts[j]; j ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+        ctx.closePath(); ctx.clip();
+        ctx.fillStyle = sh; ctx.beginPath();
+        ctx.ellipse(px - r * 0.4, py - r * 0.1, r, r, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      // rocks vary in size and sometimes cluster with a pebble or two
+      function rock(px, py, d, v, depthY) {
+        if (v > 0.55) drawOneRock(px - (7 + v * 5) * d, py + 2 * d, d * 0.5, v + 0.3, depthY);
+        drawOneRock(px, py, d * (0.8 + v * 0.95), v, depthY);
+        if (v > 0.78) drawOneRock(px + (6 + v * 4) * d, py + 1.5 * d, d * 0.45, v + 0.7, depthY);
+      }
+
+      // a cut tree stump, sized realistically next to the hen: a chunky tapered
+      // barrel with a ringed cut top
+      function stump(px, py, d, v, depthY) {
+        var col = fog(PAL.trunk, depthY), side = fog(PAL.dirtShade, depthY);
+        var w = 26 * d, h = (18 + (v * 12 | 0)) * d; // wider, squatter: realistic vs the hen
+        groundShadow(px, py, w * 1.15, w * 0.4);
+        var body = [[px - w, py], [px - w * 0.86, py - h], [px + w * 0.86, py - h], [px + w, py]];
+        fillInk(body, foliBoil, (v * 70) | 0, col, 1.4);
+        // shaded right face + bark grain, clipped to the trunk
+        ctx.save();
+        ctx.beginPath();
+        for (var i = 0; i < body.length; i++) { var p = body[i]; i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+        ctx.closePath(); ctx.clip();
+        ctx.fillStyle = side; ctx.fillRect(px + w * 0.18, py - h, w, h);
+        ctx.strokeStyle = PAL.ink; ctx.globalAlpha = 0.26; ctx.lineWidth = 1 * d;
+        ctx.beginPath();
+        ctx.moveTo(px - w * 0.42, py - h * 0.12); ctx.lineTo(px - w * 0.42, py - h * 0.9);
+        ctx.moveTo(px - w * 0.05, py - h * 0.1); ctx.lineTo(px - w * 0.05, py - h * 0.86);
+        ctx.moveTo(px + w * 0.36, py - h * 0.1); ctx.lineTo(px + w * 0.36, py - h * 0.8);
+        ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.restore();
+        // cut top with growth rings + a hairline crack
+        var ry = w * 0.42;
+        ctx.fillStyle = fog(PAL.dirt, depthY);
+        ctx.beginPath(); ctx.ellipse(px, py - h, w * 0.92, ry, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = PAL.ink; ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.strokeStyle = side; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.ellipse(px, py - h, w * 0.62, ry * 0.62, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(px - w * 0.04, py - h, w * 0.32, ry * 0.32, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 0.4;
+        ctx.beginPath(); ctx.moveTo(px, py - h); ctx.lineTo(px + w * 0.55, py - h + ry * 0.4); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      function groundShadow(px, py, rx, ry) {
+        ctx.fillStyle = PAL.contact;
+        ctx.beginPath();
+        ctx.ellipse(px + 3, py + 1, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // =======================================================================
+      //  CRITTERS + PARTICLES
+      // =======================================================================
+      var butterflies = [], motes = [], dust = [], prints = [], bees = [], beetles = [], hoppers = [];
+      function spawnCritters() {
+        butterflies.length = 0; motes.length = 0; bees.length = 0; beetles.length = 0; hoppers.length = 0;
+        dust.length = 0; prints.length = 0;
+        var r = mulberry32(0x8a9b);
+        for (var i = 0; i < 3; i++) {
+          butterflies.push({
+            x: hen.x + (r() - 0.5) * 360, y: hen.y + (r() - 0.5) * 240,
+            t: r() * 6.28, sp: 0.5 + r() * 0.5, hue: r() < 0.5, flap: 0, scat: 0
+          });
+        }
+        for (var j = 0; j < 7; j++) {
+          motes.push({ x: r(), y: r(), z: 0.3 + r() * 0.7, ph: r() * 6.28 });
+        }
+        for (var b = 0; b < 2; b++) {
+          bees.push({ x: hen.x + (r() - 0.5) * 300, y: hen.y + (r() - 0.5) * 220, ph: r() * 6.28 });
+        }
+        for (var e = 0; e < 2; e++) {
+          beetles.push({ x: hen.x + (r() - 0.5) * 340, y: hen.y + (r() - 0.5) * 240, dir: r() * 6.28, spd: 9 + r() * 6, turn: 1 + r() * 2, freeze: 0 });
+        }
+        for (var hp = 0; hp < 2; hp++) {
+          hoppers.push({ x: hen.x + (r() - 0.5) * 380, y: hen.y + (r() - 0.5) * 260, dir: r() * 6.28, z: 0, hopT: 0, hopDur: 0.42 + r() * 0.22, hopH: 13 + r() * 7, spd: 58 + r() * 28, rest: r() * 1.6 });
+        }
+      }
+
+      function updateCritters(dt) {
+        for (var i = 0; i < butterflies.length; i++) {
+          var b = butterflies[i];
+          b.flap += dt;
+          // scatter when the hen's foot comes near
+          var dx = b.x - hen.x, dy = (b.y - hen.y) * 0.7;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < 6400 && hen.speed > 6) b.scat = 1;
+          if (b.scat > 0) {
+            var d = Math.sqrt(d2) || 1;
+            b.x += (dx / d) * 90 * dt; b.y += (dy / d) * 90 * dt;
+            b.scat -= dt * 0.7;
+          } else {
+            b.t += dt * b.sp;
+            b.x += Math.cos(b.t) * 26 * dt;
+            b.y += Math.sin(b.t * 1.3) * 18 * dt;
+          }
+          // keep them loosely around the camera
+          recenter(b, 520, 360);
+        }
+        // bees hover and bob from bloom to bloom
+        for (var k = 0; k < bees.length; k++) {
+          var be = bees[k];
+          be.ph += dt * 2.6;
+          be.x += Math.cos(be.ph * 0.7) * 34 * dt;
+          be.y += Math.sin(be.ph) * 24 * dt;
+          recenter(be, 480, 340);
+        }
+        // beetles trundle in straight lines, freeze + scurry when the hen nears
+        for (var g = 0; g < beetles.length; g++) {
+          var e = beetles[g];
+          var ex = hen.x - e.x, ey = (hen.y - e.y) * 0.7, e2 = ex * ex + ey * ey;
+          if (e2 < 4200) e.freeze = 0.45;
+          if (e.freeze > 0) {
+            e.freeze -= dt;
+            if (e.freeze < 0.28) { var ed = Math.sqrt(e2) || 1; e.x -= (ex / ed) * 72 * dt; e.y -= (ey / ed) * 72 * dt; }
+          } else {
+            e.turn -= dt;
+            if (e.turn <= 0) { e.dir += (Math.random() - 0.5) * 1.6; e.turn = 1 + Math.random() * 2; }
+            e.x += Math.cos(e.dir) * e.spd * dt;
+            e.y += Math.sin(e.dir) * e.spd * 0.55 * dt;
+          }
+          recenter(e, 500, 360);
+        }
+        // grasshoppers bound across the meadow in little arcs, then pause
+        for (var hp = 0; hp < hoppers.length; hp++) {
+          var h = hoppers[hp];
+          if (h.rest > 0) { h.rest -= dt; h.z = 0; }
+          else {
+            h.hopT += dt;
+            h.x += Math.cos(h.dir) * h.spd * dt;
+            h.y += Math.sin(h.dir) * h.spd * 0.55 * dt;
+            var pp = h.hopT / h.hopDur;
+            h.z = Math.sin(Math.min(pp, 1) * Math.PI) * h.hopH;
+            if (pp >= 1) {
+              h.hopT = 0; h.z = 0; h.rest = 0.4 + Math.random() * 1.1;
+              h.dir += (Math.random() - 0.5) * 1.5;
+              var hdx = h.x - hen.x, hdy = h.y - hen.y;
+              if (hdx * hdx + hdy * hdy < 11000) h.dir = Math.atan2(hdy, hdx); // bound away
+            }
+          }
+          recenter(h, 520, 360);
+        }
+      }
+      function recenter(o, rx, ry) {
+        if (o.x < cam.x - rx) o.x += rx * 2;
+        else if (o.x > cam.x + rx) o.x -= rx * 2;
+        if (o.y < cam.y - ry) o.y += ry * 2;
+        else if (o.y > cam.y + ry) o.y -= ry * 2;
+      }
+
+      function drawButterflies() {
+        for (var i = 0; i < butterflies.length; i++) {
+          var b = butterflies[i];
+          var bx = sx(b.x), by = sy(b.y) - 24; // floats above the grass
+          // little shadow far below
+          ctx.fillStyle = PAL.contact;
+          ctx.beginPath(); ctx.ellipse(sx(b.x) + 2, sy(b.y), 3, 1.4, 0, 0, Math.PI * 2); ctx.fill();
+          var open = 0.5 + 0.5 * Math.abs(Math.sin(b.flap * 16));
+          var col = b.hue ? PAL.butterfly : PAL.butterfly2;
+          if (PAL.firefly) {
+            // dark mode: a soft glowing mote
+            ctx.save(); ctx.globalAlpha = 0.5 + 0.5 * Math.sin(b.flap * 6);
+            ctx.fillStyle = col;
+            ctx.beginPath(); ctx.arc(bx, by, 2.6, 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha *= 0.4; ctx.beginPath(); ctx.arc(bx, by, 5.5, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+            continue;
+          }
+          ctx.fillStyle = col;
+          ctx.beginPath();
+          ctx.ellipse(bx - 3 * open, by, 3 * open, 4, 0.4, 0, Math.PI * 2);
+          ctx.ellipse(bx + 3 * open, by, 3 * open, 4, -0.4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.8;
+          ctx.beginPath(); ctx.moveTo(bx, by - 3); ctx.lineTo(bx, by + 3); ctx.stroke();
+        }
+      }
+
+      function drawBees() {
+        for (var i = 0; i < bees.length; i++) {
+          var b = bees[i], bx = sx(b.x), by = sy(b.y) - 13;
+          ctx.fillStyle = PAL.contact;
+          ctx.beginPath(); ctx.ellipse(sx(b.x), sy(b.y), 2, 1, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 0.32; ctx.fillStyle = PAL.mote; // wing blur
+          ctx.beginPath(); ctx.ellipse(bx, by - 1, 3.6, 1.7, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = PAL.beak;
+          ctx.beginPath(); ctx.arc(bx, by, 2, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.8;
+          ctx.beginPath(); ctx.moveTo(bx - 1.4, by); ctx.lineTo(bx + 1.4, by); ctx.stroke();
+        }
+      }
+
+      function drawBeetles() {
+        for (var i = 0; i < beetles.length; i++) {
+          var e = beetles[i], ex = sx(e.x), ey = sy(e.y);
+          ctx.save();
+          ctx.translate(ex, ey); ctx.rotate(Math.sin(e.dir) * 0.4);
+          ctx.fillStyle = PAL.ink;
+          ctx.beginPath(); ctx.ellipse(0, 0, 3.3, 2.1, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = PAL.rim; ctx.globalAlpha = 0.22;
+          ctx.beginPath(); ctx.ellipse(-0.6, -0.6, 1.3, 0.7, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 1; ctx.restore();
+        }
+      }
+
+      function drawHoppers() {
+        for (var i = 0; i < hoppers.length; i++) {
+          var h = hoppers[i], hx = sx(h.x), gy = sy(h.y), by = gy - h.z;
+          // shadow shrinks as it leaps
+          ctx.fillStyle = PAL.contact;
+          ctx.beginPath(); ctx.ellipse(hx, gy, Math.max(0.6, 2.6 - h.z * 0.05), 1.2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.save();
+          ctx.translate(hx, by);
+          if (Math.cos(h.dir) < 0) ctx.scale(-1, 1);
+          if (h.z > 0.5) ctx.rotate(-0.32); // nose-up mid-leap
+          ctx.fillStyle = fog(PAL.grassShade, gy);
+          ctx.beginPath(); ctx.ellipse(0, 0, 3.4, 1.8, 0, 0, Math.PI * 2); ctx.fill();   // abdomen
+          ctx.beginPath(); ctx.arc(3.2, -0.6, 1.5, 0, Math.PI * 2); ctx.fill();           // head
+          ctx.strokeStyle = PAL.ink; ctx.lineWidth = 0.9; ctx.lineCap = "round";
+          ctx.beginPath(); ctx.moveTo(-1, 1); ctx.lineTo(-3.2, -2.6); ctx.lineTo(-4.8, 1.6); ctx.stroke(); // hind leg
+          ctx.beginPath(); ctx.moveTo(4.2, -1.4); ctx.lineTo(6.4, -3.2); ctx.stroke();    // antenna
+          ctx.restore();
+        }
+      }
+
+      function drawMotes() {
+        ctx.fillStyle = PAL.mote;
+        for (var i = 0; i < motes.length; i++) {
+          var m = motes[i];
+          var mx = (m.x * W + windPhase * 12 * m.z) % W;
+          if (mx < 0) mx += W;
+          var my = (m.y * H + Math.sin(windPhase + m.ph) * 8) % H;
+          if (my < 0) my += H;
+          ctx.globalAlpha = 0.35 * m.z;
+          ctx.beginPath(); ctx.arc(mx, my, 1.2 * m.z + 0.4, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      function puff(wx, wy, big) {
+        dust.push({ x: wx, y: wy, r: big ? 5 : 3, life: 1, big: big });
+      }
+      // a peck that lands near a crawling critter gulps it: it vanishes in a
+      // little puff and a fresh one wanders back in from off-screen later
+      function eatNearbyCritter() {
+        var best = -1, bestD = 26 * 26;
+        for (var i = 0; i < beetles.length; i++) {
+          var dx = beetles[i].x - hen.x, dy = beetles[i].y - hen.y;
+          var dd = dx * dx + dy * dy;
+          if (dd < bestD) { bestD = dd; best = i; }
+        }
+        if (best < 0) return false;
+        var e = beetles[best];
+        puff(e.x, e.y, false); puff(e.x + 2, e.y - 1, true);
+        e.x = hen.x + (Math.random() < 0.5 ? -1 : 1) * (560 + Math.random() * 170);
+        e.y = hen.y + (Math.random() - 0.5) * 520;
+        e.freeze = 0;
+        return true;
+      }
+      function drawDust(dt) {
+        for (var i = dust.length - 1; i >= 0; i--) {
+          var p = dust[i];
+          p.life -= dt * 2.6;
+          if (p.life <= 0) { dust.splice(i, 1); continue; }
+          var px = sx(p.x), py = sy(p.y);
+          ctx.globalAlpha = p.life * 0.5;
+          ctx.fillStyle = p.big ? PAL.dirt : PAL.dust; // brown soil vs pale grass fleck
+          ctx.beginPath();
+          ctx.arc(px, py - (1 - p.life) * 6, p.r * (1.4 - p.life * 0.4), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+      function drawPrints() {
+        for (var i = prints.length - 1; i >= 0; i--) {
+          var p = prints[i];
+          p.life -= 0.0055;
+          if (p.life <= 0) { prints.splice(i, 1); continue; }
+          ctx.globalAlpha = p.life * 0.4;
+          ctx.strokeStyle = PAL.dirtShade; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+          var px = sx(p.x), py = sy(p.y);
+          ctx.beginPath();
+          ctx.moveTo(px, py); ctx.lineTo(px - 2, py + 2);
+          ctx.moveTo(px, py); ctx.lineTo(px, py + 2.6);
+          ctx.moveTo(px, py); ctx.lineTo(px + 2, py + 2);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // a passing bird-shadow glides across now and then (no on-screen bird)
+      var birdShadow = -1, birdTimer = 8;
+
+      // =======================================================================
+      //  BACKDROP (sky + ground bands + paper grain) prerendered once
+      // =======================================================================
+      var grain = null;
+      function buildGrain() {
+        var g = document.createElement("canvas");
+        g.width = 64; g.height = 64;
+        var gc = g.getContext("2d");
+        var ink = rgb(PAL.ink);
+        var img = gc.createImageData(64, 64);
+        var r = mulberry32(7);
+        for (var i = 0; i < img.data.length; i += 4) {
+          var on = r() < 0.5;
+          img.data[i] = ink[0]; img.data[i + 1] = ink[1]; img.data[i + 2] = ink[2];
+          img.data[i + 3] = on ? (r() * 14) | 0 : 0;
+        }
+        gc.putImageData(img, 0, 0);
+        grain = ctx.createPattern(g, "repeat");
+      }
+      var backdrop = null;
+      function buildBackdrop() {
+        buildGrain();
+        backdrop = document.createElement("canvas");
+        backdrop.width = Math.max(1, canvas.width);
+        backdrop.height = Math.max(1, canvas.height);
+        var bc = backdrop.getContext("2d");
+        bc.scale(dpr, dpr);
+        // No sky and no horizon line: the whole viewport is meadow that recedes
+        // into a hazy distance up top, so the terrain never looks like it floats.
+        var grd = bc.createLinearGradient(0, 0, 0, H);
+        grd.addColorStop(0, PAL.haze);        // far mist
+        grd.addColorStop(0.3, PAL.groundFar);
+        grd.addColorStop(1, PAL.groundNear);  // rich near meadow
+        bc.fillStyle = grd; bc.fillRect(0, 0, W, H);
+      }
+
+      // =======================================================================
+      //  RENDER
+      // =======================================================================
+      function paintWorld() {
+        // the meadow fills the whole frame (no sky, no horizon)
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(backdrop, 0, 0);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        collectScene();        // build the y-sorted items + the ground decals
+
+        // zoom the whole world in about the anchor so the hen + meadow read
+        // bigger (the backdrop, grain and intro overlay stay full-screen)
+        ctx.save();
+        ctx.translate(W * 0.5, anchorY); ctx.scale(ZOOM, ZOOM); ctx.translate(-W * 0.5, -anchorY);
+
+        drawDecals();          // bare-earth patches lie flat on the ground
+        // passing bird-shadow gliding across the meadow
+        if (birdShadow >= 0) {
+          ctx.globalAlpha = 0.12; ctx.fillStyle = PAL.ink;
+          ctx.beginPath();
+          ctx.ellipse(birdShadow, H * 0.5, 26, 7, 0, 0, Math.PI * 2);
+          ctx.fill(); ctx.globalAlpha = 1;
+        }
+        drawPrints();
+        drawBeetles();         // on the ground; nearer grass draws over them
+        for (var i = 0; i < items.length; i++) drawItem(items[i]);
+        drawDust(lastDt);
+        drawHoppers();
+        drawButterflies();
+        drawBees();
+        drawMotes();
+
+        ctx.restore();         // end world zoom
+
+        // paper grain over everything for tooth
+        if (grain) {
+          ctx.save();
+          ctx.globalAlpha = 0.5;
+          ctx.fillStyle = grain;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+
+        // entrance: the meadow fades up out of the page base, so the 404 words
+        // (HTML, always on top) read first and the scene materialises after
+        var ia = reduceMQ.matches ? 1 : (intro - INTRO_DELAY) / INTRO_FADE;
+        if (ia < 1) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, Math.min(1, 1 - ia));
+          ctx.fillStyle = PAL.base;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+      }
+
+      // =======================================================================
+      //  SIMULATION
+      // =======================================================================
+      var WALK = 96, ACCEL = 760, FRICT = 900;
+      var JUMP_V = 168, GRAV = 560, SCRATCH_DUR = 0.7;
+      var keys = { up: false, down: false, left: false, right: false, f: false };
+      var touchDir = null;
+      var windPhase = 0, charBoil = 0, foliBoil = 0;
+      var intro = 0, INTRO_DELAY = 0.15, INTRO_FADE = 0.7; // entrance: words, then meadow fades, then hen drops
+      var charClock = 0, foliClock = 0, lastDt = 0.016, moved = false;
+
+      function step(dt) {
+        // ---- input -> intent ----
+        var ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+        var iy = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+        if (touchDir) { ix = touchDir.x; iy = touchDir.y; }
+        var mag = Math.hypot(ix, iy);
+        if (mag > 0) { ix /= mag; iy /= mag; moved = true; hideHint(); }
+
+        // ---- accel / decel (weight) ----
+        if (mag > 0) {
+          hen.vx += (ix * WALK - hen.vx) * Math.min(1, ACCEL / WALK * dt);
+          hen.vy += (iy * WALK - hen.vy) * Math.min(1, ACCEL / WALK * dt);
+          hen.idle = 0;
+        } else {
+          var f = Math.max(0, 1 - FRICT / Math.max(WALK, 1) * dt);
+          hen.vx *= f; hen.vy *= f;
+          hen.idle += dt;
+        }
+        var dx = hen.vx * dt, dy = hen.vy * dt;
+        hen.x += dx; hen.y += dy;
+        hen.speed = Math.hypot(hen.vx, hen.vy);
+
+        // ---- facing ----
+        if (hen.speed > 4) {
+          if (Math.abs(hen.vx) > Math.abs(hen.vy)) { hen.face = "side"; hen.flip = hen.vx < 0; }
+          else hen.face = hen.vy < 0 ? "up" : "down";
+          // legs advance with distance -> stepped pose
+          var prev = hen.legPhase;
+          hen.legPhase += hen.speed * dt / 13;
+          // footfall on contact poses -> dust + footprints
+          if (Math.floor(hen.legPhase) !== Math.floor(prev)) {
+            var pi = Math.floor(hen.legPhase) % 4;
+            if (pi === 0 || pi === 2) {
+              var onDirt = nearPath(hen.x, hen.y);
+              puff(hen.x - hen.vx * 0.03, hen.y, onDirt);
+              if (onDirt) prints.push({ x: hen.x, y: hen.y, life: 1 });
+            }
+          }
+        }
+
+        intro += dt;
+
+        // ---- vertical: entrance drop, then hold-F hover, else a gravity hop ----
+        if (hen.drop > 0) {
+          hen.drop -= dt;                                   // held aloft until the meadow has faded in
+        } else if (keys.f && !reduceMQ.matches) {
+          if (hen.flap <= 0.06) hen.flap = 0.55;            // keep the wings beating
+          var hoverZ = 19 + Math.sin(time * 8) * 3;         // bob in place
+          hen.vz += (hoverZ - hen.z) * 70 * dt;             // flap lift toward hover height
+          hen.vz *= 1 / (1 + 7 * dt);                       // damping (stable at any dt)
+          hen.z += hen.vz * dt;
+        } else if (hen.z > 0 || hen.vz !== 0) {
+          hen.vz -= GRAV * dt;                              // gravity: hop / entrance drop / fall
+          hen.z += hen.vz * dt;
+          if (hen.z <= 0) {
+            hen.z = 0; hen.vz = 0; hen.land = 0.16;
+            puff(hen.x - 6, hen.y, true); puff(hen.x + 6, hen.y, true); // touchdown dust
+          }
+        }
+        if (hen.land > 0) hen.land -= dt;
+
+        // ---- scratch / peck at the ground (shift): kick dirt up behind ----
+        if (hen.scratch > 0) {
+          hen.scratch -= dt;
+          hen.scratchPuff -= dt;
+          if (hen.scratchPuff <= 0 && hen.z === 0) {
+            hen.scratchPuff = 0.16;
+            var bx = hen.face === "side" ? (hen.flip ? 9 : -9) : 0;
+            var by = hen.face === "down" ? -5 : hen.face === "up" ? 6 : 0;
+            puff(hen.x + bx, hen.y + by, true); // dirt
+          }
+        }
+
+        // ---- a peck/scratch that strikes the ground gulps a nearby critter ----
+        if ((hen.peck > 0 || hen.scratch > 0) && !hen.ate) {
+          var pkT = hen.peck > 0 ? Math.sin((1 - hen.peck / 0.34) * Math.PI) : 0;
+          if (hen.scratch > 0) pkT = Math.max(pkT, Math.sin(Math.min(1 - hen.scratch / SCRATCH_DUR, 1) * Math.PI));
+          if (pkT > 0.7 && eatNearbyCritter()) hen.ate = true;
+        }
+
+        // ---- camera: a real dead-zone so the BIRD moves first ----
+        // The chicken roams a centered rectangle before the world follows; the
+        // anchor (screen 0.62H) keeps it low so the 404 has headroom up top.
+        var laX = hen.vx * 0.16, laY = hen.vy * 0.16;          // look-ahead
+        var hwx = W * 0.15, hwy = (H * 0.11) / GROUND_SQUASH;  // dead-zone half-size
+        var gx = hen.x + laX, gy = hen.y + laY;
+        var ex = gx - cam.tx, ey = gy - cam.ty;
+        if (ex > hwx) cam.tx += ex - hwx; else if (ex < -hwx) cam.tx += ex + hwx;
+        if (ey > hwy) cam.ty += ey - hwy; else if (ey < -hwy) cam.ty += ey + hwy;
+        var k = Math.min(1, 7 * dt);                           // soft weighty follow
+        cam.x += (cam.tx - cam.x) * k;
+        cam.y += (cam.ty - cam.y) * k;
+
+        // ---- idle life: blink, peck, wing-flap, head bob ----
+        if (hen.blink > 0) hen.blink -= dt;
+        hen.nextBlink -= dt;
+        if (hen.nextBlink <= 0) { hen.blink = 0.09; hen.nextBlink = 2.5 + Math.random() * 2.5; }
+        if (hen.peck > 0) hen.peck -= dt;
+        if (hen.flap > 0) hen.flap -= dt;
+        if (hen.idle > 0.5) {
+          hen.nextPeck -= dt;
+          if (hen.nextPeck <= 0 && hen.peck <= 0 && hen.flap <= 0) {
+            hen.peck = 0.34; hen.nextPeck = 3 + Math.random() * 4; hen.ate = false;
+            puff(hen.x + (hen.face === "side" ? (hen.flip ? -8 : 8) : 0), hen.y, false);
+          }
+          hen.nextFlap -= dt;
+          if (hen.nextFlap <= 0 && hen.flap <= 0 && hen.peck <= 0) {
+            hen.flap = 0.55; hen.nextFlap = 5 + Math.random() * 6; // a little shake-out
+          }
+          hen.headBob = Math.sin(time * 2.2) * 1.0;
+        } else hen.headBob = 0;
+
+        // ---- ambient timers ----
+        windPhase += dt * 1.1;
+        updateCritters(dt);
+        if (birdShadow >= 0) { birdShadow += 110 * dt; if (birdShadow > W + 60) birdShadow = -1; }
+        else { birdTimer -= dt; if (birdTimer <= 0) { birdShadow = -80; birdTimer = 18 + Math.random() * 16; } }
+
+        // ---- stepped clocks for the boiling line ----
+        charClock += dt; if (charClock >= 1 / 12) { charClock = 0; charBoil = (charBoil + 1) % 3; }
+        foliClock += dt; if (foliClock >= 1 / 8) { foliClock = 0; foliBoil = (foliBoil + 1) % 3; }
+        lastDt = dt;
+      }
+
+      function hideHint() {
+        var h = document.getElementById("hint");
+        if (h) h.classList.remove("-on");
+      }
+
+      // =======================================================================
+      //  LOOP
+      // =======================================================================
+      var time = 0, raf = 0, running = false;
+      function frame(now) {
+        if (!running) return;
+        var dt = (now - lastNow) / 1000;
+        lastNow = now;
+        if (dt > 0.05) dt = 0.05; // clamp after a stall
+        time += dt;
+        step(dt);
+        paintWorld();
+        raf = requestAnimationFrame(frame);
+      }
+      var lastNow = 0;
+      function start() {
+        if (running || reduceMQ.matches) return;
+        running = true; lastNow = performance.now();
+        raf = requestAnimationFrame(frame);
+      }
+      function stop() { running = false; cancelAnimationFrame(raf); }
+
+      // reduced motion: one calm painted frame, arrow keys nudge in steps
+      function staticFrame() {
+        windPhase = 1.0; charBoil = 0; foliBoil = 0;
+        // keep the camera target in sync too, so toggling motion back on later
+        // does not ease away from the nudged hen
+        cam.x = cam.tx = hen.x; cam.y = cam.ty = hen.y;
+        paintWorld();
+      }
+
+      // =======================================================================
+      //  INPUT
+      // =======================================================================
+      function setKey(e, down) {
+        var k = e.key;
+        // action keys (press only): hop = space, scratch/peck = shift
+        if (k === " " || k === "Spacebar" || k === "Space") {
+          if (down) e.preventDefault();   // only on keydown (keyup is passive)
+          if (down && !e.repeat && !reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
+            hen.vz = JUMP_V; hen.idle = 0; hideHint();
+          }
+          return;
+        }
+        if (k === "Shift") {
+          if (down && !e.repeat && !reduceMQ.matches && hen.z === 0 && hen.scratch <= 0) {
+            hen.scratch = SCRATCH_DUR; hen.scratchPuff = 0.06; hen.idle = 0; hen.ate = false; hideHint();
+          }
+          return; // no preventDefault, so Shift+Tab still navigates
+        }
+        if (k === "f" || k === "F") {  // tap = flap; hold = flap and hover
+          keys.f = down;
+          if (down && !reduceMQ.matches) {
+            if (hen.flap <= 0) hen.flap = 0.55;
+            hen.idle = 0; hideHint();
+          }
+          return;
+        }
+        var hit = true;
+        if (k === "ArrowUp" || k === "Up") keys.up = down;
+        else if (k === "ArrowDown" || k === "Down") keys.down = down;
+        else if (k === "ArrowLeft" || k === "Left") keys.left = down;
+        else if (k === "ArrowRight" || k === "Right") keys.right = down;
+        else hit = false;
+        if (hit) {
+          if (down) e.preventDefault();   // only on keydown (keyup is passive)
+          if (reduceMQ.matches && down) {
+            // discrete nudge, no animation
+            var sxn = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+            var syn = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+            hen.x += sxn * 22; hen.y += syn * 22;
+            if (Math.abs(sxn) > Math.abs(syn)) { hen.face = "side"; hen.flip = sxn < 0; }
+            else if (syn) hen.face = syn < 0 ? "up" : "down";
+            staticFrame();
+          }
+        }
+      }
+      window.addEventListener("keydown", function (e) { setKey(e, true); }, { passive: false });
+      window.addEventListener("keyup", function (e) { setKey(e, false); });
+
+      // touch / pointer: hold to walk toward the finger (keeps the "no UI" feel)
+      function pointTo(e) {
+        var t = e.touches ? e.touches[0] : e;
+        // un-squash the screen delta into world space, THEN normalize once, so a
+        // diagonal touch walks true to the finger
+        var wx = t.clientX - sx(hen.x);
+        var wy = (t.clientY - sy(hen.y)) / GROUND_SQUASH;
+        var m = Math.hypot(wx, wy);
+        if (m < 12) { touchDir = null; return; }
+        touchDir = { x: wx / m, y: wy / m };
+        hideHint();
+      }
+      canvas.addEventListener("pointerdown", function (e) { pointTo(e); });
+      canvas.addEventListener("pointermove", function (e) { if (e.pressure > 0 || e.buttons) pointTo(e); });
+      window.addEventListener("pointerup", function () { touchDir = null; });
+      window.addEventListener("pointercancel", function () { touchDir = null; });
+
+      // =======================================================================
+      //  WIRING: resize, scheme, motion, visibility
+      // =======================================================================
+      window.addEventListener("resize", function () {
+        resize();
+        if (reduceMQ.matches) staticFrame();
+      });
+      // listen on a media query across modern + legacy (Safari < 14) APIs
+      function onMQ(mq, fn) {
+        if (mq.addEventListener) mq.addEventListener("change", fn);
+        else if (mq.addListener) mq.addListener(fn); // legacy: single-arg
+      }
+      function onScheme() {
+        PAL = darkMQ.matches ? DARK : LIGHT;
+        rgbCache = {}; fogCache = {};
+        buildBackdrop();
+        if (reduceMQ.matches) staticFrame();
+      }
+      function onMotion() {
+        if (reduceMQ.matches) { stop(); staticFrame(); }
+        else start();
+      }
+      onMQ(darkMQ, onScheme);
+      onMQ(reduceMQ, onMotion);
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) stop();              // pause; stop() clears `running`
+        else if (!reduceMQ.matches) start();      // resume cleanly on return
+      });
+
+      // reveal the hint only now that JS runs (so the no-JS page never shows an
+      // instruction for a control that does nothing) and name the real control
+      var hintEl = document.getElementById("hint");
+      if (hintEl && !reduceMQ.matches) {
+        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk";
+        hintEl.classList.add("-on");
+      }
+      // hide the hint on its own after a while even if no one moves
+      setTimeout(hideHint, 9000);
+
+      // =======================================================================
+      //  GO - paint a finished scene synchronously, then animate
+      // =======================================================================
+      resize();
+      spawnCritters();
+      hen.x = 0; hen.y = 60;
+      cam.x = hen.x; cam.y = hen.y; cam.tx = hen.x; cam.ty = hen.y;
+      if (reduceMQ.matches) {
+        // reduced motion: no entrance, just the finished still scene
+        intro = 99; hen.z = 0; hen.drop = 0;
+        staticFrame();
+      } else {
+        // entrance: words first, meadow fades up, then the hen drops from above
+        intro = 0; hen.z = 290; hen.drop = INTRO_DELAY + 0.3; hen.face = "down";
+        paintWorld();                       // first paint = just the page base + words
+        if (!document.hidden) start();      // (hidden tabs start via visibilitychange)
+      }
+
+    })();
+    </script>
+  </body>
+</html>
