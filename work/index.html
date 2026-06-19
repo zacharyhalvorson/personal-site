@@ -172,7 +172,10 @@
       background: var(--press);
       text-decoration: none;
     }
-    .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
+    /* All three chrome icons share one resting tint and only darken on hover,
+       so they read as one set. (The navigator toggle used to stay darkened
+       while its rail was open, which made it look a different colour from the
+       fullscreen icon beside it; the open rail already signals that state.) */
     .back svg, .rail-toggle svg { width: 18px; height: 18px; }
     /* The maximize glyph is sparser than the navigator's solid square, so it
        reads bigger and lighter at a matched box. Nudge it down a touch and
