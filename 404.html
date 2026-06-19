@@ -140,15 +140,16 @@
         z-index: 2;
         margin: 0;
         text-align: center;
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         letter-spacing: 0.01em;
-        color: var(--text-soft);
+        color: var(--text-default);
         opacity: 0;            /* hidden until JS confirms the controls work */
         pointer-events: none;
-        text-shadow: 0 1px 2px var(--base), 0 0 8px var(--base);
+        /* a stronger base-color halo so it stays legible over the busy meadow */
+        text-shadow: 0 1px 2px var(--base), 0 0 5px var(--base), 0 0 9px var(--base), 0 0 13px var(--base);
         transition: opacity 600ms ease;
       }
-      .hint.-on { opacity: 0.7; }
+      .hint.-on { opacity: 0.95; }
 
       .sr-only {
         position: absolute;
