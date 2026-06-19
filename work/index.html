@@ -1182,34 +1182,45 @@
 
     railToggle.addEventListener("click", function () { setRailHidden(!railHidden); });
 
-    // Persistent fullscreen toggle in the top row. (The deck ships its own
-    // fullscreen control, but only inside its auto-hiding bottom nav.) This
-    // fullscreens the whole reader so the chrome, and this button, stay
-    // reachable to toggle back out; the active deck refits to the larger
-    // canvas on the resize. Revealed only where the Fullscreen API is usable,
-    // otherwise it stays hidden rather than presenting a dead control.
+    // Persistent fullscreen toggle in the top row, mirroring the deck's own
+    // control (which lives only in its auto-hiding bottom nav). It fullscreens
+    // the active deck-stage element inside the iframe, so the deck enters the
+    // exact same presentation mode the bottom button gives: the rail collapses
+    // to a hover-peek and the slide fills the screen. Revealed only where the
+    // Fullscreen API is usable, otherwise hidden rather than a dead control.
     var fsToggle = document.getElementById("fullscreen-toggle");
     if (fsToggle && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
       fsToggle.hidden = false;
-      var fsRoot = document.documentElement;
-      // True only when WE put the reader in fullscreen. The deck's own control
-      // fullscreens an element inside the iframe, which surfaces here as the
-      // <iframe> being document.fullscreenElement; matching on our own root
-      // keeps the two controls from flipping each other's pressed state.
+      // The deck is the only thing we ever fullscreen, and from here that
+      // surfaces as the <iframe> being document.fullscreenElement, so any
+      // fullscreen element means the deck is presenting. Keeps this button in
+      // sync whether it or the deck's own bottom-bar control toggled it.
       var fsActive = function () {
-        return (document.fullscreenElement || document.webkitFullscreenElement) === fsRoot;
+        return !!(document.fullscreenElement || document.webkitFullscreenElement);
       };
       var syncFs = function () {
         fsToggle.setAttribute("aria-pressed", fsActive() ? "true" : "false");
       };
       fsToggle.addEventListener("click", function () {
         try {
-          var p = fsActive()
-            ? (document.exitFullscreen || document.webkitExitFullscreen).call(document)
-            : (fsRoot.requestFullscreen || fsRoot.webkitRequestFullscreen).call(fsRoot);
-          // The request/exit promise rejects asynchronously when the gesture
-          // is untrusted or blocked by policy; swallow it like the sync guard.
-          if (p && p.catch) p.catch(function () {});
+          if (fsActive()) {
+            var ex = document.exitFullscreen || document.webkitExitFullscreen;
+            var pe = ex && ex.call(document);
+            if (pe && pe.catch) pe.catch(function () {});
+            return;
+          }
+          // Fullscreen the active deck-stage element, exactly as the deck's own
+          // bottom-bar button does. The click's user activation propagates to
+          // the same-origin iframe, so the request is honored; the deck's own
+          // fullscreenchange handler then drives the rail collapse and icon.
+          var frame = active && frames[active];
+          var deck = frame && frame.contentDocument &&
+            frame.contentDocument.querySelector("deck-stage");
+          if (deck) {
+            var req = deck.requestFullscreen || deck.webkitRequestFullscreen;
+            var pr = req && req.call(deck);
+            if (pr && pr.catch) pr.catch(function () {});
+          }
         } catch (e) { /* fullscreen unavailable, ignore */ }
       });
       document.addEventListener("fullscreenchange", syncFs);
