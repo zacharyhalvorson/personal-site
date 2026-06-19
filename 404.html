@@ -88,20 +88,20 @@
         pointer-events: none; /* let drags pass through to the meadow */
       }
 
-      /* System type from the main site. The fill itself is slightly translucent
-         so the meadow ghosts through the letters, and a soft drop shadow floats
-         it above the scene. No panels. The subline is narrow + balanced. */
+      /* System type from the main site. The fill is a hair translucent, and a
+         strong downward drop shadow makes the words read as a layer hovering
+         above the meadow and casting onto it. No panels. Subline narrow + balanced. */
       .copy h1 {
         margin: 0;
         font-size: clamp(4.5rem, 17vw, 9.5rem);
         font-weight: 800;
         letter-spacing: -0.05em;
         line-height: 0.94;
-        color: color-mix(in srgb, var(--text-default) 80%, transparent);
+        color: color-mix(in srgb, var(--text-default) 92%, transparent);
         text-shadow:
-          0 1px 1px rgba(255, 255, 255, 0.18),
-          0 3px 6px rgba(26, 22, 12, 0.22),
-          0 12px 26px rgba(26, 22, 12, 0.28);
+          0 2px 0 rgba(255, 255, 255, 0.22),
+          0 9px 12px rgba(18, 14, 6, 0.45),
+          0 20px 30px rgba(18, 14, 6, 0.38);
       }
 
       .copy .sub {
@@ -110,11 +110,11 @@
         font-size: clamp(0.95rem, 2.4vw, 1.075rem);
         line-height: 1.5;
         text-wrap: balance;
-        color: color-mix(in srgb, var(--text-default) 88%, transparent);
+        color: color-mix(in srgb, var(--text-default) 94%, transparent);
         text-shadow:
-          0 1px 1px rgba(255, 255, 255, 0.18),
-          0 4px 9px rgba(26, 22, 12, 0.3),
-          0 9px 18px rgba(26, 22, 12, 0.22);
+          0 1px 0 rgba(255, 255, 255, 0.2),
+          0 5px 8px rgba(18, 14, 6, 0.42),
+          0 12px 20px rgba(18, 14, 6, 0.3);
       }
 
       /* inline link inside the sentence; no underline, just the link color */
@@ -211,6 +211,7 @@
       // dark mode. One ink, one shadow tone and one rim per surface - that
       // restraint is the whole cel-shading model.
       var LIGHT = {
+        base: "#fafaf7",
         haze: "#c7d4b6",
         groundFar: "#b6c79a", groundNear: "#a4be7c",
         grass: "#88a85f", grassShade: "#6c8a4e", grassRim: "#d3dd92",
@@ -223,7 +224,7 @@
         trunk: "#9c7d57",
         body: "#f4eee2", bodyShade: "#dccfb8", comb: "#d2654f", beak: "#e3a44e",
         combShade: "#a8442f", saddle: "#c9795e", saddleShade: "#a85f48",
-        teal: "#46b3a4", tealShade: "#2f8b80", lilac: "#b7a7d6", lilacShade: "#8f7fb0",
+        teal: "#8fa6c8", tealShade: "#637aa0", lilac: "#b7a7d6", lilacShade: "#8f7fb0",
         bill: "#f3b53e", billShade: "#d4922a", legShade: "#b97a2e",
         ink: "#3a3026", rim: "#fff5e0",
         contact: "rgba(74,84,55,0.22)",
@@ -232,6 +233,7 @@
         mote: "#fffaf0", firefly: false
       };
       var DARK = {
+        base: "#1c1b19",
         haze: "#3c4642",
         groundFar: "#36422f", groundNear: "#2c3a2a",
         grass: "#52663f", grassShade: "#384a2b", grassRim: "#86997a",
@@ -244,7 +246,7 @@
         trunk: "#5b4836",
         body: "#dad2c0", bodyShade: "#a89e8a", comb: "#b3584a", beak: "#c18c44",
         combShade: "#8a3a2a", saddle: "#9c5e48", saddleShade: "#7a4836",
-        teal: "#4ea99c", tealShade: "#2f7d73", lilac: "#8a7da8", lilacShade: "#695d84",
+        teal: "#6d83b8", tealShade: "#4c5d88", lilac: "#8a7da8", lilacShade: "#695d84",
         bill: "#d99e38", billShade: "#a87526", legShade: "#95612a",
         ink: "#171510", rim: "#ffcf87",
         contact: "rgba(8,12,6,0.34)",
@@ -387,6 +389,7 @@
         z: 0, vz: 0,          // hop height + vertical velocity (space bar)
         scratch: 0, scratchPuff: 0, // ground scratch/peck (shift key)
         land: 0,              // brief squash after a hop lands
+        drop: 0,              // held aloft before the entrance drop
         ate: false,           // guard so one peck eats at most one critter
         headBob: 0
       };
@@ -644,13 +647,6 @@
         // eye(s) with the deadpan lid
         drawEye(mode === "side" ? ox + 4 : ox - 3.4, oy - 1, blinking, lwIn);
         if (mode === "front") drawEye(ox + 3.4, oy - 1, blinking, lwIn);
-        // teal cheek / throat patch - the other Cucco tell
-        ctx.fillStyle = PAL.teal;
-        if (mode === "side") { ctx.beginPath(); ctx.ellipse(ox + 1.5, oy + 2.8, 2.6, 1.8, -0.2, 0, Math.PI * 2); ctx.fill(); }
-        else {
-          ctx.beginPath(); ctx.ellipse(ox - 5.4, oy + 1.8, 2.0, 1.5, 0, 0, Math.PI * 2); ctx.fill();
-          ctx.beginPath(); ctx.ellipse(ox + 5.4, oy + 1.8, 2.0, 1.5, 0, 0, Math.PI * 2); ctx.fill();
-        }
       }
 
       // a big round bead eye crossed by one heavy half-lid: the Cucco deadpan
@@ -1367,6 +1363,17 @@
           ctx.fillRect(0, 0, W, H);
           ctx.restore();
         }
+
+        // entrance: the meadow fades up out of the page base, so the 404 words
+        // (HTML, always on top) read first and the scene materialises after
+        var ia = reduceMQ.matches ? 1 : (intro - INTRO_DELAY) / INTRO_FADE;
+        if (ia < 1) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, Math.min(1, 1 - ia));
+          ctx.fillStyle = PAL.base;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
       }
 
       // =======================================================================
@@ -1377,6 +1384,7 @@
       var keys = { up: false, down: false, left: false, right: false, f: false };
       var touchDir = null;
       var windPhase = 0, charBoil = 0, foliBoil = 0;
+      var intro = 0, INTRO_DELAY = 0.15, INTRO_FADE = 0.7; // entrance: words, then meadow fades, then hen drops
       var charClock = 0, foliClock = 0, lastDt = 0.016, moved = false;
 
       function step(dt) {
@@ -1419,19 +1427,23 @@
           }
         }
 
-        // ---- vertical: hold F to flap + hover, else a gravity hop arc ----
-        if (keys.f && !reduceMQ.matches) {
+        intro += dt;
+
+        // ---- vertical: entrance drop, then hold-F hover, else a gravity hop ----
+        if (hen.drop > 0) {
+          hen.drop -= dt;                                   // held aloft until the meadow has faded in
+        } else if (keys.f && !reduceMQ.matches) {
           if (hen.flap <= 0.06) hen.flap = 0.55;            // keep the wings beating
           var hoverZ = 19 + Math.sin(time * 8) * 3;         // bob in place
           hen.vz += (hoverZ - hen.z) * 70 * dt;             // flap lift toward hover height
           hen.vz *= 1 / (1 + 7 * dt);                       // damping (stable at any dt)
           hen.z += hen.vz * dt;
         } else if (hen.z > 0 || hen.vz !== 0) {
-          hen.vz -= GRAV * dt;                              // gravity: hop / fall after release
+          hen.vz -= GRAV * dt;                              // gravity: hop / entrance drop / fall
           hen.z += hen.vz * dt;
           if (hen.z <= 0) {
-            hen.z = 0; hen.vz = 0; hen.land = 0.13;
-            puff(hen.x, hen.y, nearPath(hen.x, hen.y));
+            hen.z = 0; hen.vz = 0; hen.land = 0.16;
+            puff(hen.x - 6, hen.y, true); puff(hen.x + 6, hen.y, true); // touchdown dust
           }
         }
         if (hen.land > 0) hen.land -= dt;
@@ -1648,10 +1660,16 @@
       spawnCritters();
       hen.x = 0; hen.y = 60;
       cam.x = hen.x; cam.y = hen.y; cam.tx = hen.x; cam.ty = hen.y;
-      paintWorld();        // a complete painting on the very first frame
-      if (reduceMQ.matches) staticFrame();
-      else if (!document.hidden) start();   // if loaded in a hidden tab, the
-                                            // visibilitychange handler starts us
+      if (reduceMQ.matches) {
+        // reduced motion: no entrance, just the finished still scene
+        intro = 99; hen.z = 0; hen.drop = 0;
+        staticFrame();
+      } else {
+        // entrance: words first, meadow fades up, then the hen drops from above
+        intro = 0; hen.z = 290; hen.drop = INTRO_DELAY + 0.3; hen.face = "down";
+        paintWorld();                       // first paint = just the page base + words
+        if (!document.hidden) start();      // (hidden tabs start via visibilitychange)
+      }
 
     })();
     </script>
