@@ -1630,54 +1630,69 @@
         return Math.hypot(e.clientX - hx, e.clientY - hy) <= r;
       }
 
-      // tap the hen = hop, press-and-hold = flap; dragging (on the meadow or off
-      // the hen) walks toward the finger. mirrors the space / F keys for touch.
-      var HOLD_MS = 170, TAP_SLOP = 12, press = null, holdTimer = 0;
-      var holdStartX = 0, holdStartY = 0;
-      function beginFlap() {
-        if (reduceMQ.matches) return;
-        keys.f = true;
+      // touch is multi-finger: one finger steers (walk toward it), while taps and
+      // holds — from a second finger, or landing on the hen — fire the hop/flap
+      // actions. so you can direct and flap at once. mirrors the space / F keys.
+      var HOLD_MS = 170, TAP_SLOP = 12, pointers = {};
+      function anyFlapping() {
+        for (var id in pointers) if (pointers[id].flapping) return true;
+        return false;
+      }
+      function anyDirecting() {
+        for (var id in pointers) if (pointers[id].directing) return true;
+        return false;
+      }
+      function startFlap(p) {
+        if (reduceMQ.matches || p.flapping) return;
+        p.flapping = true; keys.f = true;
         if (hen.flap <= 0) hen.flap = 0.55;
         hen.idle = 0; hideHint();
       }
-      function endPress() {
-        clearTimeout(holdTimer);
-        if (press === "hen") {
-          // a clean tap on the hen: hop, same gate as the space bar
-          if (!reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
-            hen.vz = JUMP_V; hen.idle = 0; hideHint();
-          }
-        } else if (press === "flap") {
-          keys.f = false; // let go: drop out of the hover, wings settle
+      function hop() {
+        if (!reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
+          hen.vz = JUMP_V; hen.idle = 0; hideHint();
         }
-        press = null; touchDir = null;
       }
       canvas.addEventListener("pointerdown", function (e) {
-        if (onHen(e)) {
-          press = "hen";
-          holdStartX = e.clientX; holdStartY = e.clientY;
-          holdTimer = setTimeout(function () {
-            if (press === "hen") { press = "flap"; beginFlap(); }
-          }, HOLD_MS);
-          hideHint();
+        var p = { x: e.clientX, y: e.clientY, action: false, directing: false, flapping: false, hold: 0 };
+        // a press on the hen, or any extra finger while one already steers, is an
+        // action (tap = hop, hold = flap); the first loose finger steers instead
+        if (onHen(e) || anyDirecting()) {
+          p.action = true;
+          p.hold = setTimeout(function () { startFlap(p); }, HOLD_MS);
         } else {
-          press = "walk"; pointTo(e);
+          p.directing = true;
+          pointTo(e);
         }
+        pointers[e.pointerId] = p;
+        hideHint();
       });
       canvas.addEventListener("pointermove", function (e) {
-        if (!press || !(e.pressure > 0 || e.buttons)) return;
-        if (press === "hen") {
-          // dragged off the hen before the hold fired -> treat it as a walk
-          if (Math.hypot(e.clientX - holdStartX, e.clientY - holdStartY) > TAP_SLOP) {
-            clearTimeout(holdTimer); press = "walk"; pointTo(e);
+        var p = pointers[e.pointerId];
+        if (!p || !(e.pressure > 0 || e.buttons)) return;
+        if (p.action && !p.directing) {
+          // not steering yet: a drag past the slop begins it. if the hold already
+          // fired we keep flapping and now steer too (fly + direct); if it hasn't,
+          // cancel it so a drag stays a plain walk, never a surprise flap
+          if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > TAP_SLOP) {
+            clearTimeout(p.hold); p.directing = true; pointTo(e);
           }
           return;
         }
-        if (press === "flap") return; // stay aloft until release
-        pointTo(e);
+        pointTo(e); // a steering finger (loose, or an action finger now dragging)
       });
-      window.addEventListener("pointerup", endPress);
-      window.addEventListener("pointercancel", endPress);
+      function liftPointer(e) {
+        var p = pointers[e.pointerId];
+        if (!p) return;
+        clearTimeout(p.hold);
+        // a clean tap (an action finger that never steered or flapped) hops
+        if (p.action && !p.directing && !p.flapping) hop();
+        delete pointers[e.pointerId];
+        keys.f = anyFlapping();               // another finger may still be flapping
+        if (!anyDirecting()) touchDir = null;  // nobody left steering -> stop walking
+      }
+      window.addEventListener("pointerup", liftPointer);
+      window.addEventListener("pointercancel", liftPointer);
 
       // =======================================================================
       //  WIRING: resize, scheme, motion, visibility
