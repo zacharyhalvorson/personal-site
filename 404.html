@@ -33,6 +33,19 @@
         --highlight: #fff3d6;
         --link: #0066cc;
         --link-hover: #003f80;
+        /* the floating 404 copy reads as a bright overlay hovering above the
+           busy meadow in both schemes — plain white in light, warm-white in dark */
+        --copy-ink: #ffffff;
+        /* light mode rides on a bright background, so the lift only needs a
+           gentle cast; dark mode deepens these (below) */
+        --copy-shadow-h1:
+          0 1px 1px rgba(18, 14, 6, 0.18),
+          0 6px 10px rgba(18, 14, 6, 0.24),
+          0 14px 22px rgba(18, 14, 6, 0.2);
+        --copy-shadow-sub:
+          0 1px 1px rgba(18, 14, 6, 0.2),
+          0 4px 7px rgba(18, 14, 6, 0.24),
+          0 10px 16px rgba(18, 14, 6, 0.18);
         --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
       @media (prefers-color-scheme: dark) {
@@ -43,6 +56,15 @@
           --highlight: #4a3a16;
           --link: #8fccff;
           --link-hover: #c2e2ff;
+          --copy-ink: #f4f1ea;
+          --copy-shadow-h1:
+            0 1px 1px rgba(18, 14, 6, 0.3),
+            0 9px 12px rgba(18, 14, 6, 0.45),
+            0 20px 30px rgba(18, 14, 6, 0.38);
+          --copy-shadow-sub:
+            0 1px 1px rgba(18, 14, 6, 0.32),
+            0 5px 8px rgba(18, 14, 6, 0.42),
+            0 12px 20px rgba(18, 14, 6, 0.3);
         }
       }
 
@@ -103,11 +125,9 @@
         font-weight: 800;
         letter-spacing: -0.05em;
         line-height: 0.94;
-        color: color-mix(in srgb, var(--text-default) 66%, transparent);
-        text-shadow:
-          0 2px 0 rgba(255, 255, 255, 0.22),
-          0 9px 12px rgba(18, 14, 6, 0.45),
-          0 20px 30px rgba(18, 14, 6, 0.38);
+        color: color-mix(in srgb, var(--copy-ink) 92%, transparent);
+        /* per-scheme cast (see :root): a gentle lift in light, deeper in dark */
+        text-shadow: var(--copy-shadow-h1);
       }
 
       .copy .sub {
@@ -116,11 +136,8 @@
         font-size: clamp(0.95rem, 2.4vw, 1.075rem);
         line-height: 1.5;
         text-wrap: balance;
-        color: color-mix(in srgb, var(--text-default) 78%, transparent);
-        text-shadow:
-          0 1px 0 rgba(255, 255, 255, 0.2),
-          0 5px 8px rgba(18, 14, 6, 0.42),
-          0 12px 20px rgba(18, 14, 6, 0.3);
+        color: color-mix(in srgb, var(--copy-ink) 96%, transparent);
+        text-shadow: var(--copy-shadow-sub);
       }
 
       /* inline link inside the sentence; no underline, just the link color */
