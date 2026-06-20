@@ -366,6 +366,70 @@
   .comment { margin: 0; }
 
   /* ---- iPhone bezel (for portrait phone screenshots) ---- */
+  /* ---- realistic iPhone 16 device frame (SVG bezel + iOS chrome) ---- */
+  .iphone16 {
+    --w: 260px;
+    position: relative;
+    width: var(--w);
+    aspect-ratio: 747 / 1520;
+    flex: none;
+  }
+  .iphone16 .screen {
+    position: absolute;
+    left: 1.98%;
+    top: 0.67%;
+    width: 95.96%;
+    height: 98.65%;
+    border-radius: calc(var(--w) * 0.15);
+    overflow: hidden;
+    background: #000;
+    z-index: 1;
+  }
+  .iphone16 .screen > img,
+  .iphone16 .screen > video,
+  .iphone16 .screen image-slot {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: none;
+  }
+  .iphone16 .frame-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+  /* Dynamic Island */
+  .iphone16 .island {
+    position: absolute;
+    top: 1.95%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 29.4%;
+    height: 4.25%;
+    background: #000;
+    border-radius: 999px;
+    z-index: 3;
+  }
+  /* home indicator */
+  .iphone16 .home-ind {
+    position: absolute;
+    bottom: 0.85%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32.5%;
+    height: 0.52%;
+    min-height: 4px;
+    background: rgba(0,0,0,0.92);
+    border-radius: 999px;
+    z-index: 3;
+  }
+  /* dark-UI variant: light home indicator */
+  .iphone16.ui-dark .home-ind { background: rgba(255,255,255,0.9); }
+
   .phone {
     --bezel: 13px;
     position: relative;
@@ -410,9 +474,12 @@
     overflow: hidden;
     display: block;
     background: #000;
-    aspect-ratio: 858 / 1868;
+    aspect-ratio: 786 / 1704;
     z-index: 1;
   }
+  /* small phone frame — thin bezel to match a real iPhone 16 */
+  .phone--sm { --bezel: 5px; border-radius: 40px; }
+  .phone--sm .screen { border-radius: 35px; aspect-ratio: 786 / 1704; }
   .phone image-slot {
     display: block;
     width: 100%;
@@ -570,14 +637,14 @@
   <section class="slide" data-label="The opportunity" data-om-id="26c911db:31" data-screen-label="02 The opportunity" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="1">
     <div class="rail" data-om-id="26c911db:32">
       <p class="kicker anim" data-om-id="26c911db:33">The opportunity</p>
-      <span class="pageno" data-om-id="26c911db:34">02 / 14</span>
+      <span class="pageno" data-om-id="26c911db:34">02 / 15</span>
     </div>
     <div class="grow" style="display:flex; flex-direction:column; justify-content:center; max-width:1400px;" data-om-id="26c911db:35">
       <p class="statement anim-2" data-om-id="26c911db:36">Staying <span class="mark" data-om-id="26c911db:37">present</span>, yet connected.</p>
       <div class="spacer-md" data-om-id="26c911db:38"></div>
       <div class="cols two anim-3" style="max-width:1180px;" data-om-id="26c911db:39">
-        <p class="body" data-om-id="26c911db:40">Ray-Ban Meta had already given people a camera and a voice in their ear. But anything visual still sent them back to their phone, and every glance down is a small exit from the room.</p>
-        <p class="body" data-om-id="26c911db:41">The promise of Meta Ray-Ban Display was human: a glanceable, private screen in your eye-line, so you could check in without reaching for your phone. And for early adopters, the pull of a genuinely new kind of device, something nobody had worn before.</p>
+        <p class="body" data-om-id="26c911db:40">Ray-Ban Meta gave people a camera and a voice. But anything visual still sent them back to their phone, and every glance down is a small exit from the room.</p>
+        <p class="body" data-om-id="26c911db:41">Meta Ray-Ban Display answered with a glanceable, private screen, so you could check in without reaching for your phone. And for early adopters, the pull of a genuinely new kind of device.</p>
       </div>
     </div>
     <div class="footer anim-4" data-om-id="26c911db:42"><span data-om-id="26c911db:43">Meta Ray-Ban Display</span><span data-om-id="26c911db:44">Zachary Halvorson</span></div>
@@ -587,18 +654,19 @@
   <section class="slide" data-label="The bet" data-om-id="26c911db:300" data-screen-label="03 The bet" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="2">
     <div class="rail" data-om-id="26c911db:301">
       <p class="kicker anim" data-om-id="26c911db:302">The bet</p>
-      <span class="pageno" data-om-id="26c911db:303">03 / 14</span>
+      <span class="pageno" data-om-id="26c911db:303">03 / 15</span>
     </div>
-    <div class="grow cols two" style="grid-template-columns: 1fr 0.92fr; gap:96px; align-items:center;" data-om-id="26c911db:304">
+    <div class="grow cols two" style="grid-template-columns: 0.92fr 1.12fr; gap:72px; align-items:center;" data-om-id="26c911db:304">
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:304b">
-        <p class="statement anim-2" style="text-wrap:balance; max-width:30ch;" data-om-id="26c911db:305">To keep our lead, Meta had to <span class="mark" data-om-id="26c911db:306">break new ground</span>.</p>
+        <p class="statement anim-2" style="text-wrap:balance; max-width:22ch;" data-om-id="26c911db:305">Meta had to <span class="mark" data-om-id="26c911db:306">break new ground</span> and keep it premium.</p>
         <div class="spacer-sm" data-om-id="26c911db:307"></div>
         <p class="body anim-3" style="max-width:46ch;" data-om-id="26c911db:309">A first-of-its-kind device earns the innovative reputation that early adopters are looking for. A glanceable in-lens display paired with a novel gesture interface, marketed as a premium upgrade to the Ray-Ban Meta.</p>
       </div>
-      <div class="anim-3" style="display:flex; align-items:center; justify-content:center;" data-om-id="26c911db:308">
-        <div class="media squircle" style="aspect-ratio:640/557; width:84%;" data-om-id="26c911db:308a">
-          <image-slot id="bet-product" shape="rect" fit="cover" src="images/display-neuralband.webp" placeholder="Neural Band" data-om-id="26c911db:308b" data-editable="" data-filled=""></image-slot>
+      <div class="anim-3" style="display:flex; flex-direction:column; align-items:center; justify-content:center;" data-om-id="26c911db:308">
+        <div class="media" style="aspect-ratio:2364/1247; width:100%;" data-om-id="26c911db:308a">
+          <image-slot id="bet-product" shape="rect" fit="contain" src="images/display-glasses-band-2.webp" placeholder="Meta Ray-Ban Display" data-om-id="26c911db:308b" data-editable="" data-filled=""></image-slot>
         </div>
+        <p class="slot-cap slot-cap--plain" style="max-width:34ch; margin-top:22px;" data-om-id="26c911db:74e">Capacitive touch on the glasses plus an EMG band for gestures</p>
       </div>
     </div>
     <div class="footer anim-4" data-om-id="26c911db:311"><span data-om-id="26c911db:312">Meta Ray-Ban Display</span><span data-om-id="26c911db:313">Zachary Halvorson</span></div>
@@ -608,11 +676,11 @@
   <section class="slide" data-label="My role" data-om-id="26c911db:45" data-screen-label="03 My role" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="2">
     <div class="rail" data-om-id="26c911db:46">
       <p class="kicker anim" data-om-id="26c911db:47">My role</p>
-      <span class="pageno" data-om-id="26c911db:48">04 / 14</span>
+      <span class="pageno" data-om-id="26c911db:48">04 / 15</span>
     </div>
     <div class="spacer-md" data-om-id="26c911db:49"></div>
     <h1 class="title anim-2" data-om-id="26c911db:50">I shaped the design of several flagship features.</h1>
-    <p class="body anim-2" style="max-width:66ch; margin-top:24px;" data-om-id="26c911db:50b">With my experience on Wearables, additive displays, and constrained input like D-pad, voice, and the Neural Band, I had <span class="mark">more horizontal impact</span>. Helping to ship quickly at a high quality bar.</p>
+    <p class="body anim-2" style="max-width:66ch; margin-top:24px;" data-om-id="26c911db:50b">With my experience on Wearables, additive displays, and constrained input like capacitive touch, voice, and the Neural Band, I had <span class="mark">more horizontal impact</span>. Helping to ship quickly at a high quality bar.</p>
     <div class="spacer-sm" data-om-id="26c911db:51"></div>
     <div class="ownership anim-3" style="max-width:1500px;" data-om-id="26c911db:52">
       <div data-om-id="26c911db:53">
@@ -640,7 +708,7 @@
   <section class="slide" data-label="The constraint" data-om-id="26c911db:69" data-screen-label="04 The constraint" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="3">
     <div class="rail" data-om-id="26c911db:70">
       <p class="kicker anim" data-om-id="26c911db:71">The constraints</p>
-      <span class="pageno" data-om-id="26c911db:72">05 / 14</span>
+      <span class="pageno" data-om-id="26c911db:72">05 / 15</span>
     </div>
     <div class="spacer-md" data-om-id="26c911db:73"></div>
     <div class="cols two anim-2" style="grid-template-columns: 0.84fr 1.16fr; gap:64px; flex:1; align-items:center;" data-om-id="26c911db:73b">
@@ -653,10 +721,9 @@
         </div>
       </div>
       <div class="anim-3" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <div class="media" style="width:62%; aspect-ratio:590/420; overflow:hidden; margin:0 auto;" data-om-id="26c911db:74c">
-          <image-slot id="input-graphic" shape="rect" fit="contain" src="images/display-glasses-band-clear.webp" placeholder="Diagram: Neural Band gestures + temple capacitive touch bar on the glasses" data-om-id="26c911db:74d" data-editable="" data-filled=""></image-slot>
+        <div class="media squircle" style="aspect-ratio:640/557; width:67%; margin:0 auto;" data-om-id="26c911db:74c">
+          <image-slot id="input-graphic" shape="rect" fit="cover" src="images/display-neuralband.webp" placeholder="Neural Band" data-om-id="26c911db:74d" data-editable="" data-filled=""></image-slot>
         </div>
-        <p class="slot-cap slot-cap--plain" style="max-width:34ch; margin-top:22px;" data-om-id="26c911db:74e">Capacitive touch on the glasses plus an EMG band for gestures</p>
       </div>
     </div>
     <div class="spacer-md" data-om-id="26c911db:89"></div>
@@ -667,7 +734,7 @@
   <section class="slide" data-label="System design" data-om-id="26c911db:149" data-screen-label="07 System design" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="6" data-deck-active="">
     <div class="rail" data-om-id="26c911db:150">
       <p class="kicker anim" data-om-id="26c911db:151">How I worked</p>
-      <span class="pageno" data-om-id="26c911db:152">06 / 14</span>
+      <span class="pageno" data-om-id="26c911db:152">06 / 15</span>
     </div>
     <div class="spacer-md" data-om-id="26c911db:153"></div>
     <div class="cols two anim-2" style="grid-template-columns: 0.8fr 1.2fr; gap:72px; flex:1; align-items:center;" data-om-id="26c911db:153b">
@@ -676,7 +743,7 @@
         <div class="steps-stack anim-3" style="margin-top:42px;">
           <p class="step-p" data-om-id="26c911db:160"><strong data-om-id="26c911db:159">Prototype the feel.</strong> A spec can't tell you if a gesture feels good. I built working prototypes against the real hardware.</p>
           <p class="step-p" data-om-id="26c911db:164"><strong data-om-id="26c911db:163">Tune by hand.</strong> Tuned timing, thresholds, and motion until each interaction disappeared.</p>
-          <p class="step-p" data-om-id="26c911db:168"><strong data-om-id="26c911db:167">Hold the bar.</strong> That let me move across surfaces and ship each at quality.</p>
+          <p class="step-p" data-om-id="26c911db:168"><strong data-om-id="26c911db:167">Hold the bar.</strong> This rigor let me move across surfaces and ship each at quality.</p>
         </div>
       </div>
       <div class="anim-3" style="display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; max-width:88%; margin-left:auto; margin-right:0;">
@@ -699,7 +766,7 @@
   </section><section class="slide" data-label="Explorations · Music" data-om-id="26c911db:173" data-screen-label="05 Explorations · Music" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="4">
     <div class="rail" data-om-id="26c911db:174">
       <p class="kicker anim" data-om-id="26c911db:175">Explorations</p>
-      <span class="pageno" data-om-id="26c911db:176">07 / 14</span>
+      <span class="pageno" data-om-id="26c911db:176">07 / 15</span>
     </div>
     <div class="spacer-sm" data-om-id="26c911db:177"></div>
     <h1 class="title anim-2" style="max-width:30ch;" data-om-id="26c911db:178">Tuning the Music player.</h1>
@@ -710,7 +777,7 @@
         <p class="expl-phase" data-om-id="26c911db:181p">01 · Baseline</p>
         <div class="media squircle" style="aspect-ratio:1/1; position:relative; overflow:hidden; background:#0a0c0f;" data-om-id="26c911db:182">
           <img src="images/teleprompter-bg.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" />
-          <img src="images/expl-old.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; mix-blend-mode:screen;" />
+          <img src="images/expl-old.webp" alt="" style="position:absolute; inset:9%; width:82%; height:82%; object-fit:contain; mix-blend-mode:screen;" />
         </div>
         <p class="expl-label" data-om-id="26c911db:184">The original player</p>
         <p class="expl-why" data-om-id="26c911db:185">Readable, but spaced out and hard to glance.</p>
@@ -719,7 +786,7 @@
         <p class="expl-phase" data-om-id="26c911db:186p">02 · Discovery</p>
         <div class="media squircle" style="aspect-ratio:1/1; position:relative; overflow:hidden; background:#0a0c0f;" data-om-id="26c911db:187">
           <img src="images/teleprompter-bg.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" />
-          <img src="images/expl-suggestions.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; mix-blend-mode:screen;" />
+          <img src="images/expl-suggestions.webp" alt="" style="position:absolute; inset:9%; width:82%; height:82%; object-fit:contain; mix-blend-mode:screen;" />
         </div>
         <p class="expl-label" data-om-id="26c911db:189">Surfacing what's next</p>
         <p class="expl-why" data-om-id="26c911db:190">Recommendations brought in to aid discovery.</p>
@@ -728,7 +795,7 @@
         <p class="expl-phase" data-om-id="26c911db:191p">03 · Shipped</p>
         <div class="media squircle" style="aspect-ratio:1/1; position:relative; overflow:hidden; background:#0a0c0f;" data-om-id="26c911db:192">
           <img src="images/teleprompter-bg.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" />
-          <img src="images/expl-color.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; mix-blend-mode:screen;" />
+          <img src="images/expl-color.webp" alt="" style="position:absolute; inset:9%; width:82%; height:82%; object-fit:contain; mix-blend-mode:screen;" />
         </div>
         <p class="expl-label" data-om-id="26c911db:194">The album sets the tone</p>
         <p class="expl-why" data-om-id="26c911db:195">Cover colors flow in, so the UI feels like content.</p>
@@ -737,7 +804,7 @@
         <p class="expl-phase" data-om-id="26c911db:196p">04 · Edge cases</p>
         <div class="media squircle" style="aspect-ratio:1/1; position:relative; overflow:hidden; background:#0a0c0f;" data-om-id="26c911db:197">
           <img src="images/teleprompter-bg.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" />
-          <img src="images/expl-null.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; mix-blend-mode:screen;" />
+          <img src="images/expl-null.webp" alt="" style="position:absolute; inset:9%; width:82%; height:82%; object-fit:contain; mix-blend-mode:screen;" />
         </div>
         <p class="expl-label" data-om-id="26c911db:199">Mapping voice to the UI</p>
         <p class="expl-why" data-om-id="26c911db:200">The default state mirrors what "play music" does by voice.</p>
@@ -752,7 +819,7 @@
   <section class="slide" data-label="Craft · Music" data-om-id="26c911db:112" data-screen-label="08 Craft · Music" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="7">
     <div class="rail" data-om-id="26c911db:113">
       <p class="kicker anim" data-om-id="26c911db:114">Craft artifact · 01</p>
-      <span class="pageno" data-om-id="26c911db:115">08 / 14</span>
+      <span class="pageno" data-om-id="26c911db:115">08 / 15</span>
     </div>
     <div class="spacer-sm" data-om-id="26c911db:116"></div>
     <div class="cols two anim-2" style="grid-template-columns: 1fr 1fr; gap:80px; flex:1; align-items:center;" data-om-id="26c911db:117">
@@ -761,7 +828,6 @@
           <img src="images/teleprompter-bg.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" />
           <video id="art-music" data-vsrc="images/music-loading-2.mp4" poster="images/poster-music-loading-2.jpg" loop="" muted="" playsinline="" style="position:absolute; inset:9%; width:82%; height:82%; object-fit:contain; mix-blend-mode:screen;" data-om-id="26c911db:120"></video>
         </div>
-        <p class="slot-cap" data-om-id="26c911db:120c">Album art flowing through the player UI</p>
       </div>
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:121">
         <h1 class="title" style="font-size:60px;" data-om-id="26c911db:122">Making discovery easy, and the UI feel like the music.</h1>
@@ -777,7 +843,7 @@
   <section class="slide" data-label="What's next · Music" data-om-id="7c3e9f10:1" data-screen-label="09 What's next · Music" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="8">
     <div class="rail" data-om-id="7c3e9f10:2">
       <p class="kicker anim" data-om-id="7c3e9f10:3">Explorations</p>
-      <span class="pageno" data-om-id="7c3e9f10:4">09 / 14</span>
+      <span class="pageno" data-om-id="7c3e9f10:4">09 / 15</span>
     </div>
     <div class="spacer-sm" data-om-id="7c3e9f10:5"></div>
     <h1 class="title anim-2" style="max-width:30ch;" data-om-id="7c3e9f10:6">A vision for where Music could go.</h1>
@@ -826,14 +892,14 @@
   </section><section class="slide" data-label="Craft · Handwriting" data-om-id="26c911db:93" data-screen-label="08 Craft · Handwriting" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="7">
     <div class="rail" data-om-id="26c911db:94">
       <p class="kicker anim" data-om-id="26c911db:95">Craft artifact · 02</p>
-      <span class="pageno" data-om-id="26c911db:96">10 / 14</span>
+      <span class="pageno" data-om-id="26c911db:96">10 / 15</span>
     </div>
     <div class="spacer-sm" data-om-id="26c911db:97"></div>
     <div class="cols two anim-2" style="grid-template-columns: 1fr 1fr; gap:80px; flex:1; align-items:center;" data-om-id="26c911db:98">
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:99">
         <h1 class="title" style="font-size:60px;" data-om-id="26c911db:100">Write a message with your fingertip.</h1>
         <div class="spacer-sm" data-om-id="26c911db:101"></div>
-        <p class="body" style="max-width:36ch;" data-om-id="26c911db:102">Messaging was a hero feature, and handwriting showcased the Neural Band, a <span class="mark" data-om-id="26c911db:103">novel, wearables-native input</span>. I designed the autocomplete and the handoff between writing by hand and picking a suggestion, so a quick reply stays one fluid motion.</p>
+        <p class="body" style="max-width:36ch;" data-om-id="26c911db:102">Messaging was a hero feature, and handwriting showcased the Neural Band, a <span class="mark" data-om-id="26c911db:103">novel, wearables-native input</span>. I designed the autocomplete and suggested input experience, so a quick reply stays one fluid motion.</p>
         <figure class="pullquote" style="max-width:46ch; margin:28px 0 0; border-left:3px solid var(--accent); padding-left:20px;" data-om-id="26c911db:102q">
           <blockquote style="margin:0; font-size:24px; line-height:1.4; font-style:italic; color:var(--ink); text-wrap:balance;" data-om-id="26c911db:102qb">&ldquo;Handwriting is my new favorite way to text.&rdquo;</blockquote>
           <figcaption style="margin-top:10px; font-size:15px; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted);" data-om-id="26c911db:102qc">Karissa Bell, Engadget</figcaption>
@@ -854,18 +920,14 @@
   <section class="slide" data-label="Craft · Teleprompter" data-om-id="26c911db:130" data-screen-label="09 Craft · Teleprompter" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="8">
     <div class="rail" data-om-id="26c911db:131">
       <p class="kicker anim" data-om-id="26c911db:132">Craft artifact · 03</p>
-      <span class="pageno" data-om-id="26c911db:133">11 / 14</span>
+      <span class="pageno" data-om-id="26c911db:133">11 / 15</span>
     </div>
     <div class="spacer-sm" data-om-id="26c911db:134"></div>
     <div class="cols two anim-2" style="grid-template-columns: 1.04fr 0.96fr; gap:80px; flex:1; align-items:center;" data-om-id="26c911db:135">
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:136">
         <h1 class="title" style="font-size:60px;" data-om-id="26c911db:137">A teleprompter only the wearer can see.</h1>
         <div class="spacer-sm" data-om-id="26c911db:138"></div>
-        <p class="body" style="max-width:36ch;" data-om-id="26c911db:139">Teleprompter came to me late, with a hard deadline and <span class="mark" data-om-id="26c911db:140">readability and control</span> problems blocking ship. I drove the in-glass UI and mobile companion through launch. The key call came from research: we tested auto-scroll, but speakers preferred to control when each line appeared, so I shipped manual cards driven by the Neural Band.</p>
-        <figure class="pullquote" style="max-width:54ch; margin:28px 0 0; border-left:3px solid var(--accent); padding-left:20px;" data-om-id="26c911db:139q">
-          <blockquote style="margin:0; font-size:24px; line-height:1.4; font-style:italic; color:var(--ink); text-wrap:balance;" data-om-id="26c911db:139qb">&ldquo;Customizable text-based cards and simple navigation with the Meta Neural Band.&rdquo;</blockquote>
-          <figcaption style="margin-top:10px; font-size:15px; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted);" data-om-id="26c911db:139qc">Meta, on the shipped teleprompter</figcaption>
-        </figure>
+        <p class="body" style="max-width:36ch;" data-om-id="26c911db:139">Teleprompter had a hard deadline and <span class="mark" data-om-id="26c911db:140">readability and control</span> problems blocking ship. I drove the in-glass UI and mobile companion through launch. The key call came from research: we tested auto-scroll, but speakers preferred to control when each line appeared, so I shipped manual cards driven by the Neural Band.</p>
       </div>
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:141">
         <div class="media squircle shadow-soft" style="aspect-ratio:1/1; width:84%; margin:0 auto; position:relative; overflow:hidden; background:#0a0c0f;" data-om-id="26c911db:142">
@@ -879,11 +941,68 @@
     <div class="footer anim-4" data-om-id="26c911db:146"><span data-om-id="26c911db:147">Meta Ray-Ban Display</span><span data-om-id="26c911db:148">Zachary Halvorson</span></div>
   </section>
 
-  <!-- 12 · OUTCOME RECEPTION -->
-  <section class="slide" data-label="Outcome · reception" data-om-id="26c911db:222" data-screen-label="12 Outcome · reception" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="11">
+  <!-- 12 · TRADEOFF TELEPROMPTER -->
+  <section class="slide" data-label="Tradeoff · Teleprompter" data-om-id="9f2a11cc:1" data-screen-label="12 Tradeoff · Teleprompter" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="11">
+    <div class="rail" data-om-id="9f2a11cc:2">
+      <p class="kicker anim" data-om-id="9f2a11cc:3">The tradeoff</p>
+      <span class="pageno" data-om-id="9f2a11cc:4">12 / 15</span>
+    </div>
+    <div class="spacer-sm" data-om-id="9f2a11cc:5"></div>
+    <div class="cols two anim-2" style="grid-template-columns: 0.82fr 1.18fr; gap:72px; flex:1; align-items:center;" data-om-id="9f2a11cc:6">
+      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="9f2a11cc:7">
+        <h1 class="title" style="font-size:56px;" data-om-id="9f2a11cc:8">Teleprompter vs Speaker Notes</h1>
+        <div class="spacer-sm" data-om-id="9f2a11cc:9"></div>
+        <p class="body" style="max-width:40ch;" data-om-id="9f2a11cc:10">The key call came from research. We tested a smooth <span class="mark" data-om-id="9f2a11cc:11">auto-scroll</span>, but speakers wanted to control when each line appeared, so I shipped manual cards advanced by the Neural Band, with a manual scroll kept as an option.</p>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:96px;" data-om-id="9f2a11cc:12">
+        <div style="display:flex; flex-direction:column; align-items:center;" data-om-id="9f2a11cc:17">
+          <div class="media squircle shadow-soft" style="aspect-ratio:1/1; height:420px; width:auto; position:relative; overflow:hidden; background:#0a0c0f;" data-om-id="9f2a11cc:18">
+            <img src="images/teleprompter-bg.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" />
+            <img src="images/teleprompter-scroll.webp" alt="" style="position:absolute; inset:9%; width:82%; height:82%; object-fit:contain; mix-blend-mode:screen;" />
+          </div>
+          <p class="slot-cap slot-cap--plain" data-om-id="9f2a11cc:19">Scroll mode, in-glass</p>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center;" data-om-id="9f2a11cc:13">
+          <div class="phone phone--sm" style="width:250px;" data-om-id="9f2a11cc:14">
+            <div class="screen" data-om-id="9f2a11cc:14s">
+              <image-slot id="tele-editor" shape="rect" fit="cover" src="images/teleprompter-editor.webp" placeholder="Companion app editor" data-om-id="9f2a11cc:15" data-editable="" data-filled=""></image-slot>
+            </div>
+          </div>
+          <p class="slot-cap slot-cap--plain" data-om-id="9f2a11cc:16">Choose a view<br>and edit text</p>
+        </div>
+      </div>
+    </div>
+    <div class="spacer-sm" data-om-id="9f2a11cc:20"></div>
+    <div class="footer anim-4" data-om-id="9f2a11cc:21"><span data-om-id="9f2a11cc:22">Meta Ray-Ban Display</span><span data-om-id="9f2a11cc:23">Zachary Halvorson</span></div>
+  </section>
+
+  <!-- 13 · OUTCOME LAUNCH -->
+  <section class="slide" data-label="Outcome · launch" data-om-id="26c911db:205" data-screen-label="13 Outcome · launch" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="12">
+    <div class="rail" data-om-id="26c911db:206">
+      <p class="kicker anim" data-om-id="26c911db:207">Outcome</p>
+      <span class="pageno" data-om-id="26c911db:208">13 / 15</span>
+    </div>
+    <div class="cols two anim-2" style="grid-template-columns: 1fr 1fr; gap:80px; flex:1; align-items:center;" data-om-id="26c911db:209">
+      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:210">
+        <p class="statement" style="font-size:58px;" data-om-id="26c911db:211">Handwriting took <span class="mark" data-om-id="26c911db:212">center stage at Meta Connect</span>.</p>
+        <div class="spacer-sm" data-om-id="26c911db:213"></div>
+        <p class="body" style="max-width:36ch;" data-om-id="26c911db:214">Meta Ray-Ban Display shipped as Meta's first glasses with an in-lens display, with handwriting spotlighted in the live on-stage demo. It was never built for volume, it was the halo that makes the whole line feel more premium.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:215">
+        <div class="media squircle" style="aspect-ratio:3002/1724; width:100%;" data-om-id="26c911db:216">
+          <image-slot id="connect-keynote" shape="rect" fit="contain" src="images/display-connect-keynote.webp" placeholder="Meta Connect live demo" data-om-id="26c911db:217" data-editable="" data-filled=""></image-slot>
+        </div>
+        <p class="slot-cap" data-om-id="26c911db:218">Handwriting in the on-stage live demo</p>
+      </div>
+    </div>
+    <div class="footer anim-4" data-om-id="26c911db:219"><span data-om-id="26c911db:220">Meta Ray-Ban Display</span><span data-om-id="26c911db:221">Zachary Halvorson</span></div>
+  </section>
+
+  <!-- 14 · OUTCOME RECEPTION -->
+  <section class="slide" data-label="Outcome · reception" data-om-id="26c911db:222" data-screen-label="14 Outcome · reception" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="13">
     <div class="rail" data-om-id="26c911db:223">
       <p class="kicker anim" data-om-id="26c911db:224">Outcome · in the wild</p>
-      <span class="pageno" data-om-id="26c911db:225">12 / 14</span>
+      <span class="pageno" data-om-id="26c911db:225">14 / 15</span>
     </div>
     <div class="spacer-md" data-om-id="26c911db:226"></div>
     <h1 class="title anim-2" data-om-id="26c911db:227">First on the scene for the spatial future.</h1>
@@ -913,33 +1032,13 @@
     <div class="footer anim-4" data-om-id="26c911db:246"><span data-om-id="26c911db:247">Meta Ray-Ban Display</span><span data-om-id="26c911db:248">Zachary Halvorson</span></div>
   </section>
 
-  <!-- 13 · OUTCOME LAUNCH -->
-  <section class="slide" data-label="Outcome · launch" data-om-id="26c911db:205" data-screen-label="13 Outcome · launch" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="12">
-    <div class="rail" data-om-id="26c911db:206">
-      <p class="kicker anim" data-om-id="26c911db:207">Outcome</p>
-      <span class="pageno" data-om-id="26c911db:208">13 / 14</span>
-    </div>
-    <div class="cols two anim-2" style="grid-template-columns: 1fr 1fr; gap:80px; flex:1; align-items:center;" data-om-id="26c911db:209">
-      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:210">
-        <p class="statement" style="font-size:58px;" data-om-id="26c911db:211">Handwriting took <span class="mark" data-om-id="26c911db:212">center stage at Meta Connect</span>.</p>
-        <div class="spacer-sm" data-om-id="26c911db:213"></div>
-        <p class="body" style="max-width:36ch;" data-om-id="26c911db:214">Meta Ray-Ban Display shipped as Meta's first glasses with an in-lens display, with handwriting spotlighted in the live on-stage demo. It was never built for volume, it was the halo that makes the whole line feel more premium.</p>
-      </div>
-      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:215">
-        <div class="media squircle" style="aspect-ratio:3002/1724; width:100%;" data-om-id="26c911db:216">
-          <image-slot id="connect-keynote" shape="rect" fit="contain" src="images/display-connect-keynote.webp" placeholder="Meta Connect live demo" data-om-id="26c911db:217" data-editable="" data-filled=""></image-slot>
-        </div>
-        <p class="slot-cap" data-om-id="26c911db:218">Handwriting in the on-stage live demo</p>
-      </div>
-    </div>
-    <div class="footer anim-4" data-om-id="26c911db:219"><span data-om-id="26c911db:220">Meta Ray-Ban Display</span><span data-om-id="26c911db:221">Zachary Halvorson</span></div>
-  </section>
+  <!-- removed-duplicate-launch -->
 
   <!-- 11 · CLOSE -->
   <section class="slide" data-label="Close" data-om-id="26c911db:249" data-screen-label="12 Close" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="11" data-deck-last-visible="">
     <div class="rail" data-om-id="26c911db:250">
       <p class="kicker anim" data-om-id="26c911db:251">Reflection</p>
-      <span class="pageno" data-om-id="26c911db:252">14 / 14</span>
+      <span class="pageno" data-om-id="26c911db:252">15 / 15</span>
     </div>
     <div class="grow cols two" style="grid-template-columns: 1.1fr 0.9fr; gap:80px; align-items:center;" data-om-id="26c911db:253">
       <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="26c911db:254">
@@ -962,6 +1061,24 @@
 
 <script src="deck-stage.js"></script>
 <script src="image-slot.js"></script>
+
+<script>
+/* Some preview servers don't support the HTTP range requests a <video src> needs,
+   so a native src= errors on an otherwise-valid file. We keep the source in
+   data-vsrc (so the element never makes the unsupported request), fetch the whole
+   file, and hand the element a blob URL. Falls back to a plain src if fetch fails. */
+(function(){
+  function blobify(v){
+    var orig = v.getAttribute('data-vsrc');
+    if(!orig) return;
+    fetch(orig).then(function(r){ return r.ok ? r.blob() : Promise.reject(); })
+      .then(function(b){ v.src = URL.createObjectURL(b); v.load(); var p=v.play(); if(p&&p.catch)p.catch(function(){}); })
+      .catch(function(){ v.src = orig; v.load(); var p=v.play(); if(p&&p.catch)p.catch(function(){}); });
+  }
+  document.querySelectorAll('video[data-vsrc]').forEach(blobify);
+})();
+</script>
+
 
 <script id="lazy-video-loader">
 /* Slide clips keep their source in data-src (a fresh export's `src` is moved here
@@ -1046,7 +1163,5 @@
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
 })();
 </script>
-
-
 </body>
 </html>
