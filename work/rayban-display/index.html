@@ -963,20 +963,87 @@
 <script src="deck-stage.js"></script>
 <script src="image-slot.js"></script>
 
-<script>
-/* Some preview servers don't support the HTTP range requests a <video src> needs,
-   so a native src= errors on an otherwise-valid file. We keep the source in
-   data-vsrc (so the element never makes the unsupported request), fetch the whole
-   file, and hand the element a blob URL. Falls back to a plain src if fetch fails. */
+<script id="lazy-video-loader">
+/* Slide clips keep their source in data-src (a fresh export's `src` is moved here
+   by optimize-deck.mjs) so the element never makes the HTTP Range request a native
+   <video src> does — some preview hosts answer it with an error. We fetch each file
+   once, hand the element a blob URL, and reuse it. Only the active slide's clips
+   play; the neighbouring slides' clips are warmed during idle, so a clip is ready
+   the moment its slide is shown. No spinner, no new state — the poster covers any
+   remaining gap. Legacy decks using data-vsrc keep working unchanged. */
 (function(){
-  function blobify(v){
-    var orig = v.getAttribute('data-vsrc');
-    if(!orig) return;
-    fetch(orig).then(function(r){ return r.ok ? r.blob() : Promise.reject(); })
-      .then(function(b){ v.src = URL.createObjectURL(b); v.load(); var p=v.play(); if(p&&p.catch)p.catch(function(){}); })
-      .catch(function(){ v.src = orig; v.load(); var p=v.play(); if(p&&p.catch)p.catch(function(){}); });
+  var SEL = 'video[data-src],video[data-vsrc]';
+  function srcOf(v){ return v.getAttribute('data-src') || v.getAttribute('data-vsrc'); }
+  function vids(s){ return s ? [].slice.call(s.querySelectorAll(SEL)) : []; }
+  function playSafe(v){ try{ var p=v.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+
+  // url -> Promise<objectURL>. Dedupes, so a warm() already in flight is reused
+  // by the activate() that follows and a revisited clip never re-downloads.
+  var blobs = Object.create(null);
+  function ensure(url){
+    if(blobs[url]) return blobs[url];
+    var p = fetch(url)
+      .then(function(r){ return r.ok ? r.blob() : Promise.reject(); })
+      .then(function(b){ return URL.createObjectURL(b); });
+    // A transient failure shouldn't poison the URL forever — drop it so a later
+    // activate() can retry (and fall back to a direct src).
+    p.catch(function(){ if(blobs[url] === p) delete blobs[url]; });
+    blobs[url] = p;
+    return p;
   }
-  document.querySelectorAll('video[data-vsrc]').forEach(blobify);
+
+  // Warm a slide's clips into blobs without attaching them — they stay on their
+  // poster, paused, until their own slide is shown.
+  function warm(s){ vids(s).forEach(function(v){ var u=srcOf(v); if(u) ensure(u); }); }
+
+  // Attach the (now usually ready) clip and play it. Falls back to a direct src=
+  // if the blob fetch fails — covers a network blip, and streams fine on a host
+  // that does support Range.
+  function attach(v){
+    var url = srcOf(v);
+    if(!url) return;
+    if(v.dataset.vready){ playSafe(v); return; }
+    ensure(url).then(function(obj){
+      if(v.dataset.vready) return;
+      v.dataset.vready='1'; v.src=obj; playSafe(v);
+    }).catch(function(){
+      if(v.dataset.vready) return;
+      v.dataset.vready='1'; v.src=url; try{ v.load(); }catch(e){} playSafe(v);
+    });
+  }
+
+  function activate(s){ vids(s).forEach(attach); }
+  function deactivate(s){ vids(s).forEach(function(v){ try{ v.pause(); }catch(e){} }); }
+
+  function adjacentSlide(s, dir){
+    var n = s;
+    while((n = dir > 0 ? n.nextElementSibling : n.previousElementSibling)){
+      if(n.classList && n.classList.contains('slide')) return n;
+    }
+    return null;
+  }
+  var idle = window.requestIdleCallback || function(fn){ return setTimeout(fn, 200); };
+  function prefetchAround(s){
+    if(!s) return;
+    idle(function(){
+      warm(adjacentSlide(s, 1));   // next slide — the likely destination — first
+      warm(adjacentSlide(s, -1));  // prev slide — cheap insurance for back-nav
+    });
+  }
+
+  function init(){
+    var stage=document.querySelector('deck-stage');
+    if(!stage){ return setTimeout(init,50); }
+    stage.addEventListener('slidechange', function(e){
+      deactivate(e.detail.previousSlide);
+      activate(e.detail.slide);
+      prefetchAround(e.detail.slide);
+    });
+    var first = stage.querySelector('[data-deck-active]') || document.querySelector('section.slide');
+    activate(first);
+    prefetchAround(first);
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
 })();
 </script>
 

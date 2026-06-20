@@ -8,11 +8,14 @@
 // downloads *all* of the clips on first load — tens of MB, most of it for
 // slides the visitor may never scroll to.
 //
-// This rewrites each deck's <video> tags to load lazily and gives every clip a
-// poster still, so:
-//   • the browser fetches a clip only when its slide is actually shown — the
-//     reader shell (work/index.html) plays the on-screen slide's videos and
-//     pauses the rest — and
+// This rewrites each deck's <video> tags to load lazily — moving the source from
+// the native `src` onto `data-src` and giving every clip a poster still — and
+// injects a small player (LAZY_VIDEO_LOADER) that drives them, so:
+//   • the browser fetches a clip only when its slide is actually shown, and the
+//     injected player additionally warms the neighbouring slides' clips during
+//     idle so a clip is ready the moment you navigate to it (no spinner — the
+//     poster covers any gap). This works whether the deck is opened directly or
+//     embedded in the reader shell; the shell's own play/pause just complements it.
 //   • a deferred clip still shows a frame on the slide and in the navigator
 //     rail thumbnails (the rail falls back to the poster when it can't grab a
 //     live frame).
@@ -24,8 +27,9 @@
 // <html>, so for visitors it's pure dead weight — and the site's only
 // third-party-CDN dependency. See stripEditorScripts.
 //
-// The playback half is automatic for every deck (handled by the shell), so the
-// ONLY per-export step is running this script. Re-run it after every re-export.
+// The playback half is automatic for every deck (the injected player, with the
+// reader shell complementing it), so the ONLY per-export step is running this
+// script. Re-run it after every re-export.
 //
 // Usage:
 //   node work/optimize-deck.mjs <slug|path> [<slug|path> ...]
@@ -33,13 +37,16 @@
 //   node work/optimize-deck.mjs <slug> --force # regenerate posters too
 //   node work/optimize-deck.mjs <slug> --ss 0.5  # grab posters at 0.5s in
 //
-// Requires ffmpeg on PATH (only invoked when a poster needs generating).
-// Idempotent: posters already on disk are reused unless --force is passed, and
+// Requires ffmpeg on PATH — used for poster stills and the video re-encode pass
+// (both degrade gracefully: posters are reused if present, the video pass is
+// skipped entirely if ffmpeg is missing).
+// Idempotent: posters already on disk are reused unless --force is passed,
+// re-encoded clips carry a metadata sentinel so they're skipped on re-run, and
 // re-running on an already-optimized deck makes no changes.
 // ---------------------------------------------------------------------------
 
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync, renameSync } from "node:fs";
 import { dirname, join, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -52,6 +59,10 @@ let all = false;
 let noImages = false; // skip the image (downscale + WebP) pass
 let maxEdge = 1600;   // cap an image's longest side at this many px
 let imgQuality = 80;  // cwebp quality for the image pass
+let noVideos = false; // skip the video re-encode pass
+let vCrf = 28;        // H.264 CRF for the video pass (higher = smaller/softer)
+let vPreset = "slow"; // x264 preset (slower = smaller at the same CRF)
+let vMaxEdge = 1920;  // cap a video's longest side at this many px
 const targets = [];
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
@@ -61,6 +72,10 @@ for (let i = 0; i < args.length; i++) {
   else if (a === "--no-images") noImages = true;
   else if (a === "--max-edge") maxEdge = parseInt(args[++i], 10) || maxEdge;
   else if (a === "--img-quality") imgQuality = parseInt(args[++i], 10) || imgQuality;
+  else if (a === "--no-videos") noVideos = true;
+  else if (a === "--v-crf") vCrf = parseInt(args[++i], 10) || vCrf;
+  else if (a === "--v-preset") vPreset = String(args[++i]);
+  else if (a === "--v-max-edge") vMaxEdge = parseInt(args[++i], 10) || vMaxEdge;
   else if (a.startsWith("--")) fail(`Unknown flag: ${a}`);
   else targets.push(a);
 }
@@ -103,14 +118,26 @@ function attr(tag, name) {
   return m ? (m[2] ?? m[3] ?? m[4]) : null;
 }
 
-// Rewrite a single <video> opening tag: drop autoplay, force preload="none",
-// and ensure a poster. Existing class/loop/muted/playsinline/style/data-* are
-// left untouched.
+// Rewrite a single <video> opening tag: drop autoplay, move the source off the
+// native `src` and onto `data-src`, force preload="none", and ensure a poster.
+// Existing class/loop/muted/playsinline/style/data-* are left untouched.
+//
+// Why move src → data-src: a native <video src> issues an HTTP Range request,
+// which some preview/share hosts answer with an error on an otherwise-valid file.
+// Parking the source in data-src means the element never makes that request — the
+// injected lazy-video-loader (see LAZY_VIDEO_LOADER) fetches the file as a blob
+// and hands it back, and gains a place to do per-slide playback + idle prefetch.
 function rewriteTag(tag, posterRel, hadPoster) {
   let out = tag;
-  // Drop autoplay (bare `autoplay` or `autoplay="..."`).
+  // Drop autoplay (bare `autoplay` or `autoplay="..."`) — the loader plays the
+  // active slide's clips explicitly, so nothing should autoplay off-screen.
   out = out.replace(/\s+autoplay(\s*=\s*("[^"]*"|'[^']*'|[^\s>]+))?/i, "");
-  // Normalize preload to none (replace existing, else add).
+  // Move src="…" → data-src="…". The `\s` anchor means `data-src`/`data-vsrc`
+  // (no leading whitespace before "src") are never matched, so a re-run is a
+  // no-op and a legacy data-vsrc deck is left alone.
+  out = out.replace(/(\s)src(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)/i, "$1data-src$2$3");
+  // Normalize preload to none (replace existing, else add). Moot without a native
+  // src, but correct for the loader's direct-src fallback path.
   if (/\spreload\s*=/i.test(out)) {
     out = out.replace(/\spreload\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/i, ' preload="none"');
   } else {
@@ -118,6 +145,115 @@ function rewriteTag(tag, posterRel, hadPoster) {
   }
   if (!hadPoster) out = out.replace(/<video\b/i, `<video poster="${posterRel}"`);
   return out;
+}
+
+// The lazy/prefetch video player injected into every deck that has deferred
+// clips. Decks load their slide clips from data-src/data-vsrc (never a live src);
+// this script plays the active slide's clips, pauses the rest, and warms the
+// neighbouring slides' clips during idle so a clip is ready the moment its slide
+// is shown. Poster-only placeholder — no spinner, no new state. This is the
+// single source of truth: ensureVideoLoader() (re)writes it into each deck, so a
+// re-export that resets index.html gets the current player back on the next run.
+const LAZY_VIDEO_LOADER = `<script id="lazy-video-loader">
+/* Slide clips keep their source in data-src (a fresh export's \`src\` is moved here
+   by optimize-deck.mjs) so the element never makes the HTTP Range request a native
+   <video src> does — some preview hosts answer it with an error. We fetch each file
+   once, hand the element a blob URL, and reuse it. Only the active slide's clips
+   play; the neighbouring slides' clips are warmed during idle, so a clip is ready
+   the moment its slide is shown. No spinner, no new state — the poster covers any
+   remaining gap. Legacy decks using data-vsrc keep working unchanged. */
+(function(){
+  var SEL = 'video[data-src],video[data-vsrc]';
+  function srcOf(v){ return v.getAttribute('data-src') || v.getAttribute('data-vsrc'); }
+  function vids(s){ return s ? [].slice.call(s.querySelectorAll(SEL)) : []; }
+  function playSafe(v){ try{ var p=v.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+
+  // url -> Promise<objectURL>. Dedupes, so a warm() already in flight is reused
+  // by the activate() that follows and a revisited clip never re-downloads.
+  var blobs = Object.create(null);
+  function ensure(url){
+    if(blobs[url]) return blobs[url];
+    var p = fetch(url)
+      .then(function(r){ return r.ok ? r.blob() : Promise.reject(); })
+      .then(function(b){ return URL.createObjectURL(b); });
+    // A transient failure shouldn't poison the URL forever — drop it so a later
+    // activate() can retry (and fall back to a direct src).
+    p.catch(function(){ if(blobs[url] === p) delete blobs[url]; });
+    blobs[url] = p;
+    return p;
+  }
+
+  // Warm a slide's clips into blobs without attaching them — they stay on their
+  // poster, paused, until their own slide is shown.
+  function warm(s){ vids(s).forEach(function(v){ var u=srcOf(v); if(u) ensure(u); }); }
+
+  // Attach the (now usually ready) clip and play it. Falls back to a direct src=
+  // if the blob fetch fails — covers a network blip, and streams fine on a host
+  // that does support Range.
+  function attach(v){
+    var url = srcOf(v);
+    if(!url) return;
+    if(v.dataset.vready){ playSafe(v); return; }
+    ensure(url).then(function(obj){
+      if(v.dataset.vready) return;
+      v.dataset.vready='1'; v.src=obj; playSafe(v);
+    }).catch(function(){
+      if(v.dataset.vready) return;
+      v.dataset.vready='1'; v.src=url; try{ v.load(); }catch(e){} playSafe(v);
+    });
+  }
+
+  function activate(s){ vids(s).forEach(attach); }
+  function deactivate(s){ vids(s).forEach(function(v){ try{ v.pause(); }catch(e){} }); }
+
+  function adjacentSlide(s, dir){
+    var n = s;
+    while((n = dir > 0 ? n.nextElementSibling : n.previousElementSibling)){
+      if(n.classList && n.classList.contains('slide')) return n;
+    }
+    return null;
+  }
+  var idle = window.requestIdleCallback || function(fn){ return setTimeout(fn, 200); };
+  function prefetchAround(s){
+    if(!s) return;
+    idle(function(){
+      warm(adjacentSlide(s, 1));   // next slide — the likely destination — first
+      warm(adjacentSlide(s, -1));  // prev slide — cheap insurance for back-nav
+    });
+  }
+
+  function init(){
+    var stage=document.querySelector('deck-stage');
+    if(!stage){ return setTimeout(init,50); }
+    stage.addEventListener('slidechange', function(e){
+      deactivate(e.detail.previousSlide);
+      activate(e.detail.slide);
+      prefetchAround(e.detail.slide);
+    });
+    var first = stage.querySelector('[data-deck-active]') || document.querySelector('section.slide');
+    activate(first);
+    prefetchAround(first);
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>`;
+
+// Ensure the deck carries the current lazy-video-loader. Idempotent: replaces an
+// existing #lazy-video-loader in place (so a re-run upgrades an older player to
+// the current one), else inserts it just before </body>. Only added when the deck
+// actually has deferred clips. Returns { html, changed }.
+function ensureVideoLoader(html) {
+  if (!/<video\b[^>]*\bdata-(src|vsrc)\s*=/i.test(html)) return { html, changed: false };
+  const existing = /<script\b[^>]*\bid\s*=\s*["']lazy-video-loader["'][^>]*>[\s\S]*?<\/script>/i;
+  let out;
+  if (existing.test(html)) {
+    out = html.replace(existing, () => LAZY_VIDEO_LOADER);
+  } else if (/<\/body>/i.test(html)) {
+    out = html.replace(/<\/body>/i, () => LAZY_VIDEO_LOADER + "\n</body>");
+  } else {
+    out = html + "\n" + LAZY_VIDEO_LOADER + "\n";
+  }
+  return { html: out, changed: out !== html };
 }
 
 // Make any render-blocking Google Fonts stylesheet load asynchronously. A raw
@@ -270,6 +406,134 @@ function optimizeImages(html, deckDir) {
   return { html, converted, saved, skipped, unavailable: false };
 }
 
+// ---------------------------------------------------------------------------
+// Video pass: re-encode oversized slide clips to a much lower bitrate in place.
+//
+// A fresh export ships the demo clips straight from screen capture / motion
+// tools at far higher bitrates than a muted, looping, slide-sized <video> needs
+// — the Ray-Ban Meta deck alone carries ~80 MB across them, several clips topping
+// 15 MB. Re-encoding to H.264 (yuv420p, faststart) at a constant-quality CRF,
+// with a longest-edge cap, cuts the big ones ~3-13x with no visible loss at slide
+// size. Audio is dropped (every clip is displayed muted), which also trims bytes.
+//
+// Re-encoding happens IN PLACE — same filename — so the deck's data-src/data-vsrc
+// references and the poster-*.jpg stills (frame 0 is unchanged) stay valid with
+// no markup edits. As in the image pass we only keep the re-encode when it's a
+// clear win; an already-tight clip is instead stream-copied (lossless) just to
+// carry the skip marker, so it isn't re-encoded on every run.
+//
+// Idempotency rides on a `comment` metadata sentinel baked into every clip we
+// touch: a re-run probes it and skips, while a fresh re-export (which lands an
+// un-stamped file under the same name) is picked up and recompressed. Needs
+// ffmpeg/ffprobe; if either is absent the whole pass is skipped and the deck
+// still works, just heavier.
+const VIDEO_SENTINEL = "optimize-deck-v1";
+
+let ffmpegChecked = false, ffmpegOK = false;
+function haveFfmpeg() {
+  if (!ffmpegChecked) {
+    ffmpegChecked = true;
+    try {
+      execFileSync("ffmpeg", ["-version"], { stdio: "ignore" });
+      execFileSync("ffprobe", ["-version"], { stdio: "ignore" });
+      ffmpegOK = true;
+    } catch { ffmpegOK = false; }
+  }
+  return ffmpegOK;
+}
+
+// True when this exact file was already re-encoded (or stamped) by a prior run:
+// our sentinel sits in the container-level `comment` tag. A fresh re-export
+// overwrites the file without it, so the clip is recompressed again — exactly
+// what we want.
+function videoStamped(abs) {
+  try {
+    const out = execFileSync(
+      "ffprobe",
+      ["-v", "error", "-show_entries", "format_tags=comment", "-of", "default=nw=1:nk=1", abs],
+      { encoding: "utf8" }
+    );
+    return out.trim() === VIDEO_SENTINEL;
+  } catch { return false; }
+}
+
+// Re-encode srcAbs → outAbs: H.264 yuv420p at the configured CRF/preset, longest
+// side capped at vMaxEdge (only ever downscaling; dimensions forced even for
+// yuv420p), audio dropped, faststart, and our sentinel stamped into the comment.
+// The `\,` escapes keep the commas inside min() from splitting the filtergraph.
+function encodeVideo(srcAbs, outAbs) {
+  const vf = `scale=w=min(${vMaxEdge}\\,iw):h=min(${vMaxEdge}\\,ih):force_original_aspect_ratio=decrease:force_divisible_by=2`;
+  execFileSync(
+    "ffmpeg",
+    ["-y", "-loglevel", "error", "-i", srcAbs,
+     "-vf", vf,
+     "-c:v", "libx264", "-crf", String(vCrf), "-preset", vPreset, "-pix_fmt", "yuv420p",
+     "-an", "-movflags", "+faststart",
+     "-metadata", `comment=${VIDEO_SENTINEL}`, outAbs],
+    { stdio: ["ignore", "ignore", "inherit"] }
+  );
+}
+
+// Lossless stamp for a clip that wouldn't shrink: copy the video stream untouched
+// but add the sentinel (and faststart), so the next run skips it instead of
+// re-encoding it again. Audio is dropped to match the re-encode path.
+function stampVideo(srcAbs, outAbs) {
+  execFileSync(
+    "ffmpeg",
+    ["-y", "-loglevel", "error", "-i", srcAbs,
+     "-c", "copy", "-an", "-movflags", "+faststart",
+     "-metadata", `comment=${VIDEO_SENTINEL}`, outAbs],
+    { stdio: ["ignore", "ignore", "inherit"] }
+  );
+}
+
+// Find the deck's referenced clips (src/data-src/data-vsrc → a local .mp4),
+// re-encode each in place when that's a clear win, and stamp the rest so they're
+// skipped next time. Touches files only — the filename never changes, so no html
+// is rewritten. Returns a tally. Idempotent: a re-run sees every clip stamped and
+// does nothing.
+function optimizeVideos(html, deckDir) {
+  if (noVideos) return { converted: 0, stamped: 0, saved: 0, unavailable: false };
+  if (!haveFfmpeg()) return { converted: 0, stamped: 0, saved: 0, unavailable: true };
+
+  const refs = new Set();
+  const re = /(?:src|data-src|data-vsrc)\s*=\s*"([^"]+\.mp4)"/gi;
+  let m;
+  while ((m = re.exec(html))) refs.add(m[1]);
+
+  let converted = 0, stamped = 0, saved = 0;
+  for (const rel of refs) {
+    if (/^(https?:|data:|blob:)/i.test(rel)) continue; // remote/inline — not ours
+    const srcAbs = join(deckDir, rel);
+    if (!existsSync(srcAbs)) continue;                 // bundler/opaque — no file
+    if (videoStamped(srcAbs)) continue;                // already done (idempotent)
+
+    const origSize = statSync(srcAbs).size;
+    const tmpAbs = join(deckDir, dirname(rel), `.optdeck-${basename(rel)}`);
+    try {
+      encodeVideo(srcAbs, tmpAbs);
+    } catch (e) {
+      try { unlinkSync(tmpAbs); } catch {}
+      fail(`ffmpeg failed re-encoding ${rel} (is ffmpeg installed and on PATH?)\n${e.message}`);
+    }
+    const newSize = existsSync(tmpAbs) ? statSync(tmpAbs).size : Infinity;
+    if (newSize < origSize * 0.9) {
+      renameSync(tmpAbs, srcAbs); // keep the smaller re-encode (sentinel baked in)
+      saved += origSize - newSize;
+      converted++;
+    } else {
+      try { unlinkSync(tmpAbs); } catch {}
+      // Not worth re-encoding — stamp the original (lossless) so we skip it later.
+      try {
+        stampVideo(srcAbs, tmpAbs);
+        renameSync(tmpAbs, srcAbs);
+        stamped++;
+      } catch { try { unlinkSync(tmpAbs); } catch {} }
+    }
+  }
+  return { converted, stamped, saved, unavailable: false };
+}
+
 function processDeck(indexPath) {
   const deckDir = dirname(indexPath);
   const slug = basename(deckDir);
@@ -323,16 +587,30 @@ function processDeck(indexPath) {
   const images = optimizeImages(html, deckDir);
   html = images.html;
 
-  if (rewritten || postersMade || fonts.count || editors.count || images.converted) {
+  // Re-encode oversized slide clips in place (same filenames; refs/posters keep).
+  const videos = optimizeVideos(html, deckDir);
+
+  // Inject (or refresh) the lazy/prefetch video player so a re-export gets it back.
+  const loader = ensureVideoLoader(html);
+  html = loader.html;
+
+  if (rewritten || postersMade || fonts.count || editors.count || images.converted || videos.converted || videos.stamped || loader.changed) {
     writeFileSync(indexPath, html);
     const bits = [`${rewritten} tag(s) rewritten`, `${postersMade} poster(s) generated`];
+    if (loader.changed) bits.push("video loader refreshed");
     if (fonts.count) bits.push(`${fonts.count} font link(s) made async`);
     if (editors.count) bits.push(`${editors.count} editor script(s) stripped`);
     if (images.converted) bits.push(`${images.converted} image(s) → webp (−${(images.saved / 1048576).toFixed(1)}MB)`);
+    if (videos.converted) bits.push(`${videos.converted} video(s) re-encoded (−${(videos.saved / 1048576).toFixed(1)}MB)`);
+    if (videos.stamped) bits.push(`${videos.stamped} video(s) stamped`);
     if (images.unavailable) bits.push("images skipped (no cwebp)");
+    if (videos.unavailable) bits.push("videos skipped (no ffmpeg)");
     console.log(`✓ ${slug}: ${bits.join(", ")}${skipped ? `, ${skipped} skipped` : ""}`);
   } else {
-    const note = images.unavailable ? " (cwebp not found — image pass skipped)" : "";
+    const notes = [];
+    if (images.unavailable) notes.push("cwebp not found — image pass skipped");
+    if (videos.unavailable) notes.push("ffmpeg not found — video pass skipped");
+    const note = notes.length ? ` (${notes.join("; ")})` : "";
     console.log(`· ${slug}: already optimized${skipped ? ` (${skipped} non-file src skipped)` : ""}${note}`);
   }
 }
