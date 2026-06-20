@@ -416,7 +416,11 @@
         land: 0,              // brief squash after a hop lands
         drop: 0,              // held aloft before the entrance drop
         ate: false,           // guard so one peck eats at most one critter
-        headBob: 0
+        headBob: 0,
+        perched: false,       // resting on top of a stump
+        standZ: 0,            // height of the surface under the feet (stump top, else 0)
+        standWy: 0, standRy: 0, // perched stump centre wy + footprint depth-radius (for sort)
+        coyote: 0             // brief no-recatch window after stepping off a rim
       };
 
       var POSE = [
@@ -448,14 +452,18 @@
         var passing = (poseIdx % 2) === 1; // mid-stride, body at its highest
         var bt = charBoil; // boiling tick for the character (on twos)
 
-        // contact shadow - flat, squashed; shrinks + fades as she leaps
-        var shrink = 1 / (1 + hen.z * 0.02);
+        // contact shadow - flat, squashed; shrinks + fades as she leaps. when
+        // perched on a stump it rides the stump top, and the shrink/fade is keyed
+        // to her height ABOVE that surface so it reads as a normal grounded shadow.
+        var surfZ = hen.perched ? hen.standZ : 0;
+        var zAbove = hen.z - surfZ;
+        var shrink = 1 / (1 + zAbove * 0.02);
         var shW = 15 * s * (1 + P.lift * 0.03) * shrink;
         ctx.save();
-        ctx.globalAlpha = Math.max(0.4, 1 - hen.z * 0.018);
+        ctx.globalAlpha = Math.max(0.4, 1 - zAbove * 0.018);
         ctx.fillStyle = PAL.contact;
         ctx.beginPath();
-        ctx.ellipse(px + 2 * s, py + 1.5, shW, 5 * s * shrink, 0, 0, Math.PI * 2);
+        ctx.ellipse(px + 2 * s, (py - surfZ * s) + 1.5, shW, 5 * s * shrink, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
@@ -778,9 +786,9 @@
       function nearPath(wx, wy) { return Math.abs(wy - pathY(wx)) < 34; }
 
       // gather visible scene items into a y-sortable list each frame
-      var items = [], decals = [];
+      var items = [], decals = [], stumps = [];
       function collectScene() {
-        items.length = 0; decals.length = 0;
+        items.length = 0; decals.length = 0; stumps.length = 0;
         var marginX = 80, topPad = 220;
         var leftW = cam.x - W * 0.5 - marginX;
         var rightW = cam.x + W * 0.5 + marginX;
@@ -822,12 +830,29 @@
                   items.push({ t: "grass", wx: wx + (rnd() - 0.5) * 30, wy: wy + (rnd() - 0.5) * 22, s: sz, v: rnd() });
               } else {
                 items.push({ t: type, wx: wx, wy: wy, s: sz, v: v });
+                // stumps double as little platforms: remember each visible one's
+                // top height + footprint so the hen can land + stand on it. these
+                // mirror the geometry in stump(): h = (18 + v*12) * d, half-width
+                // w = 26 * d. top height in hen-z units is just h/d (depth drops
+                // out), so a stump is the same height to stand on at any distance.
+                if (type === "stump") {
+                  var sw = 26 * depth(sy(wy));
+                  // footprint sits just inside the drawn cut-top (rx ~0.92*w,
+                  // ry ~0.42*w on screen -> ~0.68*w in world after the squash).
+                  // keep it generous, esp. in the narrow depth axis, so a hop
+                  // can grab on from in front or behind, not just side-on.
+                  stumps.push({ wx: wx, wy: wy, topZ: 18 + (v * 12 | 0),
+                                rxW: sw * 0.86, ryW: sw * 0.6 });
+                }
               }
             }
           }
         }
-        // the chicken is just another y-sorted actor
-        items.push({ t: "hen", wx: hen.x, wy: hen.y, s: 1, v: 0 });
+        // the chicken is just another y-sorted actor. when perched, sort her at
+        // the front edge of her stump so she always paints over its top, never
+        // tucked behind the cut-top disc she is standing on.
+        items.push({ t: "hen", wx: hen.x, s: 1, v: 0,
+                     wy: hen.perched ? hen.standWy + hen.standRy + 3 : hen.y });
         // grasshoppers are ground critters: sort them in by depth too, so one
         // behind the hen is occluded by her rather than painted on top
         for (var hi = 0; hi < hoppers.length; hi++) {
@@ -836,6 +861,22 @@
         items.sort(byDepth);
       }
       function byDepth(a, b) { return a.wy - b.wy; }
+
+      // is a world point standing over a stump top? returns the nearest stump
+      // whose (squashed) footprint covers the point, else null. `pad` widens the
+      // footprint a touch - used while perched so she clings on past the visual
+      // rim instead of flickering off when the camera reshapes the footprint.
+      function stumpAt(wx, wy, pad) {
+        pad = pad || 1;
+        var best = null, bestN = 1;
+        for (var i = 0; i < stumps.length; i++) {
+          var s = stumps[i];
+          var nx = (wx - s.wx) / (s.rxW * pad), ny = (wy - s.wy) / (s.ryW * pad);
+          var n = nx * nx + ny * ny;
+          if (n <= 1 && n < bestN) { bestN = n; best = s; }
+        }
+        return best;
+      }
 
       // wind: a single traveling wave sweeps the whole field
       function windAt(wx, wy) {
@@ -1477,19 +1518,60 @@
 
         intro += dt;
 
-        // ---- vertical: entrance drop, then hold-F hover, else a gravity hop ----
+        // ---- the surface under the feet: a stump top is a little platform -----
+        // while perched we test a padded footprint (hysteresis) so she only steps
+        // off when she has clearly walked past the rim. stepping off opens a short
+        // "coyote" window during which she can't be re-caught, so walking off a
+        // stump reliably drops her instead of snapping straight back onto the top.
+        var stp = stumpAt(hen.x, hen.y, hen.perched ? 1.12 : 1);
+        if (hen.perched && !stp) { hen.perched = false; hen.coyote = 0.25; }
+        if (hen.coyote > 0) hen.coyote -= dt;
+        var floorZ = hen.perched ? stp.topZ : 0;
+        hen.standZ = floorZ;
+        hen.standWy = stp ? stp.wy : hen.y;
+        hen.standRy = stp ? stp.ryW : 0;
+
+        // ---- vertical: entrance drop, hold-F hover, gravity hop, else rest ----
         if (hen.drop > 0) {
           hen.drop -= dt;                                   // held aloft until the meadow has faded in
         } else if (keys.f && !reduceMQ.matches) {
           if (hen.flap <= 0.06) hen.flap = 0.55;            // keep the wings beating
           var hoverZ = 19 + Math.sin(time * 8) * 3;         // bob in place
+          // a stump underfoot: flap up to clear its rim so she can settle on top
+          // (lets the tallest stumps be reached by flapping, not just hopping)
+          if (stp) hoverZ = Math.max(hoverZ, stp.topZ + 7 + Math.sin(time * 8) * 3);
           hen.vz += (hoverZ - hen.z) * 70 * dt;             // flap lift toward hover height
           hen.vz *= 1 / (1 + 7 * dt);                       // damping (stable at any dt)
           hen.z += hen.vz * dt;
+          hen.perched = false;                              // flapping always lifts off a perch
+        } else if (hen.perched) {
+          // perched + resting: ride the support height, so stepping between
+          // overlapping stumps of different heights settles her onto the new top
+          // (stepping up OR down) instead of embedding in a taller one or
+          // dropping through a shorter one to the ground.
+          hen.z = floorZ;
         } else if (hen.z > 0 || hen.vz !== 0) {
           hen.vz -= GRAV * dt;                              // gravity: hop / entrance drop / fall
           hen.z += hen.vz * dt;
-          if (hen.z <= 0) {
+          // settle onto a stump top. a hop crests ~25px above its launch, so a hop
+          // from in front or behind sails across the narrow (depth) axis of the
+          // top before it is high enough - an exact-rim test only caught her
+          // side-on. instead catch her with a generous footprint as she crests at
+          // or above the rim: the band reaches topZ+8 so the catch happens near
+          // her apex, keeping the horizontal overshoot small from any side, then
+          // pull her feet onto the cut top (a snap-to-platform). the lower edge
+          // (topZ-4) lets a hop that falls just short scramble up; the coyote
+          // window blocks re-catching a hen who just walked off the rim.
+          var land = hen.coyote > 0 ? null : stumpAt(hen.x, hen.y, 1.4);
+          if (land && hen.vz <= 0 && hen.z <= 40 &&
+              hen.z <= land.topZ + 8 && hen.z >= land.topZ - 4) {
+            var mx = land.rxW * 0.58, my = land.ryW * 0.58;
+            hen.x = land.wx + Math.max(-mx, Math.min(mx, hen.x - land.wx));
+            hen.y = land.wy + Math.max(-my, Math.min(my, hen.y - land.wy));
+            hen.perched = true; hen.standZ = land.topZ;
+            hen.standWy = land.wy; hen.standRy = land.ryW;
+            hen.z = land.topZ; hen.vz = 0; hen.land = 0.12;
+          } else if (hen.z <= 0) {
             hen.z = 0; hen.vz = 0; hen.land = 0.16;
             puff(hen.x - 6, hen.y, true); puff(hen.x + 6, hen.y, true); // touchdown dust
           }
@@ -1603,8 +1685,9 @@
         // action keys (press only): hop = space, scratch/peck = shift
         if (k === " " || k === "Spacebar" || k === "Space") {
           if (down) e.preventDefault();   // only on keydown (keyup is passive)
-          if (down && !e.repeat && !reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
-            hen.vz = JUMP_V; hen.idle = 0; hideHint();
+          if (down && !e.repeat && !reduceMQ.matches &&
+              (hen.perched || (hen.z === 0 && hen.vz === 0))) {
+            hen.vz = JUMP_V; hen.perched = false; hen.idle = 0; hideHint();
           }
           return;
         }
@@ -1688,8 +1771,8 @@
         hen.idle = 0; hideHint();
       }
       function hop() {
-        if (!reduceMQ.matches && hen.z === 0 && hen.vz === 0) {
-          hen.vz = JUMP_V; hen.idle = 0; hideHint();
+        if (!reduceMQ.matches && (hen.perched || (hen.z === 0 && hen.vz === 0))) {
+          hen.vz = JUMP_V; hen.perched = false; hen.idle = 0; hideHint();
         }
       }
       canvas.addEventListener("pointerdown", function (e) {
@@ -1752,7 +1835,12 @@
         if (reduceMQ.matches) staticFrame();
       }
       function onMotion() {
-        if (reduceMQ.matches) { stop(); staticFrame(); }
+        if (reduceMQ.matches) {
+          // dropping to a still frame stops step(), the only thing that lands her;
+          // set her back down so a mid-perch toggle can't freeze her floating.
+          hen.perched = false; hen.z = 0; hen.vz = 0; hen.standZ = 0; hen.coyote = 0;
+          stop(); staticFrame();
+        }
         else start();
       }
       onMQ(darkMQ, onScheme);
