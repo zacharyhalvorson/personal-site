@@ -1735,7 +1735,7 @@
         img.decoding = 'async';
         let css = elStyle + ';object-fit:' + (el.getAttribute('fit') || 'cover') +
           ';object-position:' + (el.getAttribute('position') || '50% 50%') + ';';
-        if (!/\bwidth\s*:/.test(elStyle)) css += 'width:100%;height:100%;';
+        if (!/(?:^|;)\s*width\s*:/i.test(elStyle)) css += 'width:100%;height:100%;';
         img.style.cssText = css;
         img.className = el.className;
         el.replaceWith(img);

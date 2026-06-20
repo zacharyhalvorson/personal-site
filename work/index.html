@@ -175,6 +175,11 @@
     .back { left: 0.6rem; }
     .rail-toggle { right: 0.6rem; }
     .fullscreen-toggle { right: 3rem; }
+    /* Honour the `hidden` default-off state. The shared rule above sets
+       display:inline-flex, which beats the UA [hidden]{display:none}, so
+       without this the button would still render where the JS leaves it
+       hidden (no Fullscreen API). Same guard .app[hidden] / #gate[hidden] use. */
+    .fullscreen-toggle[hidden] { display: none; }
     .back:hover, .rail-toggle:hover, .fullscreen-toggle:hover {
       color: var(--text-default);
       background: var(--press);
@@ -1231,6 +1236,11 @@
             var req = deck.requestFullscreen || deck.webkitRequestFullscreen;
             var pr = req && req.call(deck);
             if (pr && pr.catch) pr.catch(function () {});
+            // Hand keyboard control to the deck so arrow/Page keys drive the
+            // slides in fullscreen. Otherwise focus stays on this button (now
+            // covered by the fullscreen deck) and the shell's nav-key forwarder
+            // drops the keys because the focused element is a <button>.
+            try { frame.focus({ preventScroll: true }); } catch (e2) {}
           }
         } catch (e) { /* fullscreen unavailable, ignore */ }
       });
