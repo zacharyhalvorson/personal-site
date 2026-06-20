@@ -116,6 +116,14 @@
       outline-offset: 2px;
       border-radius: 3px;
     }
+    /* The deck iframe shouldn't carry the chrome's focus ring. Exiting the
+       deck's fullscreen restores focus to the frame with :focus-visible set,
+       and its offset outline bleeds up across the top bar as a stray blue
+       line. The deck shows its own focus once focus enters its content, so
+       only ring the frame itself while navigating the shell by keyboard
+       (matching the case picker), and inset it so it never reaches the bar. */
+    .frame:focus-visible { outline: none; border-radius: 0; }
+    body.-kbd .frame:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
 
     /* ---------- app shell ---------- */
 
@@ -146,8 +154,9 @@
     }
 
     /* Toolbar icon buttons, pinned to the bar edges so they don't offset
-       the centered dropdown: home on the left, rail toggle on the right. */
-    .back, .rail-toggle {
+       the centered dropdown: home on the left, fullscreen + rail toggle on
+       the right (fullscreen sits just inboard of the navigator toggle). */
+    .back, .rail-toggle, .fullscreen-toggle {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -165,13 +174,34 @@
     }
     .back { left: 0.6rem; }
     .rail-toggle { right: 0.6rem; }
-    .back:hover, .rail-toggle:hover {
+    .fullscreen-toggle { right: 3rem; }
+    /* Honour the `hidden` default-off state. The shared rule above sets
+       display:inline-flex, which beats the UA [hidden]{display:none}, so
+       without this the button would still render where the JS leaves it
+       hidden (no Fullscreen API). Same guard .app[hidden] / #gate[hidden] use. */
+    .fullscreen-toggle[hidden] { display: none; }
+    .back:hover, .rail-toggle:hover, .fullscreen-toggle:hover {
       color: var(--text-default);
       background: var(--press);
       text-decoration: none;
     }
-    .rail-toggle[aria-pressed="true"] { color: var(--text-default); }
+    /* All three chrome icons share one resting tint and only darken on hover,
+       so they read as one set. (The navigator toggle used to stay darkened
+       while its rail was open, which made it look a different colour from the
+       fullscreen icon beside it; the open rail already signals that state.) */
     .back svg, .rail-toggle svg { width: 18px; height: 18px; }
+    /* The maximize glyph is sparser than the navigator's solid square, so it
+       reads bigger and lighter at a matched box. Nudge it down a touch and
+       thicken the stroke so the two icons carry equal weight. */
+    .fullscreen-toggle svg { width: 16px; height: 16px; stroke-width: 2.4; }
+    /* Cross-swap the maximize/minimize glyph with the fullscreen state. */
+    .fullscreen-toggle .ic-collapse { display: none; }
+    .fullscreen-toggle[aria-pressed="true"] .ic-expand { display: none; }
+    .fullscreen-toggle[aria-pressed="true"] .ic-collapse { display: block; }
+    /* The persistent fullscreen control is desktop-only; on phones the deck's
+       own fullscreen toggle covers it and the top bar gets tight. 640px
+       matches MOBILE_BP. */
+    @media (max-width: 640px) { .fullscreen-toggle { display: none; } }
 
     /* A single minimal dropdown, centered in the bar — quieter than a tab
        strip inside a browser that already has tabs. The native <select>
@@ -482,6 +512,20 @@
           <path d="M6 9l6 6 6-6"></path>
         </svg>
       </div>
+      <button class="fullscreen-toggle" id="fullscreen-toggle" type="button" aria-pressed="false" aria-label="Toggle fullscreen" title="Toggle fullscreen" hidden>
+        <svg class="ic-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+          <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+          <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+          <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+        </svg>
+        <svg class="ic-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 3v3a2 2 0 0 1-2 2H3"></path>
+          <path d="M21 8h-3a2 2 0 0 1-2-2V3"></path>
+          <path d="M3 16h3a2 2 0 0 1 2 2v3"></path>
+          <path d="M16 21v-3a2 2 0 0 1 2-2h3"></path>
+        </svg>
+      </button>
       <button class="rail-toggle" id="rail-toggle" type="button" aria-pressed="true" aria-label="Toggle slide navigator">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -1153,6 +1197,57 @@
     railToggle.setAttribute("aria-pressed", String(!railHidden));
 
     railToggle.addEventListener("click", function () { setRailHidden(!railHidden); });
+
+    // Persistent fullscreen toggle in the top row, mirroring the deck's own
+    // control (which lives only in its auto-hiding bottom nav). It fullscreens
+    // the active deck-stage element inside the iframe, so the deck enters the
+    // exact same presentation mode the bottom button gives: the rail collapses
+    // to a hover-peek and the slide fills the screen. Revealed only where the
+    // Fullscreen API is usable, otherwise hidden rather than a dead control.
+    var fsToggle = document.getElementById("fullscreen-toggle");
+    if (fsToggle && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
+      fsToggle.hidden = false;
+      // The deck is the only thing we ever fullscreen, and from here that
+      // surfaces as the <iframe> being document.fullscreenElement, so any
+      // fullscreen element means the deck is presenting. Keeps this button in
+      // sync whether it or the deck's own bottom-bar control toggled it.
+      var fsActive = function () {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement);
+      };
+      var syncFs = function () {
+        fsToggle.setAttribute("aria-pressed", fsActive() ? "true" : "false");
+      };
+      fsToggle.addEventListener("click", function () {
+        try {
+          if (fsActive()) {
+            var ex = document.exitFullscreen || document.webkitExitFullscreen;
+            var pe = ex && ex.call(document);
+            if (pe && pe.catch) pe.catch(function () {});
+            return;
+          }
+          // Fullscreen the active deck-stage element, exactly as the deck's own
+          // bottom-bar button does. The click's user activation propagates to
+          // the same-origin iframe, so the request is honored; the deck's own
+          // fullscreenchange handler then drives the rail collapse and icon.
+          var frame = active && frames[active];
+          var deck = frame && frame.contentDocument &&
+            frame.contentDocument.querySelector("deck-stage");
+          if (deck) {
+            var req = deck.requestFullscreen || deck.webkitRequestFullscreen;
+            var pr = req && req.call(deck);
+            if (pr && pr.catch) pr.catch(function () {});
+            // Hand keyboard control to the deck so arrow/Page keys drive the
+            // slides in fullscreen. Otherwise focus stays on this button (now
+            // covered by the fullscreen deck) and the shell's nav-key forwarder
+            // drops the keys because the focused element is a <button>.
+            try { frame.focus({ preventScroll: true }); } catch (e2) {}
+          }
+        } catch (e) { /* fullscreen unavailable, ignore */ }
+      });
+      document.addEventListener("fullscreenchange", syncFs);
+      document.addEventListener("webkitfullscreenchange", syncFs);
+      syncFs();
+    }
 
     // Keep layout accurate as the viewport changes. Crossing the phone
     // breakpoint resets the navigator to that mode's default (the two modes

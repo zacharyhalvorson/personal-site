@@ -1663,9 +1663,29 @@
         img.alt = '';
         img.loading = 'lazy';
         img.decoding = 'async';
-        img.style.cssText = el.style.cssText + ';object-fit:cover;width:100%;height:100%;';
+        // Preserve the video's authored geometry so the thumbnail crops
+        // exactly like the live slide. Some clips are positioned with
+        // inset + width/height < 100% + object-fit:contain (e.g. a
+        // screen-blended player UI floating inside a frame); blindly
+        // forcing width/height:100% + object-fit:cover kept the inset but
+        // blew the size to 100%, shoving the still out of its box and
+        // clipping it wrong. Only fill in a full-bleed cover fit when the
+        // video left those unset (mirrors the image-slot path below). Each
+        // test is anchored to a property boundary so 'max-width' or
+        // 'line-height' don't read as the property already being set.
+        let vcss = el.style.cssText;
+        if (!/(?:^|;)\s*object-fit\s*:/i.test(vcss)) vcss += ';object-fit:cover';
+        if (!/(?:^|;)\s*width\s*:/i.test(vcss)) vcss += ';width:100%';
+        if (!/(?:^|;)\s*height\s*:/i.test(vcss)) vcss += ';height:100%';
+        img.style.cssText = vcss;
         img.className = el.className;
-        if (el.poster) img.src = el.poster;
+        // If the slide authored a poster, trust it — a hidden/paused video can
+        // grab a black frame, so the explicit still is the reliable thumbnail.
+        if (el.poster) {
+          img.src = el.poster;
+          el.replaceWith(img);
+          return;
+        }
         const grab = () => {
           if (!live || !live.videoWidth) return false;
           try {
@@ -1715,7 +1735,7 @@
         img.decoding = 'async';
         let css = elStyle + ';object-fit:' + (el.getAttribute('fit') || 'cover') +
           ';object-position:' + (el.getAttribute('position') || '50% 50%') + ';';
-        if (!/\bwidth\s*:/.test(elStyle)) css += 'width:100%;height:100%;';
+        if (!/(?:^|;)\s*width\s*:/i.test(elStyle)) css += 'width:100%;height:100%;';
         img.style.cssText = css;
         img.className = el.className;
         el.replaceWith(img);
