@@ -1236,11 +1236,11 @@
             var req = deck.requestFullscreen || deck.webkitRequestFullscreen;
             var pr = req && req.call(deck);
             if (pr && pr.catch) pr.catch(function () {});
-            // Hand keyboard control to the deck so arrow/Page keys drive the
-            // slides in fullscreen. Otherwise focus stays on this button (now
-            // covered by the fullscreen deck) and the shell's nav-key forwarder
-            // drops the keys because the focused element is a <button>.
-            try { frame.focus({ preventScroll: true }); } catch (e2) {}
+            // Focus stays on this button (the deck fills the screen over it),
+            // and moving focus across the iframe boundary in fullscreen is
+            // unreliable. The deck only navigates from key events on its OWN
+            // window, so the shell's nav-key forwarder below routes arrow and
+            // Page keys into the deck while fullscreen; see its `fs` branch.
           }
         } catch (e) { /* fullscreen unavailable, ignore */ }
       });
@@ -1288,20 +1288,55 @@
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
       if (!DECK_NAV_KEYS[e.key]) return;
       var ae = document.activeElement;
+      var frame = active && frames[active];
+      if (!frame || !frame.contentWindow) return;
+      // Is the deck fullscreen? Check the IFRAME'S OWN document, not just this
+      // one. When the deck-stage (inside the iframe) goes fullscreen, the
+      // parent's document.fullscreenElement is unreliable: notably Safari does
+      // not set it on the FIRST entry (only on later ones), which is exactly the
+      // "first time the arrow keys are dead, second time they work" symptom. The
+      // iframe's document, plus the deck's own data-fs flag (which it sets to
+      // drive its rail-collapse), is authoritative, so read fullscreen state
+      // from there.
+      var fs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (!fs) {
+        try {
+          var fdoc = frame.contentDocument;
+          fs = !!(fdoc && (fdoc.fullscreenElement || fdoc.webkitFullscreenElement ||
+                           fdoc.querySelector("deck-stage[data-fs]")));
+        } catch (_) {}
+      }
+      // In fullscreen the shell chrome (home, rail, fullscreen toggle) is hidden
+      // behind the deck, and entering it from the top-bar toggle leaves focus on
+      // that <button>, so real presses fire on this window, never the deck
+      // (which only navigates from key events on its own window). Forward them:
+      // in fullscreen a nav key can only be meant for the slides. Outside
+      // fullscreen, defer to focused buttons / links so their native key
+      // behaviour (Enter / Space activation) is preserved.
       if (ae) {
         var tag = ae.tagName;
-        // Leave focused controls alone: the case dropdown, gate input, links.
+        // Always defer to real text-entry controls, even in fullscreen.
         if (ae === selectEl || ae.isContentEditable ||
-            tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||
-            tag === "BUTTON" || tag === "A") return;
+            tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        // Outside fullscreen, also defer to focused buttons / links and to the
+        // deck iframe itself (it handles its own keys natively). In fullscreen
+        // the chrome is hidden, so forward regardless of which element holds
+        // focus: a nav key can only mean "drive the slides," and a key that
+        // reaches THIS window means focus is in the parent doc, so the deck
+        // isn't also handling it (no double-navigation).
+        if (!fs && (tag === "BUTTON" || tag === "A" || ae === frame)) return;
       }
-      var frame = active && frames[active];
-      if (!frame || !frame.contentWindow || ae === frame) return;
       try {
         frame.contentWindow.dispatchEvent(
           new KeyboardEvent("keydown", { key: e.key, code: e.code })
         );
-        frame.focus({ preventScroll: true });
+        // Outside fullscreen, hand focus to the deck so the next keys reach it
+        // natively. In fullscreen we deliberately DON'T: moving focus across the
+        // iframe boundary there is unreliable, and if it landed focus on the
+        // iframe element, every following press would hit the `ae === frame`
+        // bail above and stop forwarding (only the first key would work).
+        // Leaving focus on the toggle keeps every press flowing through here.
+        if (!fs) frame.focus({ preventScroll: true });
         e.preventDefault();
       } catch (err) {}
     });
