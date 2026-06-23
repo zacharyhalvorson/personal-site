@@ -1,11 +1,4 @@
-<svg width="59" height="59" viewBox="0 0 59 59" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_123_137)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M1 58H58V1H1V58Z" fill="#ED1D26" stroke="white" stroke-width="1.6"></path>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M37.8001 33.97H46.9201V24.85H37.8001V33.97ZM25.6401 46.13H34.7601V12.69H25.6401V46.13ZM37.8001 21.8H46.9201V12.68H37.8001V21.8ZM18.0401 12.07C16.6689 12.07 15.3539 12.6147 14.3844 13.5843C13.4148 14.5538 12.8701 15.8688 12.8701 17.24C12.8701 18.6112 13.4148 19.9262 14.3844 20.8958C15.3539 21.8653 16.6689 22.41 18.0401 22.41C19.4113 22.41 20.7263 21.8653 21.6959 20.8958C22.6654 19.9262 23.2101 18.6112 23.2101 17.24C23.2101 15.8688 22.6654 14.5538 21.6959 13.5843C20.7263 12.6147 19.4113 12.07 18.0401 12.07ZM13.5001 46.13H22.6201V24.84H13.5001V46.11V46.13Z" fill="white"></path>
-</g>
-<defs>
-<clipPath id="clip0_123_137">
-<rect width="59" height="59" fill="white"></rect>
-</clipPath>
-</defs>
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="iF Design Award">
+  <rect width="48" height="48" rx="6" fill="#111114"></rect>
+  <text x="24" y="33" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="600" font-size="24" letter-spacing="-1" fill="#ffffff">iF</text>
 </svg>
