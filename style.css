@@ -1443,18 +1443,21 @@ html.is-navigating { scroll-snap-type: none; }
 /* ---------- entrance reveals (scroll-driven, zero JS) ---------- */
 
 @supports (animation-timeline: view()) {
-  /* The chapter meta column and the body's secondary content (lede, bullets,
-     figure) reveal as the chapter scrolls into view. The heading (.display,
-     the chapter_body's first child) is intentionally LEFT OUT — even with a
-     tight `entry 0% entry 30%` range, snap-driven landings sometimes left it
-     stuck mid-reveal at partial opacity, which on a project chapter reads as
-     "the heading is missing". It's the most important element on the page;
-     not worth the intermittent flicker for a decorative fade-in. */
-  .chapter_meta {
-    animation: reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 30%;
-  }
+  /* The body's secondary content (lede, bullets, figure) reveals as the chapter
+     scrolls into view. Two pieces of identifying content are intentionally LEFT
+     OUT of the reveal: a scroll-snap landing can freeze a view() animation at
+     its opening keyframe (opacity 0, nudged down 14px) and never re-sample it to
+     the finished state, stranding the element invisible. That happens to:
+       - The heading (.display, chapter_body's first child) — stuck mid-reveal it
+         reads as "the heading is missing".
+       - The .chapter_meta column — it's a short element on the tightest, earliest
+         range (entry 0%–30%), so its sample window is only a couple dozen px of
+         scroll; a fast fling skips it whole and leaves the entire left column
+         (index, role, location) blank.
+     Both must always be visible, so they get no reveal rather than an
+     intermittent disappearing act. The taller body blocks below keep the fade:
+     their long entry range gives the compositor enough sample frames that the
+     freeze doesn't bite. */
   .chapter_body > *:nth-child(n+2) {
     animation: reveal linear both;
     animation-timeline: view();
