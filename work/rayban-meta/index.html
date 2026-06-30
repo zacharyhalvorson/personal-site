@@ -972,46 +972,23 @@
     </div>
     <div class="spacer-sm"></div>
     <div class="footer anim-4"><span>Ray‑Ban Meta</span><span>Zachary Halvorson</span></div>
-  </section><section class="slide" data-label="System design" data-om-id="4ba0b514:162" data-screen-label="14 System design" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="7">
-    <div class="rail" data-om-id="4ba0b514:163">
-      <p class="kicker anim" data-om-id="4ba0b514:164">System design · sharing</p>
-      <span class="pageno" data-om-id="4ba0b514:165">14 / 22</span>
-    </div>
-    <div class="spacer-sm" data-om-id="4ba0b514:166"></div>
-    <div class="cols two anim-2" style="grid-template-columns: 0.92fr 1.08fr; gap:80px; flex:1; align-items:center;" data-om-id="4ba0b514:167">
-      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="4ba0b514:168">
-        <h1 class="title" style="font-size:58px; max-width:18ch;" data-om-id="4ba0b514:169">Designing for every way a live stream can drop.</h1>
-        <div class="spacer-sm" data-om-id="4ba0b514:170"></div>
-        <p class="body" style="max-width:34ch;" data-om-id="4ba0b514:171">A live stream rides a fragile chain, from glasses to phone to network to app. I mapped the full system of warning and error states so it always degrades gracefully instead of going dark.</p>
-      </div>
-      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="4ba0b514:179">
-        <div class="media" style="aspect-ratio:1410/1146; overflow:hidden;" data-om-id="4ba0b514:180">
-          <video preload="none" data-src="images/edge-cases.mp4" poster="images/poster-edge-cases.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
-        </div>
-        <p class="slot-cap" data-om-id="4ba0b514:182">Interactive matrix of fail modes</p>
-      </div>
-    </div>
-    <div class="spacer-sm" data-om-id="4ba0b514:183"></div>
-    <div class="footer anim-4" data-om-id="4ba0b514:184"><span data-om-id="4ba0b514:185">Ray‑Ban Meta</span><span data-om-id="4ba0b514:186">Zachary Halvorson</span></div>
-  </section><section class="slide" data-label="Graceful failure" data-om-id="a1f0c2d3:1" data-screen-label="15 Graceful failure" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="8a">
+  </section><section class="slide" data-label="Graceful failure" data-om-id="a1f0c2d3:1" data-screen-label="14 Graceful failure" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="8a">
     <div class="rail" data-om-id="a1f0c2d3:2">
       <p class="kicker anim" data-om-id="a1f0c2d3:3">System design · failure states</p>
-      <span class="pageno" data-om-id="a1f0c2d3:4">15 / 22</span>
+      <span class="pageno" data-om-id="a1f0c2d3:4">14 / 22</span>
     </div>
     <div class="spacer-sm" data-om-id="a1f0c2d3:5"></div>
     <div class="cols two anim-2" style="grid-template-columns: 0.92fr 1.08fr; gap:64px; flex:1; align-items:center;" data-om-id="a1f0c2d3:6">
-      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="a1f0c2d3:7">
+      <div style="display:flex; flex-direction:column; justify-content:center; height:100%;" data-om-id="a1f0c2d3:7">
         <h1 class="title" style="font-size:54px; max-width:17ch;" data-om-id="a1f0c2d3:8">Designing for a dropped stream.</h1>
         <div class="spacer-sm" data-om-id="a1f0c2d3:9"></div>
         <p class="body" style="max-width:38ch; text-wrap:balance;" data-om-id="a1f0c2d3:10">A dropped stream needed to <strong class="mark" data-om-id="a1f0c2d3:10b">degrade as gracefully as possible</strong>. Utilizing push notifications, audio, and LED cues to let the user know how to restart their broadcast was key to an experience users could trust.</p>
-        <div class="spacer-sm" data-om-id="a1f0c2d3:11"></div>
       </div>
-      <div style="display:flex; align-items:center; justify-content:center;" data-om-id="a1f0c2d3:13">
+      <div style="display:flex; align-items:center; justify-content:center; height:100%; position:relative;" data-om-id="a1f0c2d3:13">
         <div style="display:flex; flex-direction:column; align-items:center;" data-om-id="a1f0c2d3:14">
-          <div class="media squircle shadow-soft" style="width:660px; aspect-ratio:1430/1270; overflow:hidden; background:#000;" data-om-id="a1f0c2d3:15">
-            <video preload="none" data-src="images/error-flow.mp4" poster="images/poster-error-flow.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+          <div class="media squircle shadow-soft" style="width:610px; aspect-ratio:1430/1270; overflow:hidden; background:#000;" data-om-id="a1f0c2d3:15">
+            <video preload="none" data-src="videos/warning-to-error.mp4" poster="videos/poster-warning-to-error.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
           </div>
-          <p class="slot-cap" style="margin-top:24px; max-width:520px;" data-om-id="a1f0c2d3:18">Keeping states clear and actionable</p>
         </div>
       </div>
     </div>
@@ -1022,7 +999,28 @@
   <!-- 8b · PROTOTYPING KIT — team tooling -->
   
 
-  <!-- 8a-2 · STREAMING BY EAR — streamer's audio-first experience -->
+<section class="slide" data-label="System design" data-om-id="4ba0b514:162" data-screen-label="15 System design" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="7">
+    <div class="rail" data-om-id="4ba0b514:163">
+      <p class="kicker anim" data-om-id="4ba0b514:164">System design · sharing</p>
+      <span class="pageno" data-om-id="4ba0b514:165">15 / 22</span>
+    </div>
+    <div class="spacer-sm" data-om-id="4ba0b514:166"></div>
+    <div class="cols two anim-2" style="grid-template-columns: 0.92fr 1.08fr; gap:80px; flex:1; align-items:center;" data-om-id="4ba0b514:167">
+      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="4ba0b514:168">
+        <h1 class="title" style="font-size:58px; max-width:18ch;" data-om-id="4ba0b514:169">Communicating all the ways a stream can drop.</h1>
+        <div class="spacer-sm" data-om-id="4ba0b514:170"></div>
+        <p class="body" style="max-width:34ch;" data-om-id="4ba0b514:171">A live stream rides a fragile chain, from glasses to phone to network to app. I mapped the full system of warning and error states so it always degrades gracefully instead of going dark.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; justify-content:center;" data-om-id="4ba0b514:179">
+        <div class="media" style="aspect-ratio:1984/1814; overflow:hidden;" data-om-id="4ba0b514:180">
+          <video preload="none" data-src="images/edge-cases.mp4" poster="images/poster-edge-cases.jpg" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+        </div>
+        <p class="slot-cap" data-om-id="4ba0b514:182">Interactive matrix of fail modes</p>
+      </div>
+    </div>
+    <div class="spacer-sm" data-om-id="4ba0b514:183"></div>
+    <div class="footer anim-4" data-om-id="4ba0b514:184"><span data-om-id="4ba0b514:185">Ray‑Ban Meta</span><span data-om-id="4ba0b514:186">Zachary Halvorson</span></div>
+  </section>  <!-- 8a-2 · STREAMING BY EAR — streamer's audio-first experience -->
   <section class="slide" data-label="Streaming by ear" data-om-id="b2e4a6f8:1" data-screen-label="16 Streaming by ear" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="8a2">
     <div class="rail" data-om-id="b2e4a6f8:2">
       <p class="kicker anim" data-om-id="b2e4a6f8:3">Audio and hardware interaction</p>
