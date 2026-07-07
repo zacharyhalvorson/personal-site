@@ -1324,20 +1324,35 @@
         dust.push({ x: wx, y: wy, r: big ? 5 : 3, life: 1, big: big });
       }
       // a peck that lands near a crawling critter gulps it: it vanishes in a
-      // little puff and a fresh one wanders back in from off-screen later
+      // little puff and a fresh one wanders back in from off-screen later.
+      // beetles and grounded grasshoppers both count (one mid-leap is out of
+      // the beak's reach); the nearest of either kind is the one that goes.
       function eatNearbyCritter() {
-        var best = -1, bestD = 26 * 26;
-        for (var i = 0; i < beetles.length; i++) {
-          var dx = beetles[i].x - hen.x, dy = beetles[i].y - hen.y;
-          var dd = dx * dx + dy * dy;
-          if (dd < bestD) { bestD = dd; best = i; }
+        // the strike lands at the beak, a step ahead of her feet in the facing
+        // direction - so pecking TOWARD a bug is what catches it
+        var bx = hen.x, by = hen.y;
+        if (hen.face === "side") bx += hen.flip ? -14 : 14;
+        else if (hen.face === "up") by -= 10;
+        else by += 10;
+        var best = null, bestD = 30 * 30, i, dx, dy, dd;
+        for (i = 0; i < beetles.length; i++) {
+          dx = beetles[i].x - bx; dy = beetles[i].y - by;
+          dd = dx * dx + dy * dy;
+          if (dd < bestD) { bestD = dd; best = beetles[i]; }
         }
-        if (best < 0) return false;
-        var e = beetles[best];
-        puff(e.x, e.y, false); puff(e.x + 2, e.y - 1, true);
-        e.x = hen.x + (Math.random() < 0.5 ? -1 : 1) * (560 + Math.random() * 170);
-        e.y = hen.y + (Math.random() - 0.5) * 520;
-        e.freeze = 0;
+        for (i = 0; i < hoppers.length; i++) {
+          if (hoppers[i].z > 8) continue;
+          dx = hoppers[i].x - bx; dy = hoppers[i].y - by;
+          dd = dx * dx + dy * dy;
+          if (dd < bestD) { bestD = dd; best = hoppers[i]; }
+        }
+        if (!best) return false;
+        puff(best.x, best.y, false); puff(best.x + 2, best.y - 1, true);
+        best.x = hen.x + (Math.random() < 0.5 ? -1 : 1) * (560 + Math.random() * 170);
+        best.y = hen.y + (Math.random() - 0.5) * 520;
+        if (best.hopDur) { // a grasshopper: set the fresh one down resting
+          best.z = 0; best.hopT = 0; best.rest = 0.6 + Math.random();
+        } else best.freeze = 0;
         return true;
       }
       function drawDust(dt) {
