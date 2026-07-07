@@ -205,7 +205,7 @@
         <p class="sub">This path wandered off into the tall grass. Wander a while, or <a class="home" href="https://www.zacharyhalvorson.com">head back home</a>.</p>
       </div>
 
-      <p class="hint" id="hint">space to hop · shift to scratch · f to flap</p>
+      <p class="hint" id="hint">click her to hop · click the grass to peck · double-press to fly · space / shift / f work too</p>
 
       <p class="sr-only">A decorative animated meadow with a chicken you can walk around using the arrow keys. This is a 404 page; the "head back home" link returns to the home page.</p>
     </main>
@@ -1324,20 +1324,35 @@
         dust.push({ x: wx, y: wy, r: big ? 5 : 3, life: 1, big: big });
       }
       // a peck that lands near a crawling critter gulps it: it vanishes in a
-      // little puff and a fresh one wanders back in from off-screen later
+      // little puff and a fresh one wanders back in from off-screen later.
+      // beetles and grounded grasshoppers both count (one mid-leap is out of
+      // the beak's reach); the nearest of either kind is the one that goes.
       function eatNearbyCritter() {
-        var best = -1, bestD = 26 * 26;
-        for (var i = 0; i < beetles.length; i++) {
-          var dx = beetles[i].x - hen.x, dy = beetles[i].y - hen.y;
-          var dd = dx * dx + dy * dy;
-          if (dd < bestD) { bestD = dd; best = i; }
+        // the strike lands at the beak, a step ahead of her feet in the facing
+        // direction - so pecking TOWARD a bug is what catches it
+        var bx = hen.x, by = hen.y;
+        if (hen.face === "side") bx += hen.flip ? -14 : 14;
+        else if (hen.face === "up") by -= 10;
+        else by += 10;
+        var best = null, bestD = 30 * 30, i, dx, dy, dd;
+        for (i = 0; i < beetles.length; i++) {
+          dx = beetles[i].x - bx; dy = beetles[i].y - by;
+          dd = dx * dx + dy * dy;
+          if (dd < bestD) { bestD = dd; best = beetles[i]; }
         }
-        if (best < 0) return false;
-        var e = beetles[best];
-        puff(e.x, e.y, false); puff(e.x + 2, e.y - 1, true);
-        e.x = hen.x + (Math.random() < 0.5 ? -1 : 1) * (560 + Math.random() * 170);
-        e.y = hen.y + (Math.random() - 0.5) * 520;
-        e.freeze = 0;
+        for (i = 0; i < hoppers.length; i++) {
+          if (hoppers[i].z > 8) continue;
+          dx = hoppers[i].x - bx; dy = hoppers[i].y - by;
+          dd = dx * dx + dy * dy;
+          if (dd < bestD) { bestD = dd; best = hoppers[i]; }
+        }
+        if (!best) return false;
+        puff(best.x, best.y, false); puff(best.x + 2, best.y - 1, true);
+        best.x = hen.x + (Math.random() < 0.5 ? -1 : 1) * (560 + Math.random() * 170);
+        best.y = hen.y + (Math.random() - 0.5) * 520;
+        if (best.hopDur) { // a grasshopper: set the fresh one down resting
+          best.z = 0; best.hopT = 0; best.rest = 0.6 + Math.random();
+        } else best.freeze = 0;
         return true;
       }
       function drawDust(dt) {
@@ -1752,10 +1767,16 @@
         return Math.hypot(e.clientX - hx, e.clientY - hy) <= r;
       }
 
-      // touch is multi-finger: one finger steers (walk toward it), while taps and
-      // holds — from a second finger, or landing on the hen — fire the hop/flap
-      // actions. so you can direct and flap at once. mirrors the space / F keys.
-      var HOLD_MS = 170, TAP_SLOP = 12, pointers = {};
+      // one pointer scheme for touch AND mouse: a held press steers (walk
+      // toward it), while clean taps/clicks fire the actions — on the hen it
+      // hops, on the grass it pecks toward the tapped spot, and a second quick
+      // press held down flies (flap + hover, steering toward the pointer)
+      // until it lifts. a hold on the hen (or an extra touch finger) still
+      // flaps, mirroring the F key. touch is multi-finger: one finger can
+      // steer while another taps or holds.
+      var HOLD_MS = 170, TAP_SLOP = 12, TAP_MS = 250, pointers = {};
+      var DBL_MS = 300, DBL_SLOP = 48;          // double-press window
+      var lastTap = { t: -1e9, x: 0, y: 0 };    // last clean tap, for doubles
       function anyFlapping() {
         for (var id in pointers) if (pointers[id].flapping) return true;
         return false;
@@ -1775,13 +1796,31 @@
           hen.vz = JUMP_V; hen.perched = false; hen.idle = 0; hideHint();
         }
       }
+      // a tap on the grass: peck toward the tapped spot. the peck pose is a
+      // side profile, so the direction becomes a left/right facing.
+      function peckToward(e) {
+        if (reduceMQ.matches || hen.z !== 0 || hen.scratch > 0) return;
+        hen.face = "side"; hen.flip = e.clientX < sx(hen.x);
+        hen.scratch = SCRATCH_DUR; hen.scratchPuff = 0.06;
+        hen.idle = 0; hen.ate = false; hideHint();
+      }
       canvas.addEventListener("pointerdown", function (e) {
-        lastPointerTs = performance.now();
-        enableMotionPeck(); // first gesture: iOS motion permission needs one
-        var p = { x: e.clientX, y: e.clientY, action: false, directing: false, flapping: false, hold: 0 };
-        // a press on the hen, or any extra finger while one already steers, is an
-        // action (tap = hop, hold = flap); the first loose finger steers instead
-        if (onHen(e) || anyDirecting()) {
+        var now = performance.now();
+        var p = { x: e.clientX, y: e.clientY, t0: now,
+                  action: false, directing: false, flapping: false, moved: false, hold: 0 };
+        if (now - lastTap.t < DBL_MS &&
+            Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < DBL_SLOP) {
+          // a second quick press near the last tap: fly while it stays down,
+          // steering toward the finger; lifting it lands her. the first tap of
+          // the double already fired (a peck or a hop) - swallow a just-started
+          // peck into the takeoff so she doesn't scratch mid-air
+          lastTap.t = -1e9;
+          hen.scratch = 0;
+          startFlap(p);
+          p.directing = true; pointTo(e);
+        } else if (onHen(e) || anyDirecting()) {
+          // a press on the hen, or any extra finger while one already steers,
+          // is an action (tap = hop, hold = flap)
           p.action = true;
           p.hold = setTimeout(function () { startFlap(p); }, HOLD_MS);
         } else {
@@ -1794,14 +1833,13 @@
       canvas.addEventListener("pointermove", function (e) {
         var p = pointers[e.pointerId];
         if (!p || !(e.pressure > 0 || e.buttons)) return;
-        lastPointerTs = performance.now();
+        if (!p.moved && Math.hypot(e.clientX - p.x, e.clientY - p.y) > TAP_SLOP)
+          p.moved = true; // a drag, not a tap
         if (p.action && !p.directing) {
           // not steering yet: a drag past the slop begins it. if the hold already
           // fired we keep flapping and now steer too (fly + direct); if it hasn't,
           // cancel it so a drag stays a plain walk, never a surprise flap
-          if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > TAP_SLOP) {
-            clearTimeout(p.hold); p.directing = true; pointTo(e);
-          }
+          if (p.moved) { clearTimeout(p.hold); p.directing = true; pointTo(e); }
           return;
         }
         pointTo(e); // a steering finger (loose, or an action finger now dragging)
@@ -1809,82 +1847,20 @@
       function liftPointer(e) {
         var p = pointers[e.pointerId];
         if (!p) return;
-        lastPointerTs = performance.now();
         clearTimeout(p.hold);
-        // a clean tap (an action finger that never steered or flapped) hops
-        if (p.action && !p.directing && !p.flapping) hop();
+        // a clean tap (never dragged, never flapped, down and up in a beat):
+        // on the hen it hops, on the grass it pecks that way
+        var now = performance.now();
+        if (!p.moved && !p.flapping && now - p.t0 < TAP_MS) {
+          if (p.action) hop(); else peckToward(e);
+          lastTap.t = now; lastTap.x = e.clientX; lastTap.y = e.clientY;
+        }
         delete pointers[e.pointerId];
         keys.f = anyFlapping();               // another finger may still be flapping
         if (!anyDirecting()) touchDir = null;  // nobody left steering -> stop walking
       }
       window.addEventListener("pointerup", liftPointer);
       window.addEventListener("pointercancel", liftPointer);
-
-      // ---- back-tap -> peck (mobile) ----------------------------------------
-      // a knock on the BACK of the phone reads on the accelerometer as one
-      // sharp spike out of stillness, dominant on z (straight through the
-      // body). taps on the glass jolt the sensor too, but those also raise
-      // pointer events, so any spike within a beat of a touch is ignored.
-      // mirrors the shift-key scratch/peck (and eats bugs the same way).
-      var coarseMQ = window.matchMedia("(pointer: coarse)");
-      var motionArmed = false, motionAsked = false;
-      var lastPointerTs = -1e9, lastBackTap = -1e9, calmRun = 0;
-      var gravX = 0, gravY = 0, gravZ = 0, gravSet = false;
-      var TAP_SPIKE = 3.5;  // m/s^2 - the knock itself
-      var TAP_CALM = 1.1;   // m/s^2 - "the phone was just resting" ceiling
-      var TOUCH_GAP = 400, TAP_GAP = 550; // ms: touch quarantine + refractory
-
-      function backTapPeck() {
-        if (reduceMQ.matches || hen.z !== 0 || hen.scratch > 0) return;
-        hen.scratch = SCRATCH_DUR; hen.scratchPuff = 0.06;
-        hen.idle = 0; hen.ate = false; hideHint();
-      }
-
-      function onDeviceMotion(e) {
-        if (!running) return;
-        var ax, ay, az, a = e.acceleration;
-        if (a && a.x != null) { ax = a.x; ay = a.y; az = a.z; }
-        else {
-          // no gyro data: low-pass gravity out of the including-gravity feed
-          var g = e.accelerationIncludingGravity;
-          if (!g || g.x == null) return;
-          if (!gravSet) { gravX = g.x; gravY = g.y; gravZ = g.z; gravSet = true; return; }
-          gravX += (g.x - gravX) * 0.1;
-          gravY += (g.y - gravY) * 0.1;
-          gravZ += (g.z - gravZ) * 0.1;
-          ax = g.x - gravX; ay = g.y - gravY; az = g.z - gravZ;
-        }
-        var mag = Math.hypot(ax, ay, az);
-        var now = performance.now();
-        if (mag > TAP_SPIKE && calmRun >= 3 &&
-            Math.abs(az) >= Math.abs(ax) && Math.abs(az) >= Math.abs(ay) &&
-            now - lastPointerTs > TOUCH_GAP && now - lastBackTap > TAP_GAP) {
-          lastBackTap = now;
-          backTapPeck();
-        }
-        calmRun = mag < TAP_CALM ? calmRun + 1 : 0;
-      }
-
-      function armMotionPeck() {
-        if (motionArmed) return;
-        motionArmed = true;
-        window.addEventListener("devicemotion", onDeviceMotion);
-        if (hintEl && coarseMQ.matches)
-          hintEl.textContent = "drag to walk · tap to hop · hold to flap · tap the back to peck";
-      }
-
-      // iOS gates devicemotion behind a permission that must be requested from
-      // a user gesture; the first touch on the meadow asks once. everywhere
-      // else the listener is armed at load (see GO below).
-      function enableMotionPeck() {
-        if (motionArmed || motionAsked || reduceMQ.matches || !coarseMQ.matches) return;
-        var DM = window.DeviceMotionEvent;
-        if (!DM || typeof DM.requestPermission !== "function") return;
-        motionAsked = true; // one ask per visit - a denial shouldn't nag
-        DM.requestPermission().then(function (state) {
-          if (state === "granted") armMotionPeck();
-        }).catch(function () {});
-      }
 
       // =======================================================================
       //  WIRING: resize, scheme, motion, visibility
@@ -1925,7 +1901,7 @@
       // instruction for a control that does nothing) and name the real control
       var hintEl = document.getElementById("hint");
       if (hintEl && !reduceMQ.matches) {
-        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk · tap to hop · hold to flap";
+        if (window.matchMedia("(pointer: coarse)").matches) hintEl.textContent = "drag to walk · tap her to hop · tap the grass to peck · double-press to fly";
         hintEl.classList.add("-on");
       }
       // hide the hint on its own after a while even if no one moves
@@ -1936,10 +1912,6 @@
       // =======================================================================
       resize();
       spawnCritters();
-      // back-tap peck: sensors that need no permission arm right away; iOS
-      // instead asks on the first touch (requestPermission needs a gesture)
-      if (coarseMQ.matches && !reduceMQ.matches && window.DeviceMotionEvent &&
-          typeof DeviceMotionEvent.requestPermission !== "function") armMotionPeck();
       hen.x = 0; hen.y = 60;
       cam.x = hen.x; cam.y = hen.y; cam.tx = hen.x; cam.ty = hen.y;
       if (reduceMQ.matches) {
