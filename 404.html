@@ -1776,6 +1776,8 @@
         }
       }
       canvas.addEventListener("pointerdown", function (e) {
+        lastPointerTs = performance.now();
+        enableMotionPeck(); // first gesture: iOS motion permission needs one
         var p = { x: e.clientX, y: e.clientY, action: false, directing: false, flapping: false, hold: 0 };
         // a press on the hen, or any extra finger while one already steers, is an
         // action (tap = hop, hold = flap); the first loose finger steers instead
@@ -1792,6 +1794,7 @@
       canvas.addEventListener("pointermove", function (e) {
         var p = pointers[e.pointerId];
         if (!p || !(e.pressure > 0 || e.buttons)) return;
+        lastPointerTs = performance.now();
         if (p.action && !p.directing) {
           // not steering yet: a drag past the slop begins it. if the hold already
           // fired we keep flapping and now steer too (fly + direct); if it hasn't,
@@ -1806,6 +1809,7 @@
       function liftPointer(e) {
         var p = pointers[e.pointerId];
         if (!p) return;
+        lastPointerTs = performance.now();
         clearTimeout(p.hold);
         // a clean tap (an action finger that never steered or flapped) hops
         if (p.action && !p.directing && !p.flapping) hop();
@@ -1815,6 +1819,72 @@
       }
       window.addEventListener("pointerup", liftPointer);
       window.addEventListener("pointercancel", liftPointer);
+
+      // ---- back-tap -> peck (mobile) ----------------------------------------
+      // a knock on the BACK of the phone reads on the accelerometer as one
+      // sharp spike out of stillness, dominant on z (straight through the
+      // body). taps on the glass jolt the sensor too, but those also raise
+      // pointer events, so any spike within a beat of a touch is ignored.
+      // mirrors the shift-key scratch/peck (and eats bugs the same way).
+      var coarseMQ = window.matchMedia("(pointer: coarse)");
+      var motionArmed = false, motionAsked = false;
+      var lastPointerTs = -1e9, lastBackTap = -1e9, calmRun = 0;
+      var gravX = 0, gravY = 0, gravZ = 0, gravSet = false;
+      var TAP_SPIKE = 3.5;  // m/s^2 - the knock itself
+      var TAP_CALM = 1.1;   // m/s^2 - "the phone was just resting" ceiling
+      var TOUCH_GAP = 400, TAP_GAP = 550; // ms: touch quarantine + refractory
+
+      function backTapPeck() {
+        if (reduceMQ.matches || hen.z !== 0 || hen.scratch > 0) return;
+        hen.scratch = SCRATCH_DUR; hen.scratchPuff = 0.06;
+        hen.idle = 0; hen.ate = false; hideHint();
+      }
+
+      function onDeviceMotion(e) {
+        if (!running) return;
+        var ax, ay, az, a = e.acceleration;
+        if (a && a.x != null) { ax = a.x; ay = a.y; az = a.z; }
+        else {
+          // no gyro data: low-pass gravity out of the including-gravity feed
+          var g = e.accelerationIncludingGravity;
+          if (!g || g.x == null) return;
+          if (!gravSet) { gravX = g.x; gravY = g.y; gravZ = g.z; gravSet = true; return; }
+          gravX += (g.x - gravX) * 0.1;
+          gravY += (g.y - gravY) * 0.1;
+          gravZ += (g.z - gravZ) * 0.1;
+          ax = g.x - gravX; ay = g.y - gravY; az = g.z - gravZ;
+        }
+        var mag = Math.hypot(ax, ay, az);
+        var now = performance.now();
+        if (mag > TAP_SPIKE && calmRun >= 3 &&
+            Math.abs(az) >= Math.abs(ax) && Math.abs(az) >= Math.abs(ay) &&
+            now - lastPointerTs > TOUCH_GAP && now - lastBackTap > TAP_GAP) {
+          lastBackTap = now;
+          backTapPeck();
+        }
+        calmRun = mag < TAP_CALM ? calmRun + 1 : 0;
+      }
+
+      function armMotionPeck() {
+        if (motionArmed) return;
+        motionArmed = true;
+        window.addEventListener("devicemotion", onDeviceMotion);
+        if (hintEl && coarseMQ.matches)
+          hintEl.textContent = "drag to walk · tap to hop · hold to flap · tap the back to peck";
+      }
+
+      // iOS gates devicemotion behind a permission that must be requested from
+      // a user gesture; the first touch on the meadow asks once. everywhere
+      // else the listener is armed at load (see GO below).
+      function enableMotionPeck() {
+        if (motionArmed || motionAsked || reduceMQ.matches || !coarseMQ.matches) return;
+        var DM = window.DeviceMotionEvent;
+        if (!DM || typeof DM.requestPermission !== "function") return;
+        motionAsked = true; // one ask per visit - a denial shouldn't nag
+        DM.requestPermission().then(function (state) {
+          if (state === "granted") armMotionPeck();
+        }).catch(function () {});
+      }
 
       // =======================================================================
       //  WIRING: resize, scheme, motion, visibility
@@ -1866,6 +1936,10 @@
       // =======================================================================
       resize();
       spawnCritters();
+      // back-tap peck: sensors that need no permission arm right away; iOS
+      // instead asks on the first touch (requestPermission needs a gesture)
+      if (coarseMQ.matches && !reduceMQ.matches && window.DeviceMotionEvent &&
+          typeof DeviceMotionEvent.requestPermission !== "function") armMotionPeck();
       hen.x = 0; hen.y = 60;
       cam.x = hen.x; cam.y = hen.y; cam.tx = hen.x; cam.ty = hen.y;
       if (reduceMQ.matches) {
