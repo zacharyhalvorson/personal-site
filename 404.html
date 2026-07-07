@@ -205,7 +205,7 @@
         <p class="sub">This path wandered off into the tall grass. Wander a while, or <a class="home" href="https://www.zacharyhalvorson.com">head back home</a>.</p>
       </div>
 
-      <p class="hint" id="hint">space to hop · shift to scratch · f to flap</p>
+      <p class="hint" id="hint">click her to hop · click the grass to peck · double-press to fly · space / shift / f work too</p>
 
       <p class="sr-only">A decorative animated meadow with a chicken you can walk around using the arrow keys. This is a 404 page; the "head back home" link returns to the home page.</p>
     </main>
@@ -1752,11 +1752,13 @@
         return Math.hypot(e.clientX - hx, e.clientY - hy) <= r;
       }
 
-      // touch is multi-finger: a held finger steers (walk toward it), while
-      // clean taps fire the actions — a tap ON the hen hops, a tap on the
-      // grass pecks toward the tapped spot, and a second quick press held down
-      // flies (flap + hover, steering toward the finger) until it lifts. a
-      // hold on the hen (or an extra finger) still flaps, mirroring the F key.
+      // one pointer scheme for touch AND mouse: a held press steers (walk
+      // toward it), while clean taps/clicks fire the actions — on the hen it
+      // hops, on the grass it pecks toward the tapped spot, and a second quick
+      // press held down flies (flap + hover, steering toward the pointer)
+      // until it lifts. a hold on the hen (or an extra touch finger) still
+      // flaps, mirroring the F key. touch is multi-finger: one finger can
+      // steer while another taps or holds.
       var HOLD_MS = 170, TAP_SLOP = 12, TAP_MS = 250, pointers = {};
       var DBL_MS = 300, DBL_SLOP = 48;          // double-press window
       var lastTap = { t: -1e9, x: 0, y: 0 };    // last clean tap, for doubles
