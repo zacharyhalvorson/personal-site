@@ -413,10 +413,22 @@
       render();
     }
 
-    var x0 = 0, y0 = 0, t0 = 0, moved = false, down = false, horizontal = false;
+    var x0 = 0, y0 = 0, t0 = 0, moved = false, down = false, dir = null;
+    // Direction lock, decided once per gesture: 'h' leafs the stack, 'v'
+    // leaves the gesture to the browser's page scroll. Classification is
+    // biased toward horizontal — a swipe counts as horizontal up to ~57°
+    // off-axis (|dx| > |dy| * 0.66) — because thumb swipes naturally arc;
+    // with a 50/50 split anything steeper than 45° read as a scroll, which
+    // is how angled side-swipes kept losing the stack. Deliberate scroll
+    // swipes are near-vertical, so they still fall through to the page.
+    function lockDir(dx, dy) {
+      if (dir !== null) return;
+      if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return; // too little signal yet
+      dir = Math.abs(dx) > Math.abs(dy) * 0.66 ? 'h' : 'v';
+    }
     ul.addEventListener('dragstart', function (e) { e.preventDefault(); });
     ul.addEventListener('pointerdown', function (e) {
-      down = true; moved = false; horizontal = false;
+      down = true; moved = false; dir = null;
       x0 = e.clientX; y0 = e.clientY;
       t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
       try { ul.setPointerCapture(e.pointerId); } catch (_) {}
@@ -424,23 +436,13 @@
     ul.addEventListener('pointermove', function (e) {
       if (!down) return;
       var dx = e.clientX - x0, dy = e.clientY - y0;
-      // Two-stage detection. We need preventDefault to fire early — with
-      // `touch-action: pan-y` the browser would otherwise pan vertically
-      // during the first frames of a horizontal swipe, and on a mandatory-snap
-      // page even a couple of upward pixels can tip the snap to the previous
-      // section. But we also can't set `moved` early, because the release path
-      // treats `!moved` as a tap (opens the lightbox), and a sloppy tap with
-      // a few px of finger drift must still count as a tap. So claim
-      // `preventDefault` at 5px of clearly-horizontal motion, but only commit
-      // to `moved` at the usual 8px tap/swipe boundary.
-      if (Math.abs(dx) > 5 && Math.abs(dx) > Math.abs(dy)) {
-        if (e.cancelable) e.preventDefault();
-      }
-      if (!moved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
-        moved = true;
-        horizontal = Math.abs(dx) > Math.abs(dy);
-      }
-      if (moved && horizontal) {
+      lockDir(dx, dy);
+      // The direction lock engages at 4px, but `moved` — which gates
+      // tap-vs-drag on release — waits for the usual 8px boundary, so a
+      // sloppy tap with a few px of finger drift still counts as a tap and
+      // the front card never starts visibly tracking a would-be tap.
+      if (!moved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) moved = true;
+      if (moved && dir === 'h') {
         if (e.cancelable) e.preventDefault();
         ul.classList.add('is-dragging');
         var atEdge = (active === 0 && dx > 0) || (active === items.length - 1 && dx < 0);
@@ -451,6 +453,22 @@
         front.style.zIndex = items.length + 1;
       }
     });
+    // The real scroll veto. preventDefault() on a POINTER event cannot stop
+    // a touch scroll — with `touch-action: pan-y` the browser arbitrates the
+    // gesture on its own, and anything it classifies as vertical-ish starts
+    // a page pan and fires pointercancel, aborting the drag mid-swipe.
+    // That's what made angled side-swipes feel broken on mobile. A
+    // non-passive touchmove listener is the one channel that CAN veto the
+    // pan: the browser must consult it before committing to a scroll, so
+    // cancelling here the moment the direction lock says horizontal keeps
+    // the gesture on the stack. Vertical and still-undecided moves are left
+    // uncancelled so a real scroll swipe pans the page natively.
+    ul.addEventListener('touchmove', function (e) {
+      if (!down || e.touches.length !== 1) return;
+      var t = e.touches[0];
+      lockDir(t.clientX - x0, t.clientY - y0);
+      if (dir === 'h' && e.cancelable) e.preventDefault();
+    }, { passive: false });
     function release(e) {
       if (!down) return;
       down = false;
@@ -460,7 +478,7 @@
       var distOK = Math.abs(dx) > Math.max(28, ul.clientWidth * 0.08);
       var velocity = dt > 0 ? Math.abs(dx) / dt : 0;
       var flickOK = velocity > 0.45 && Math.abs(dx) > 16;
-      if (horizontal && (distOK || flickOK)) settle(dx < 0 ? 1 : -1);
+      if (dir === 'h' && moved && (distOK || flickOK)) settle(dx < 0 ? 1 : -1);
       else if (!moved) lightbox.open(items, active, lis[active], setActiveTo);
       else settle(0);
     }
@@ -1413,7 +1431,10 @@
       var dx = e.clientX - sx0, dy = e.clientY - sy0;
       if (!mvd && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
         mvd = true;
-        hor = Math.abs(dx) > Math.abs(dy);
+        // Same horizontal bias as the in-page stacks (~57° of arc counts as
+        // a side-swipe): thumb swipes arc, and a 50/50 split made angled
+        // swipes fall into the tap/dismiss branch on release.
+        hor = Math.abs(dx) > Math.abs(dy) * 0.66;
         if (hor) dlg.classList.add('is-dragging');
       }
       if (mvd && hor) {

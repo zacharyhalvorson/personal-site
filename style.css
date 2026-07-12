@@ -634,12 +634,19 @@ mark {
   height: clamp(280px, 52svh, 520px);
   cursor: grab;
   outline: none;
-  /* pan-y lets the browser own vertical scroll on the stack itself, so a swipe
-     up to reach the next section just works; JS still claims horizontal moves
-     for leafing through the cards. */
+  /* pan-y lets the browser own vertical scroll on the stack, so a swipe up to
+     reach the next section just works. JS claims horizontal-ish moves for
+     leafing via a non-passive touchmove listener (see script.js) — a pointer
+     event's preventDefault can't stop a touch scroll. iOS evaluates
+     touch-action on the touch target itself and it does not inherit, and
+     fingers land on the card's img/video, not this ul — hence the descendant
+     rule below. */
   touch-action: pan-y;
   user-select: none;
 }
+/* touch-action is not inherited: without this a finger landing directly on a
+   card's img/video carries the default `auto` on iOS. */
+.media.is-stack * { touch-action: pan-y; }
 /* On narrow viewports the figure was reserving far more vertical space than
    most card aspects need, leaving dead air between the lede and the card.
    Tighten it so chapters feel balanced on mobile. */
