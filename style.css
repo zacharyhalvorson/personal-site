@@ -106,6 +106,11 @@ a:focus-visible {
   outline-offset: 3px;
   border-radius: 2px;
 }
+/* Activate on the first tap. `manipulation` opts links and buttons out of
+   double-tap-to-zoom, so mobile Safari can dispatch the click immediately
+   instead of holding it while it disambiguates gestures. Panning and
+   pinch-zoom are unaffected. */
+a, button { touch-action: manipulation; }
 
 ul, ol, dl, dd { margin: 0; padding: 0; }
 .list-reset { list-style: none; }
@@ -1464,16 +1469,30 @@ html.is-navigating { scroll-snap-type: none; }
      Both must always be visible, so they get no reveal rather than an
      intermittent disappearing act. The taller body blocks below keep the fade:
      their long entry range gives the compositor enough sample frames that the
-     freeze doesn't bite. */
-  .chapter_body > *:nth-child(n+2) {
-    animation: reveal linear both;
-    animation-timeline: view();
-  }
+     freeze doesn't bite.
 
-  .chapter_body > *:nth-child(2) { animation-range: entry 6%  entry 36%; }
-  .chapter_body > *:nth-child(3) { animation-range: entry 10% entry 42%; }
-  .chapter_body > *:nth-child(4) { animation-range: entry 14% entry 48%; }
-  .chapter_body > *:nth-child(5) { animation-range: entry 18% entry 54%; }
+     The reveal is also gated to hover-capable (non-touch) devices. On iOS
+     Safari a tap dispatches synthetic mouse events first, and WebKit's
+     content-change observer withholds the click when the tapped content's
+     styles change in response — the heuristic that makes hover-menus need
+     tap-then-tap. A mandatory-snap page is rarely perfectly still (snap
+     settling and toolbar collapse nudge the scroll offset), and any nudge
+     re-samples these view() animations, mutating the opacity/transform of
+     the very block being tapped. Net effect: body links inside revealed
+     blocks (the Dooly Crunchbase link, "see more of my work") needed two
+     taps. No reveal on touch → no style change under the tap → the first
+     tap navigates. */
+  @media (hover: hover) {
+    .chapter_body > *:nth-child(n+2) {
+      animation: reveal linear both;
+      animation-timeline: view();
+    }
+
+    .chapter_body > *:nth-child(2) { animation-range: entry 6%  entry 36%; }
+    .chapter_body > *:nth-child(3) { animation-range: entry 10% entry 42%; }
+    .chapter_body > *:nth-child(4) { animation-range: entry 14% entry 48%; }
+    .chapter_body > *:nth-child(5) { animation-range: entry 18% entry 54%; }
+  }
 
   @keyframes reveal {
     from {
