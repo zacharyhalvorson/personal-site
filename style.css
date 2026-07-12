@@ -96,8 +96,9 @@ a {
    a link with a :hover style applies that hover state on the first tap and
    only navigates on a second tap — the "tap once, nothing happens, tap again"
    bug on body links like "see more of my work". Scoping hover out of the touch
-   path means a tap activates the link immediately. (Same reasoning as the rail
-   below.) */
+   path removes this cause of the eaten first tap — the scroll-driven entrance
+   reveals are gated for the same symptom's other cause (see the entrance-reveals
+   section near the bottom). (Same reasoning as the rail below.) */
 @media (hover: hover) {
   a:hover { color: var(--link-hover); }
 }
@@ -1481,8 +1482,14 @@ html.is-navigating { scroll-snap-type: none; }
      the very block being tapped. Net effect: body links inside revealed
      blocks (the Dooly Crunchbase link, "see more of my work") needed two
      taps. No reveal on touch → no style change under the tap → the first
-     tap navigates. */
-  @media (hover: hover) {
+     tap navigates.
+
+     `not (any-pointer: coarse)` keeps the gate honest on hybrid devices: an
+     iPad with a paired trackpad flips to `hover: hover` while fingers still
+     tap the screen (and still run the same WebKit tap heuristic), so hover
+     capability alone isn't proof there's no touch input. Any device with a
+     coarse pointer anywhere keeps the static, always-tappable content. */
+  @media (hover: hover) and (not (any-pointer: coarse)) {
     .chapter_body > *:nth-child(n+2) {
       animation: reveal linear both;
       animation-timeline: view();
@@ -1519,6 +1526,13 @@ html.is-navigating { scroll-snap-type: none; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  /* The duration clamp above is a spec-guaranteed no-op for scroll-driven
+     animations: progress-based timelines (view()/scroll()) normalize time
+     values onto the scroll range, so a 0.001ms reveal still fades and
+     translates across its full entry range. Remove those animations outright.
+     The progress bar's base style is scaleX(0), so it simply rests empty. */
+  .progress,
+  .chapter_body > * { animation: none !important; }
   /* Keep the full name visible, no fade, no collapse, no spring, when motion is reduced. */
   .display_dim { opacity: 1; font-size: 1em; }
   .display_shift { display: inline; }

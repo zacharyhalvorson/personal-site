@@ -77,7 +77,7 @@ Deployed via **GitHub Pages** from the `master` branch. Push to `master` and the
 - **Mobile-first** responsive design
 - **CSS custom properties** in `:root`, with full **dark mode** parity via `@media (prefers-color-scheme: dark)`
 - **Scroll-snap**: `html { scroll-snap-type: y mandatory }` + `.chapter { scroll-snap-align: start; min-height: 100svh }`
-- **Entrance reveals**: CSS scroll-driven animations (`animation-timeline: view()`) inside `@supports` — graceful degradation. Desktop-pointer only (`@media (hover: hover)`): on touch, the reveal's scroll-coupled style changes trip iOS Safari's content-change tap heuristic and links inside revealed blocks need two taps
+- **Entrance reveals**: CSS scroll-driven animations (`animation-timeline: view()`) inside `@supports` — graceful degradation. Gated to `@media (hover: hover) and (not (any-pointer: coarse))` — i.e. no touch input anywhere: the reveal's scroll-coupled style changes trip iOS Safari's content-change tap heuristic and links inside revealed blocks need two taps (hover alone isn't enough — an iPad with a paired trackpad reports `hover: hover` while fingers still tap)
 - **Scroll progress bar**: `animation-timeline: scroll(root)` on a fixed 2px top bar
 - **Reduced motion**: `@media (prefers-reduced-motion: reduce)` disables snap, smooth scroll, and all animations
 - **Print stylesheet**: flattens scroll-snap and prints as a clean resume
