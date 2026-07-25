@@ -91,6 +91,13 @@ a {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
   transition: color 120ms var(--ease);
+  /* The page stays pinch-zoomable (no maximum-scale — accessibility), which
+     leaves iOS Safari's double-tap-to-zoom heuristic arbitrating every tap on
+     zoomable text. A tap on a small inline link inside a paragraph can be
+     held back as a potential first half of a text zoom instead of dispatched
+     as a click. `manipulation` opts the link itself out of that arbitration
+     (pan + pinch stay available) so a single tap always clicks. */
+  touch-action: manipulation;
 }
 /* Hover affordances are gated to real pointers. On iOS Safari (`hover: none`)
    a link with a :hover style applies that hover state on the first tap and
@@ -1475,14 +1482,36 @@ html.is-navigating { scroll-snap-type: none; }
   .chapter_body > *:nth-child(4) { animation-range: entry 14% entry 48%; }
   .chapter_body > *:nth-child(5) { animation-range: entry 18% entry 54%; }
 
+  /* Touch devices get the fade WITHOUT the 14px rise. The revealed blocks
+     contain the page's inline links (colophon: "see more of my work",
+     "reach out", Trip Cams, Remote Terminal; plus each project lede's link),
+     and on iOS Safari the view() timeline is sampled off the main thread —
+     the same snap-landing mis-sampling documented above that freezes
+     keyframes also leaves hit testing holding the block's *shifted* transform
+     after the landing. A tap then targets geometry the text no longer
+     occupies: first tap misses the link, second tap (after a re-sample)
+     lands — the "double tap to follow a colophon link" bug. Gating :hover
+     (June fix) didn't cure it because hover was never the mechanism. Opacity
+     plays no part in hit testing, so the fade itself is safe everywhere; the
+     rise is reserved for fine-pointer devices, where there are no taps to
+     eat. */
   @keyframes reveal {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .chapter_body > *:nth-child(n+2) { animation-name: reveal-rise; }
+
+    @keyframes reveal-rise {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   }
 }
