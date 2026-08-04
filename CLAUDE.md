@@ -21,18 +21,29 @@ Intentionally minimal: hand-written **HTML and CSS**, plus **one small vanilla-J
 ```
 /
 ├── index.html              # The entire site — intro + 4 project chapters + colophon
-├── style.css               # All styles
+├── style.css               # All styles (loaded by index.html only)
 ├── script.js               # Progressive enhancement: media stacks + lightbox
+├── 404.html                # Self-contained animated 404 page (own inline styles/JS)
+├── resume/index.html       # Standalone resume page (own inline styles)
+├── work/                   # Password-gated case-study viewer (own inline styles)
+│   ├── index.html          # Gate + deck shell
+│   ├── rayban-display/     # Exported case-study deck
+│   └── rayban-meta/        # Exported case-study deck
 ├── CNAME                   # GitHub Pages custom domain (www.zacharyhalvorson.com)
+├── vercel.json             # Vercel config (preview deploys)
 ├── favicon.ico             # Favicon
 ├── favicon-152.png         # Apple touch icon (152px)
 ├── apple-touch-icon.png    # Apple touch icon
-├── embed-image.png         # Open Graph / social preview image
-└── images/
-    ├── me/                 # Profile photos (400w, 600w, 1200w, full)
+├── embed-image.jpg         # Open Graph / social preview image
+├── embed-404.png           # Social preview image for the 404 page
+└── media/
+    ├── me/                 # Profile photos (400w, 800w, 1600w; jpg + webp)
     ├── socials/            # Social media icons (GitHub, LinkedIn, etc.)
-    └── work/               # One representative image per project
+    ├── awards/             # Award logos
+    └── work-samples/       # Per-project media for the chapters
 ```
+
+Note: `resume/`, `work/`, and `404.html` do NOT load `style.css` — each carries its own inline `<style>`. Cross-cutting fixes made in `style.css` (e.g. link `touch-action`, `@media (hover: hover)` gates) must be mirrored into those pages' inline styles.
 
 ## Development
 
