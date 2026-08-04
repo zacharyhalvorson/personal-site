@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Personal site for Zachary Halvorson — a product designer based in Seattle, currently at Meta Reality Labs. Deployed at [www.zacharyhalvorson.com](https://www.zacharyhalvorson.com).
+Personal site for Zachary Halvorson — a product designer based in Seattle, currently a Staff Product Designer at DoorDash (previously Meta Reality Labs). Deployed at [www.zacharyhalvorson.com](https://www.zacharyhalvorson.com).
 
 The site is a single-page, scroll-snapped portfolio: an intro section followed by one full-viewport section per project (Meta Ray-Ban Display → Ray-Ban Meta → Clio Scheduler → Dooly), each with a representative image, then a closing colophon with education and contact.
 
