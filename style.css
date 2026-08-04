@@ -99,6 +99,17 @@ a {
      (pan + pinch stay available) so a single tap always clicks. */
   touch-action: manipulation;
 }
+/* touch-action is NOT inherited — iOS Safari evaluates it on the element the
+   finger actually lands on (the same finding stamped onto `.media.is-stack *`
+   and `.lightbox *`). Inline text links hit-test to the <a> itself, so the
+   rule above covers them; the socials pills do not — their whole surface is
+   wrapped children (<img class="socials_icon">, <span>GitHub</span>), so every
+   tap targets a descendant still at `touch-action: auto` and goes back through
+   the double-tap-to-zoom arbitration the <a> opted out of. Stamp the opt-out
+   onto link descendants too. (Class-level touch-action rules — `.lightbox *`:
+   none, `.media.is-stack *`: pan-y — outrank this element selector, so gesture
+   locking inside those components is unaffected.) */
+a * { touch-action: manipulation; }
 /* Hover affordances are gated to real pointers. On iOS Safari (`hover: none`)
    a link with a :hover style applies that hover state on the first tap and
    only navigates on a second tap — the "tap once, nothing happens, tap again"
