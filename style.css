@@ -91,14 +91,17 @@ a {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
   transition: color 120ms var(--ease);
-  /* The page stays pinch-zoomable (no maximum-scale — accessibility), which
-     leaves iOS Safari's double-tap-to-zoom heuristic arbitrating every tap on
-     zoomable text. A tap on a small inline link inside a paragraph can be
-     held back as a potential first half of a text zoom instead of dispatched
-     as a click. `manipulation` opts the link itself out of that arbitration
-     (pan + pinch stay available) so a single tap always clicks. */
-  touch-action: manipulation;
 }
+/* The page stays pinch-zoomable (no maximum-scale — accessibility), which
+   leaves iOS Safari's double-tap-to-zoom heuristic arbitrating every tap on
+   zoomable text; a tap on a small link can be held back as a potential first
+   half of a text zoom instead of dispatched as a click. `manipulation` opts
+   links out (pan + pinch stay available) so a single tap always clicks.
+   Stamped onto descendants too because some links' whole surface is wrapped
+   children — the socials pills' <img>/<span> — and iOS evaluates touch-action
+   on the element the finger lands on (see `.media.is-stack *`, `.lightbox *`,
+   whose class selectors still outrank this). */
+a, a * { touch-action: manipulation; }
 /* Hover affordances are gated to real pointers. On iOS Safari (`hover: none`)
    a link with a :hover style applies that hover state on the first tap and
    only navigates on a second tap — the "tap once, nothing happens, tap again"

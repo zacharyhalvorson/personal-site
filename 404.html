@@ -146,8 +146,14 @@
         color: var(--link);
         text-decoration: none;
         transition: color 120ms ease;
+        /* Same iOS single-tap fixes as the main site (style.css): opt the
+           link out of double-tap-to-zoom arbitration and gate :hover to real
+           pointers so a first tap isn't spent applying the hover state. */
+        touch-action: manipulation;
       }
-      .copy .home:hover { color: var(--link-hover); }
+      @media (hover: hover) {
+        .copy .home:hover { color: var(--link-hover); }
+      }
       .copy .home:focus-visible {
         outline: 2px solid var(--link);
         outline-offset: 4px;

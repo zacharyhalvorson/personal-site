@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Zachary Halvorson — Resume</title>
-  <meta name="description" content="Resume of Zachary Halvorson, product designer at Meta Reality Labs.">
+  <meta name="description" content="Resume of Zachary Halvorson, Staff Product Designer at DoorDash.">
   <meta name="author" content="Zachary Halvorson">
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://www.zacharyhalvorson.com/resume/">
@@ -76,8 +76,16 @@
     a {
       color: var(--link);
       text-decoration: none;
+      /* Same iOS single-tap fixes as the main site (style.css): opt links
+         (and their wrapped children) out of double-tap-to-zoom arbitration,
+         and gate :hover to real pointers so a first tap isn't spent applying
+         the hover state. */
+      touch-action: manipulation;
     }
-    a:hover { color: var(--link-hover); text-decoration: underline; }
+    a * { touch-action: manipulation; }
+    @media (hover: hover) {
+      a:hover { color: var(--link-hover); text-decoration: underline; }
+    }
     a:focus-visible {
       outline: 2px solid var(--link);
       outline-offset: 2px;
@@ -242,17 +250,29 @@
 
     <section class="job">
       <h3 class="job_title">
-        Product Designer,
+        Staff Product Designer,
+        <a href="https://www.doordash.com/" target="_blank" rel="noopener noreferrer">DoorDash</a>
+      </h3>
+      <p class="job_meta">Seattle, WA &ndash; <time datetime="2026-07">July 2026</time>-Present</p>
+      <p>
+        I design merchant experiences at DoorDash, helping businesses expand
+        their market.
+      </p>
+    </section>
+
+    <section class="job">
+      <h3 class="job_title">
+        Staff Product Designer,
         <a href="https://about.meta.com/realitylabs/" target="_blank" rel="noopener noreferrer">Meta Reality Labs</a>
       </h3>
-      <p class="job_meta">Seattle, WA &ndash; <time datetime="2020-08">August 2020</time>-<time datetime="2026-05">May 2026</time></p>
+      <p class="job_meta">Seattle, WA &ndash; <time datetime="2020-08">August 2020</time>-<time datetime="2026-07">July 2026</time></p>
       <p>
         I focussed on AI experiences on Wearables within Meta&rsquo;s Reality
         Labs. In my time at Meta I have worked on AI Smart Glasses in a holistic
         way. Championing multiple devices and individual features from concept
         phase to launching into the market.
       </p>
-      <p>As a Product Designer on wearables, my work has included:</p>
+      <p>As a product designer on wearables, my work has included:</p>
       <ul>
         <li>AI-native feature ideation, design, and execution.</li>
         <li>Leveraging a deep understanding of networked devices in managing the connectivity of the wearables.</li>
