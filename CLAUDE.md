@@ -88,7 +88,6 @@ Deployed via **GitHub Pages** from the `master` branch. Push to `master` and the
 - **Mobile-first** responsive design
 - **CSS custom properties** in `:root`, with full **dark mode** parity via `@media (prefers-color-scheme: dark)`
 - **Scroll-snap**: `html { scroll-snap-type: y mandatory }` + `.chapter { scroll-snap-align: start; min-height: 100svh }`
-  - Mandatory snapping is only correct when every chapter fits the viewport. On phones they don't (the colophon overflows a 390×664 viewport by ~215px), and iOS Safari handles an oversized mandatory snap area badly (momentum dies, the last chapter lands anywhere). So `@media (max-width: 599px), (max-height: 499px)` relaxes the root to `scroll-snap-type: y proximity` and drops `scroll-snap-stop: always`. If chapter copy or media grows, re-measure chapter heights against common viewports (there's a comment with the numbers next to the rule) and adjust the breakpoints rather than fighting iOS.
 - **Entrance reveals**: CSS scroll-driven animations (`animation-timeline: view()`) inside `@supports` — graceful degradation
 - **Scroll progress bar**: `animation-timeline: scroll(root)` on a fixed 2px top bar
 - **Reduced motion**: `@media (prefers-reduced-motion: reduce)` disables snap, smooth scroll, and all animations

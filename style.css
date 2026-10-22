@@ -318,32 +318,6 @@ ul, ol, dl, dd { margin: 0; padding: 0; }
   position: relative;
 }
 
-/* Mandatory snapping only works when every chapter FITS the snapport. A snap
-   area taller than the viewport is, per spec, a "covering" area: any offset
-   where it still fills the viewport is a valid rest position, so mandatory
-   snapping no longer pins the chapter to its start. Desktop engines degrade
-   gracefully (free scroll inside the tall chapter, snap at its edges), but
-   iOS Safari does not: with a mandatory root snap and an oversized area it
-   kills fling momentum (WebKit bug 253195), fights the toolbar collapse, and
-   lands anywhere inside the last chapter — the "snapping is broken" report.
-
-   On phones the chapters do NOT fit (measured in a 390×664 viewport: Display
-   +107px, Ray-Ban +70, Clio +19, Dooly +45, colophon +215; iPhone SE and any
-   phone in landscape overflow by far more). Rather than trim content to force
-   a fit on every phone, relax the root to `proximity` there and drop the
-   `scroll-snap-stop: always` stop-at-every-chapter: scrolling keeps its
-   momentum inside a tall chapter and only snaps when it comes to rest near a
-   chapter start. The breakpoints are the rail's phone breakpoint (portrait
-   phones) plus a short-viewport guard (phones in landscape, where even the
-   intro is ~130px too tall). Tablets and desktops keep `mandatory`, where
-   every chapter fits (measured at 820×1100, 1180×820, 1440×790, 1920×1000).
-   Re-measure here whenever chapter copy or media grows: the colophon is the
-   tallest chapter and the first to stop fitting. */
-@media (max-width: 599px), (max-height: 499px) {
-  html { scroll-snap-type: y proximity; }
-  .chapter { scroll-snap-stop: normal; }
-}
-
 .chapter_inner {
   width: 100%;
   max-width: var(--max);
@@ -1418,19 +1392,14 @@ html.is-navigating { scroll-snap-type: none; }
 /* ---------- chapter: colophon variant ---------- */
 
 /* The closing chapter keeps the shared `.chapter` height (100svh) — it must NOT
-   be sized taller than the viewport. Earlier attempts sized it to 100lvh to give
-   the last snap point trailing room, but that made it TALLER than the svh
-   viewport while the mobile toolbar is shown. A snap area larger than the
-   snapport relaxes mandatory snapping (the spec lets the viewport rest anywhere
-   inside it), so momentum sails past `scroll-snap-align: start` to the bottom
-   of the page — the "it jumps to the bottom, like the section is too big"
-   symptom. The trailing-room problem is solved instead by `.scroll-tail` below,
-   which adds slack OUTSIDE the snap sections.
-
-   Note the colophon's CONTENT (two ledes, socials, education) already overflows
-   100svh on phones, which re-creates the same oversized-area behaviour no
-   matter how the box is sized. That is why phone-sized viewports run the root
-   snap as `proximity` (see the relaxed-snap block after `.chapter`). */
+   be taller than the viewport. Earlier attempts sized it to 100lvh to give the
+   last snap point trailing room, but that made it TALLER than the svh viewport
+   while the mobile toolbar is shown. A snap area larger than the snapport
+   relaxes mandatory snapping (the spec lets the viewport rest anywhere inside
+   it), so momentum sails past `scroll-snap-align: start` to the bottom of the
+   page — the "it jumps to the bottom, like the section is too big" symptom.
+   The trailing-room problem is solved instead by `.scroll-tail` below, which
+   adds slack OUTSIDE the snap sections. */
 
 /* Slack at the very end of the document, sized to the mobile toolbar's height
    (the gap between the large and small viewports). On iOS Safari the visual
