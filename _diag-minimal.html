@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIAG — minimal</title>
+<style>
+  html { scroll-snap-type: y mandatory; }
+  body { margin: 0; font: 24px -apple-system, sans-serif; }
+  .chapter { scroll-snap-align: start; scroll-snap-stop: always; min-height: 100svh; display: grid; place-items: center; }
+  .chapter:nth-child(odd) { background: #fff3d6; } .chapter:nth-child(even) { background: #cfe8ff; }
+</style>
+</head>
+<body>
+  <section class="chapter" id="s1">1</section>
+  <section class="chapter" id="s2">2</section>
+  <section class="chapter" id="s3">3</section>
+  <section class="chapter" id="s4">4</section>
+  <section class="chapter" id="s5">5</section>
+  <section class="chapter" id="s6">6</section>
+    <!-- TEMPORARY DIAGNOSTIC OVERLAY — not part of the site; removed before merge. -->
+    <style>
+      .diag { position: fixed; left: 0.5rem; right: 0.5rem; bottom: max(0.5rem, env(safe-area-inset-bottom)); z-index: 1000;
+        padding: 0.5rem 0.625rem; background: rgba(0,0,0,0.82); color: #fff; font: 11px/1.35 ui-monospace, Menlo, monospace;
+        border-radius: 8px; pointer-events: none; white-space: pre-wrap; word-break: break-word; }
+      .diag_probe { position: fixed; left: 0; top: 0; width: 1px; visibility: hidden; pointer-events: none; }
+    </style>
+    <div class="diag_probe" id="probeSvh" style="height:100svh"></div>
+    <div class="diag_probe" id="probeLvh" style="height:100lvh"></div>
+    <div class="diag_probe" id="probeVh" style="height:100vh"></div>
+    <div class="diag" id="diag" aria-hidden="true"></div>
+    <script>
+    (function () {
+      var el = document.getElementById('diag');
+      function mq(q) { return window.matchMedia(q).matches ? 'yes' : 'no'; }
+      function render() {
+        var html = document.documentElement, cs = getComputedStyle(html);
+        var ch = Array.prototype.map.call(document.querySelectorAll('.chapter'), function (c) {
+          var r = c.getBoundingClientRect();
+          return c.id + ':' + Math.round(r.height) + '@' + Math.round(r.top + window.scrollY);
+        }).join(' ');
+        var first = document.querySelector('.chapter');
+        var fcs = first ? getComputedStyle(first) : null;
+        el.textContent =
+          'reduce-motion: ' + mq('(prefers-reduced-motion: reduce)') +
+          '   hover: ' + mq('(hover: hover)') + '   pointer-fine: ' + mq('(pointer: fine)') + '\n' +
+          'html snap-type: ' + cs.scrollSnapType + '   html class: "' + html.className + '"\n' +
+          'chapter snap-align/stop: ' + (fcs ? fcs.scrollSnapAlign + ' / ' + fcs.scrollSnapStop : '-') +
+          '   scroll-driven anim: ' + (CSS.supports('animation-timeline: view()') ? 'yes' : 'no') + '\n' +
+          'inner: ' + window.innerWidth + 'x' + window.innerHeight +
+          '   visual: ' + (window.visualViewport ? Math.round(window.visualViewport.height) : '-') +
+          '   svh/lvh/vh: ' + document.getElementById('probeSvh').offsetHeight + '/' + document.getElementById('probeLvh').offsetHeight + '/' + document.getElementById('probeVh').offsetHeight + '\n' +
+          'scrollY: ' + Math.round(window.scrollY) + '   docH: ' + html.scrollHeight + '\n' +
+          'chapters h@top: ' + ch + '\n' +
+          'UA: ' + navigator.userAgent;
+      }
+      render();
+      window.addEventListener('scroll', render, { passive: true });
+      window.addEventListener('resize', render);
+      window.addEventListener('load', render);
+      setInterval(render, 1000);
+    })();
+    </script>
+  </body>
+</html>
